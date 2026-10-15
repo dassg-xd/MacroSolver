@@ -26,28 +26,6 @@ MacroSolver/
 └── salida/                   Aqui se guardan las graficas del demo
 ```
 
-## Como ejecutarlo (Windows)
-
-Abre una terminal **dentro de esta carpeta** y:
-
-```
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
-```
-
-Se abre en el navegador (http://localhost:8501). El titulo de la pagina muestra la version
-(`Version 0.3.0-beta`); si no la ves, estas ejecutando un archivo antiguo.
-
-## Alternativas
-
-| Comando | Que hace | Librerias |
-|---|---|---|
-| `python ejecutar_demo.py` | Resumen en consola + graficas en `salida/` | numpy, matplotlib |
-| `python tests/test_logica.py` | Verifica la logica | numpy |
-
-Si la interfaz web fallara por alguna restriccion de tu equipo, `ejecutar_demo.py` muestra la misma
-logica y las mismas graficas sin Streamlit.
-
 ## Datos de prueba
 
 En la interfaz, el generador crea un usuario simulado (cuanto se desvia del plan, variabilidad diaria
