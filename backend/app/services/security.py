@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import bcrypt
 
-from app.serfvices.configuracion import configuraciones
+from app.services.configuracion import configuraciones
 
 _ALGORITMO_JWT = "HS256"
 
