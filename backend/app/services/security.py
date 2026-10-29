@@ -22,7 +22,7 @@ def verificar_contrasena(contrasena: str, hash_guardado: str) -> bool:
 
 def crear_access_token(usuario_id: str) -> str:
     ahora = datetime.now(timezone.utc)
-    expiracion = ahora + timedelta(minutes=configuraciones.jwt_expire_minutes)
+    expiracion = ahora + timedelta(minutes=configuraciones.jwt_expiration_minutes)
     payload = {
         "sub": usuario_id,
         "iat": ahora.timestamp(),

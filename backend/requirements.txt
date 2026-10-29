@@ -6,3 +6,4 @@ python-dotenv
 pwdlib
 pyjwt
 bcrypt
+pydantic[email]
