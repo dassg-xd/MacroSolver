@@ -4,9 +4,11 @@ from fastapi import FastAPI
 from app.services.configuracion import configuraciones
 from app.services.configSupabase import crear_cliente_supabase
 from app.services.securityConfig import configurar_cors
+from app.routes.auth import router as auth_router
 
 app = FastAPI(title="MacroSolver")
 configurar_cors(app)
+app.include_router(auth_router)
 
 @app.get("/")
 def raiz():
@@ -15,7 +17,6 @@ def raiz():
         "health": "/health",
         "docs": "/docs",
     }
-
 
 @app.get("/health")
 def health():
