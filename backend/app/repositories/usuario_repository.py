@@ -14,7 +14,7 @@ class UsuarioRepository:
     def buscar_por_correo(self, correo: str) -> dict[str, Any] | None:
         respuesta = (
             cliente_supabase.table("usuario")
-            .select("id, correo, hash_contrasena")
+            .select(f"{self._COLUMNAS_PUBLICAS}, hash_contrasena")
             .eq("correo", correo)
             .limit(1)
             .execute()
