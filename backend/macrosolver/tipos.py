@@ -30,8 +30,8 @@ class Perfil:
     def __post_init__(self):
         if self.sexo not in ("hombre", "mujer"):
             raise ErrorMotor("sexo_invalido", "El sexo debe ser «hombre» o «mujer».")
-        if not 14 <= self.edad <= 100:
-            raise ErrorMotor("edad_invalida", "La edad debe estar entre 14 y 100 años.")
+        if not 18 <= self.edad <= 100:
+            raise ErrorMotor("edad_invalida", "MacroSolver es para adultos: la edad debe estar entre 18 y 100 años.")
         if not 100 <= self.altura_cm <= 250:
             raise ErrorMotor("altura_invalida", "La altura debe estar entre 100 y 250 cm.")
         if not any(abs(self.f_act - f) < 1e-9 for f in FACTORES_ACTIVIDAD):

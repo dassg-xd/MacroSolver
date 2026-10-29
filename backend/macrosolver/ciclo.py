@@ -112,7 +112,3 @@ def calcular_seguimiento(perfil: Perfil, F0: float, L0: float, ingesta_plan: flo
     desv = evaluar_replaneacion(pesos, ideal, adh.W, W_meta, N, dia_actual, con_registro, tol)
     return Seguimiento(ideal, adh.W, adh.estimado, curva_ej, dict(pesos), tend, lleg, desv)
 
-
-def ejecutar_ciclo(perfil: Perfil, W0: float, W_meta: float, N: int, **kw) -> VistaPrevia:
-    """Se conserva el nombre de la beta. Ajustar la firma si sus pruebas la usan distinta."""
-    return calcular_vista_previa(perfil, W0, W_meta, N, **kw)

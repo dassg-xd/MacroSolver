@@ -4,7 +4,9 @@ Euler sobre un modelo de dos compartimentos, Secante como método de disparo,
 mínimos cuadrados para la tendencia y diferencias finitas para la sensibilidad.
 Ecuaciones: sección 5 del Documento de software v0.5.
 """
-from .ciclo import Seguimiento, VistaPrevia, calcular_seguimiento, calcular_vista_previa, ejecutar_ciclo
+from . import beta
+from .beta import ejecutar_ciclo   # firma de la beta, se conserva para V5
+from .ciclo import Seguimiento, VistaPrevia, calcular_seguimiento, calcular_vista_previa
 from .composicion import Composicion, composicion_desde_pct, estimar_grasa, grasa_deurenberg, grasa_marina
 from .energia import coeficientes_tdee, equilibrio, imc, tdee, tmb
 from .estadisticas import Semana, estadisticas_semanales, gasto_ejercicio_dia
