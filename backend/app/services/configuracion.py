@@ -14,6 +14,8 @@ class Configuracion(BaseSettings):
 
     supabase_url: str = Field(..., min_length=1)
     supabase_key: str = Field(..., min_length=1)
+    jwt_secret: str = Field(..., min_length=32)
+    jwt_expiration_minutes: int = Field(default=180, gt=0)
     cors_origins: str = Field(..., min_length=1)
 
     @property
