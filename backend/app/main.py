@@ -8,7 +8,6 @@ from app.services.securityConfig import configurar_cors
 app = FastAPI(title="MacroSolver")
 configurar_cors(app)
 
-
 @app.get("/")
 def raiz():
     return {
