@@ -66,7 +66,7 @@ class UsuarioPublico(BaseModel):
     id: int
     correo: EmailStr
     nombre: str
-    sexo: Literal["hombre", "mujer"]
+    sexo: Literal["Masculino", "Femenino"]
     fecha_nacimiento: date
     altura_cm: Decimal
     factor_actividad: Decimal
