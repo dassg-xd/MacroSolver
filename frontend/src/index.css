@@ -1,0 +1,23 @@
+@theme {
+  color-black: #0e0e10;
+  color-red: #e0242b;
+  color-deep-red: #c41e24;
+  color-cream: #f2efea;
+  color-text-grey: #a8a8ae;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+}

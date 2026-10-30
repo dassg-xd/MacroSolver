@@ -3,3 +3,7 @@ uvicorn
 pydantic-settings
 supabase
 python-dotenv
+pwdlib
+pyjwt
+bcrypt
+pydantic[email]
