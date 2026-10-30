@@ -10,7 +10,7 @@ class RegistroRequest(BaseModel):
     correo: EmailStr
     contrasena: str = Field(min_length=8)
     nombre: str = Field(min_length=1, max_length=150)
-    sexo: Literal["hombre", "mujer"]
+    sexo: Literal["Masculino", "Femenino"]
     fecha_nacimiento: date
     altura_cm: Decimal = Field(ge=100, le=250)
     factor_actividad: Decimal
