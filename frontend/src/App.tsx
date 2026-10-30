@@ -1,8 +1,12 @@
-import Registro from "./features/auth/Registro";
-import "./App.css";
+import { RutasApp } from "./routes/RutasApp";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
-  return <Registro />;
+  return (
+    <BrowserRouter>
+      <RutasApp />; 
+    </BrowserRouter>
+  )
 }
 
 export default App;

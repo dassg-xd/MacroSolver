@@ -1,9 +1,9 @@
-import { useState, type SubimitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import logoMacroSolver from "../../assets/componente1.png";
 import { mensajeDeError } from "../../api/mensajeError";
 import { registrarUsuario } from "./services/authService";
 import type { DatosRegistro } from "../../types/auth";
-import "../../styles/Registro.css";
+import "../../styles/AuthStyles.css";
 
 type ErroresCampos = {
   sexo?: string;
