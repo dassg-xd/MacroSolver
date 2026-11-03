@@ -1,3 +1,11 @@
+import os
+
+# Valores de prueba para que la app se importe sin un .env real (no se conecta a Supabase).
+os.environ.setdefault("SUPABASE_URL", "https://prueba.supabase.co")
+os.environ.setdefault("SUPABASE_SECRET_KEY", "sb_secret_prueba")
+os.environ.setdefault("JWT_SECRET", "secreto-de-prueba-con-mas-de-32-caracteres")
+os.environ.setdefault("CORS_ORIGINS", "http://localhost:5173")
+
 import pytest
 
 from macrosolver import Perfil, estimar_grasa
