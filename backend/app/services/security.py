@@ -29,3 +29,31 @@ def crear_access_token(usuario_id: str) -> str:
         "exp": expiracion.timestamp(),
     }
     return jwt.encode(payload, configuraciones.jwt_secret, algorithm=_ALGORITMO_JWT)
+
+
+class TokenExpiradoError(Exception):
+    pass
+
+
+class TokenInvalidoError(Exception):
+    pass
+
+
+def decodificar_access_token(token: str) -> int:
+    """Devuelve el id del usuario del token, o lanza TokenExpiradoError / TokenInvalidoError."""
+    try:
+        payload = jwt.decode(
+            token,
+            configuraciones.jwt_secret,
+            algorithms=[_ALGORITMO_JWT],
+            options={"require": ["sub", "exp"]},
+        )
+    except jwt.ExpiredSignatureError as error:
+        raise TokenExpiradoError from error
+    except jwt.InvalidTokenError as error:
+        raise TokenInvalidoError from error
+
+    try:
+        return int(payload["sub"])
+    except (TypeError, ValueError) as error:
+        raise TokenInvalidoError from error

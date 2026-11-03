@@ -2,13 +2,16 @@ import httpx
 from fastapi import FastAPI
 
 from app.services.configuracion import configuraciones
-from app.services.configSupabase import crear_cliente_supabase
 from app.services.securityConfig import configurar_cors
+from app.errores import registrar_manejadores
 from app.routes.auth import router as auth_router
+from app.routes.usuario import router as usuario_router
 
 app = FastAPI(title="MacroSolver")
 configurar_cors(app)
+registrar_manejadores(app)
 app.include_router(auth_router)
+app.include_router(usuario_router)
 
 @app.get("/")
 def raiz():
@@ -20,12 +23,11 @@ def raiz():
 
 @app.get("/health")
 def health():
-    crear_cliente_supabase()
     url = configuraciones.supabase_url.rstrip("/")
     try:
         respuesta = httpx.get(
             f"{url}/auth/v1/health",
-            headers={"apikey": configuraciones.supabase_key},
+            headers={"apikey": configuraciones.supabase_secret_key},
             timeout=10.0,
         )
         supabase_ok = respuesta.status_code == 200

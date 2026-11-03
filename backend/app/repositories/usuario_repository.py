@@ -21,6 +21,17 @@ class UsuarioRepository:
         )
         
         return respuesta.data[0] if respuesta.data else None
+
+    def buscar_por_id(self, usuario_id: int) -> dict[str, Any] | None:
+        respuesta = (
+            cliente_supabase.table("usuario")
+            .select(self._COLUMNAS_PUBLICAS)
+            .eq("id", usuario_id)
+            .limit(1)
+            .execute()
+        )
+
+        return respuesta.data[0] if respuesta.data else None
     
     def crear(
         self, 
