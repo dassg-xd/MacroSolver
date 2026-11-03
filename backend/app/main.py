@@ -3,11 +3,13 @@ from fastapi import FastAPI
 
 from app.services.configuracion import configuraciones
 from app.services.securityConfig import configurar_cors
+from app.errores import registrar_manejadores
 from app.routes.auth import router as auth_router
 from app.routes.usuario import router as usuario_router
 
 app = FastAPI(title="MacroSolver")
 configurar_cors(app)
+registrar_manejadores(app)
 app.include_router(auth_router)
 app.include_router(usuario_router)
 
