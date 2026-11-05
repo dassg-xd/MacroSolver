@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
+from app.repositories.plan_repository import PlanRepository
 from app.repositories.usuario_repository import UsuarioRepository
 from app.services.auth_service import AuthService
 from app.services.security import (
@@ -25,6 +26,11 @@ def obtener_repositorio_usuarios() -> UsuarioRepository:
 
 def obtener_auth_service() -> AuthService:
     return _auth_service
+
+
+def obtener_repositorio_planes() -> PlanRepository:
+    return PlanRepository()
+
 
 
 def _no_autorizado(mensaje: str) -> HTTPException:
