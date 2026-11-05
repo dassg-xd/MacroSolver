@@ -151,9 +151,11 @@
 }
 
 .boton--secundario {
+  display: flex;
   border-color: #dcd7d1;
   background: #fff;
   color: #171719;
+  align-items: center;
 }
 
 .boton--peligro {

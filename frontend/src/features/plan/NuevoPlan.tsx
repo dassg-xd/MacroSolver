@@ -5,7 +5,112 @@ import { useSesion } from "../auth/SesionContext";
 import { vistaPreviaPlan, confirmarPlan } from "./planService";
 import type { VistaPreviaPlan, DatosPlan } from "../../types/plan";
 import ComoSeCalculo from "./ComoSeCalculo";
+import { mensajeDeError } from "../../api/mensajeError";
 import "../../styles/NuevoPlan.css";
+
+type CampoPlan =
+    | "pesoInicial"
+    | "pesoMeta"
+    | "fechaInicio"
+    | "fechaMeta"
+    | "cuello"
+    | "cintura"
+    | "cadera";
+
+type ErroresPlan = Partial<Record<CampoPlan, string>>;
+
+function fechaHoyLocal() {
+    const hoy = new Date();
+    hoy.setMinutes(hoy.getMinutes() - hoy.getTimezoneOffset());
+    return hoy.toISOString().slice(0, 10);
+}
+
+function diasEntre(inicio: string, meta: string): number | null {
+    const [anioInicio, mesInicio, diaInicio] = inicio.split("-").map(Number);
+    const [anioMeta, mesMeta, diaMeta] = meta.split("-").map(Number);
+    const fechaInicio = Date.UTC(anioInicio, mesInicio - 1, diaInicio);
+    const fechaMeta = Date.UTC(anioMeta, mesMeta - 1, diaMeta);
+    const dias = (fechaMeta - fechaInicio) / 86_400_000;
+
+    return Number.isFinite(dias) ? dias : null;
+}
+
+function validarCampos(datos: {
+    pesoInicial: string;
+    pesoMeta: string;
+    fechaInicio: string;
+    fechaMeta: string;
+    cuello: string;
+    cintura: string;
+    cadera: string;
+    esMujer: boolean;
+}): ErroresPlan {
+    const errores: ErroresPlan = {};
+    const pesoInicial = Number(datos.pesoInicial);
+    const pesoMeta = Number(datos.pesoMeta);
+    const cuello = datos.cuello === "" ? null : Number(datos.cuello);
+    const cintura = datos.cintura === "" ? null : Number(datos.cintura);
+    const cadera = datos.cadera === "" ? null : Number(datos.cadera);
+
+    if (!datos.pesoInicial) {
+        errores.pesoInicial = "Ingresa tu peso actual.";
+    } else if (!Number.isFinite(pesoInicial) || pesoInicial < 30 || pesoInicial > 300) {
+        errores.pesoInicial = "El peso debe estar entre 30 y 300 kg.";
+    }
+
+    if (!datos.pesoMeta) {
+        errores.pesoMeta = "Ingresa tu peso objetivo.";
+    } else if (!Number.isFinite(pesoMeta) || pesoMeta < 30 || pesoMeta > 300) {
+        errores.pesoMeta = "El peso debe estar entre 30 y 300 kg.";
+    } else if (Number.isFinite(pesoInicial) && pesoMeta >= pesoInicial) {
+        errores.pesoMeta = "El peso objetivo debe ser menor que el peso inicial.";
+    }
+
+    if (!datos.fechaInicio) {
+        errores.fechaInicio = "Selecciona la fecha de inicio.";
+    } else if (datos.fechaInicio > fechaHoyLocal()) {
+        errores.fechaInicio = "La fecha de inicio no puede ser futura.";
+    }
+
+    if (!datos.fechaMeta) {
+        errores.fechaMeta = "Selecciona la fecha objetivo.";
+    } else if (datos.fechaInicio && datos.fechaMeta) {
+        const plazo = diasEntre(datos.fechaInicio, datos.fechaMeta);
+        if (plazo === null || plazo <= 0) {
+            errores.fechaMeta = "La fecha objetivo debe ser posterior al inicio.";
+        } else if (plazo < 2) {
+            errores.fechaMeta = "El plazo debe ser de al menos 2 días.";
+        } else if (plazo > 730) {
+            errores.fechaMeta = "El plazo no puede superar 730 días.";
+        }
+    }
+
+    if (cuello !== null && (!Number.isFinite(cuello) || cuello < 20 || cuello > 250)) {
+        errores.cuello = "El cuello debe estar entre 20 y 250 cm.";
+    }
+    if (cintura !== null && (!Number.isFinite(cintura) || cintura < 30 || cintura > 250)) {
+        errores.cintura = "La cintura debe estar entre 30 y 250 cm.";
+    }
+    if (datos.esMujer && cadera !== null && (!Number.isFinite(cadera) || cadera < 30 || cadera > 250)) {
+        errores.cadera = "La cadera debe estar entre 30 y 250 cm.";
+    }
+
+    const medidasValidas =
+        cuello !== null &&
+        cintura !== null &&
+        Number.isFinite(cuello) &&
+        Number.isFinite(cintura) &&
+        (datos.esMujer
+            ? cadera !== null && Number.isFinite(cadera)
+            : true);
+    if (medidasValidas && datos.esMujer && cintura + (cadera ?? 0) <= cuello) {
+        errores.cadera = "Revisa las medidas: cintura + cadera debe ser mayor que cuello.";
+    } else if (medidasValidas && !datos.esMujer && cintura <= cuello) {
+        errores.cintura = "La cintura debe ser mayor que el cuello para usar estas medidas.";
+    }
+
+    return errores;
+}
 
 export default function NuevoPlan() {
     const { usuario } = useSesion();
@@ -13,62 +118,101 @@ export default function NuevoPlan() {
 
     const [pesoInicial, setPesoInicial] = useState("");
     const [pesoMeta, setPesoMeta] = useState("");
-    const [fechaInicio, setFechaInicio] = useState(
-        new Date().toISOString().slice(0, 10)
-    );
+    const [fechaInicio, setFechaInicio] = useState(fechaHoyLocal);
     const [fechaMeta, setFechaMeta] = useState("");
     const [cuello, setCuello] = useState("");
     const [cintura, setCintura] = useState("");
     const [cadera, setCadera] = useState("");
 
     const [previa, setPrevia] = useState<VistaPreviaPlan | null>(null);
+    const [datosPrevia, setDatosPrevia] = useState<DatosPlan | null>(null);
     const [cargando, setCargando] = useState(false);
     const [confirmando, setConfirmando] = useState(false);
     const [error, setError] = useState("");
+    const [camposTocados, setCamposTocados] = useState<Partial<Record<CampoPlan, boolean>>>({});
+    const [intentoEnviar, setIntentoEnviar] = useState(false);
 
     const esMujer = usuario?.sexo === "Femenino";
 
+    const errores = validarCampos({
+        pesoInicial,
+        pesoMeta,
+        fechaInicio,
+        fechaMeta,
+        cuello,
+        cintura,
+        cadera,
+        esMujer,
+    });
+
+    function marcarCampoTocado(campo: CampoPlan) {
+        setCamposTocados((actuales) => ({ ...actuales, [campo]: true }));
+    }
+
+    function errorVisible(campo: CampoPlan) {
+        return (camposTocados[campo] || intentoEnviar) ? errores[campo] : undefined;
+    }
+
+    function actualizarCampo(campo: CampoPlan, actualizar: (valor: string) => void, valor: string) {
+        actualizar(valor);
+        marcarCampoTocado(campo);
+        invalidarPrevia();
+    }
+
+    function invalidarPrevia() {
+        setPrevia(null);
+        setDatosPrevia(null);
+        setError("");
+    }
+
+    function construirDatos(): DatosPlan {
+        return {
+            peso_inicial_kg: Number(pesoInicial),
+            peso_objetivo_kg: Number(pesoMeta),
+            fecha_inicio: fechaInicio,
+            fecha_meta: fechaMeta,
+            cuello_cm: cuello ? Number(cuello) : undefined,
+            cintura_cm: cintura ? Number(cintura) : undefined,
+            cadera_cm: esMujer && cadera ? Number(cadera) : undefined,
+        };
+    }
+
     async function enviar(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        setIntentoEnviar(true);
         setError("");
+        const camposInvalidos = Object.keys(errores) as CampoPlan[];
+        if (camposInvalidos.length > 0) {
+            setCamposTocados((actuales) => ({
+                ...actuales,
+                ...Object.fromEntries(camposInvalidos.map((campo) => [campo, true])),
+            }));
+            return;
+        }
+        setPrevia(null);
+        setDatosPrevia(null);
         setCargando(true);
         try {
-            const datos: DatosPlan = {
-                peso_inicial_kg: Number(pesoInicial),
-                peso_objetivo_kg: Number(pesoMeta),
-                fecha_inicio: fechaInicio,
-                fecha_meta: fechaMeta,
-                cuello_cm: cuello ? Number(cuello) : undefined,
-                cintura_cm: cintura ? Number(cintura) : undefined,
-                cadera_cm: esMujer && cadera ? Number(cadera) : undefined,
-            };
+            const datos = construirDatos();
             const resultado = await vistaPreviaPlan(datos);
             setPrevia(resultado);
-        } catch {
-            setError("No se pudo calcular la vista previa. Revisa los datos.");
+            setDatosPrevia(datos);
+        } catch (error) {
+            setError(mensajeDeError(error));
         } finally {
             setCargando(false);
         }
     }
 
     async function confirmar() {
-        if (!previa?.puede_confirmar) return;
+        if (!previa?.puede_confirmar || !datosPrevia) return;
         setConfirmando(true);
         setError("");
         try {
-            const datos: DatosPlan = {
-                peso_inicial_kg: Number(pesoInicial),
-                peso_objetivo_kg: Number(pesoMeta),
-                fecha_inicio: fechaInicio,
-                fecha_meta: fechaMeta,
-                cuello_cm: cuello ? Number(cuello) : undefined,
-                cintura_cm: cintura ? Number(cintura) : undefined,
-                cadera_cm: esMujer && cadera ? Number(cadera) : undefined,
-            };
-            await confirmarPlan(datos);
+            await confirmarPlan(datosPrevia);
             navegar("/panel", { replace: true });
-        } catch {
-            setError("No se pudo guardar el plan. Intenta de nuevo.");
+        } catch (error) {
+            setError(mensajeDeError(error));
         } finally {
             setConfirmando(false);
         }
@@ -77,102 +221,186 @@ export default function NuevoPlan() {
     return (
         <section className="nuevo-plan">
             <header className="nuevo-plan__cabecera">
+                <span className="nuevo-plan__eyebrow">Tu siguiente paso</span>
                 <h1>Nuevo plan</h1>
                 <p>
-                    Define tu meta y las medidas. Antes de confirmar verás la
-                    ingesta, los macros, la curva y los bloqueos de seguridad.
+                    Define una meta realista. Revisaremos la viabilidad y tus
+                    objetivos de nutrición antes de guardar el plan.
                 </p>
             </header>
 
-            <form className="nuevo-plan__formulario" onSubmit={enviar}>
-                <div className="nuevo-plan__grid">
-                    <label>
-                        Peso inicial (kg)
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={pesoInicial}
-                            onChange={(e) => setPesoInicial(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Peso meta (kg)
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={pesoMeta}
-                            onChange={(e) => setPesoMeta(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Fecha de inicio
-                        <input
-                            type="date"
-                            value={fechaInicio}
-                            onChange={(e) => setFechaInicio(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Fecha meta
-                        <input
-                            type="date"
-                            value={fechaMeta}
-                            onChange={(e) => setFechaMeta(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <label>
-                        Cuello (cm)
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={cuello}
-                            onChange={(e) => setCuello(e.target.value)}
-                        />
-                    </label>
-                    <label>
-                        Cintura (cm)
-                        <input
-                            type="number"
-                            step="0.1"
-                            value={cintura}
-                            onChange={(e) => setCintura(e.target.value)}
-                        />
-                    </label>
-                    {esMujer && (
-                        <label>
-                            Cadera (cm)
+            {!previa?.puede_confirmar && <form className="nuevo-plan__formulario" onSubmit={enviar} noValidate>
+                <section className="nuevo-plan__grupo" aria-labelledby="nuevo-plan-meta">
+                    <div className="nuevo-plan__grupo-cabecera">
+                        <span className="nuevo-plan__paso">01</span>
+                        <div>
+                            <h2 id="nuevo-plan-meta">Tu objetivo</h2>
+                            <p>Indica desde dónde empiezas y a dónde quieres llegar.</p>
+                        </div>
+                    </div>
+                    <div className="nuevo-plan__grid nuevo-plan__grid--meta">
+                        <label className={errorVisible("pesoInicial") ? "nuevo-plan__campo--invalido" : ""}>
+                            Peso inicial <span>(kg)</span>
                             <input
+                                aria-invalid={Boolean(errorVisible("pesoInicial"))}
+                                aria-describedby={errorVisible("pesoInicial") ? "error-peso-inicial" : undefined}
                                 type="number"
+                                min="30"
+                                max="300"
                                 step="0.1"
-                                value={cadera}
-                                onChange={(e) => setCadera(e.target.value)}
+                                value={pesoInicial}
+                                onChange={(e) => {
+                                    actualizarCampo("pesoInicial", setPesoInicial, e.target.value);
+                                }}
                             />
+                            {errorVisible("pesoInicial") && <span className="nuevo-plan__error-campo" id="error-peso-inicial">{errorVisible("pesoInicial")}</span>}
                         </label>
-                    )}
-                </div>
+                        <label className={errorVisible("pesoMeta") ? "nuevo-plan__campo--invalido" : ""}>
+                            Peso meta <span>(kg)</span>
+                            <input
+                                aria-invalid={Boolean(errorVisible("pesoMeta"))}
+                                aria-describedby={errorVisible("pesoMeta") ? "error-peso-meta" : undefined}
+                                type="number"
+                                min="30"
+                                max="300"
+                                step="0.1"
+                                value={pesoMeta}
+                                onChange={(e) => {
+                                    actualizarCampo("pesoMeta", setPesoMeta, e.target.value);
+                                }}
+                            />
+                            {errorVisible("pesoMeta") && <span className="nuevo-plan__error-campo" id="error-peso-meta">{errorVisible("pesoMeta")}</span>}
+                        </label>
+                        <label className={errorVisible("fechaInicio") ? "nuevo-plan__campo--invalido" : ""}>
+                            Fecha de inicio
+                            <input
+                                aria-invalid={Boolean(errorVisible("fechaInicio"))}
+                                aria-describedby={errorVisible("fechaInicio") ? "error-fecha-inicio" : undefined}
+                                type="date"
+                                value={fechaInicio}
+                                onChange={(e) => {
+                                    actualizarCampo("fechaInicio", setFechaInicio, e.target.value);
+                                }}
+                            />
+                            {errorVisible("fechaInicio") && <span className="nuevo-plan__error-campo" id="error-fecha-inicio">{errorVisible("fechaInicio")}</span>}
+                        </label>
+                        <label className={errorVisible("fechaMeta") ? "nuevo-plan__campo--invalido" : ""}>
+                            Fecha objetivo
+                            <input
+                                aria-invalid={Boolean(errorVisible("fechaMeta"))}
+                                aria-describedby={errorVisible("fechaMeta") ? "error-fecha-meta" : undefined}
+                                type="date"
+                                value={fechaMeta}
+                                onChange={(e) => {
+                                    actualizarCampo("fechaMeta", setFechaMeta, e.target.value);
+                                }}
+                            />
+                            {errorVisible("fechaMeta") && <span className="nuevo-plan__error-campo" id="error-fecha-meta">{errorVisible("fechaMeta")}</span>}
+                        </label>
+                    </div>
+                </section>
+
+                <section className="nuevo-plan__grupo nuevo-plan__grupo--medidas" aria-labelledby="nuevo-plan-medidas">
+                    <div className="nuevo-plan__grupo-cabecera">
+                        <span className="nuevo-plan__paso">02</span>
+                        <div>
+                            <h2 id="nuevo-plan-medidas">Medidas corporales <span>Opcional</span></h2>
+                            <p>
+                                Ayudan a estimar tu composición. Si las dejas vacías o incompletas,
+                                usaremos una estimación basada en tu perfil.
+                            </p>
+                        </div>
+                    </div>
+                    <div className="nuevo-plan__grid nuevo-plan__grid--medidas">
+                        <label className={errorVisible("cuello") ? "nuevo-plan__campo--invalido" : ""}>
+                            Cuello <span>(cm, opcional)</span>
+                            <input
+                                aria-invalid={Boolean(errorVisible("cuello"))}
+                                aria-describedby={errorVisible("cuello") ? "error-cuello" : undefined}
+                                type="number"
+                                min="20"
+                                max="250"
+                                step="0.1"
+                                value={cuello}
+                                onChange={(e) => {
+                                    actualizarCampo("cuello", setCuello, e.target.value);
+                                }}
+                            />
+                            {errorVisible("cuello") && <span className="nuevo-plan__error-campo" id="error-cuello">{errorVisible("cuello")}</span>}
+                        </label>
+                        <label className={errorVisible("cintura") ? "nuevo-plan__campo--invalido" : ""}>
+                            Cintura <span>(cm, opcional)</span>
+                            <input
+                                aria-invalid={Boolean(errorVisible("cintura"))}
+                                aria-describedby={errorVisible("cintura") ? "error-cintura" : undefined}
+                                type="number"
+                                min="30"
+                                max="250"
+                                step="0.1"
+                                value={cintura}
+                                onChange={(e) => {
+                                    actualizarCampo("cintura", setCintura, e.target.value);
+                                }}
+                            />
+                            {errorVisible("cintura") && <span className="nuevo-plan__error-campo" id="error-cintura">{errorVisible("cintura")}</span>}
+                        </label>
+                        {esMujer && (
+                            <label className={errorVisible("cadera") ? "nuevo-plan__campo--invalido" : ""}>
+                                Cadera <span>(cm, opcional)</span>
+                                <input
+                                    aria-invalid={Boolean(errorVisible("cadera"))}
+                                    aria-describedby={errorVisible("cadera") ? "error-cadera" : undefined}
+                                    type="number"
+                                    min="30"
+                                    max="250"
+                                    step="0.1"
+                                    value={cadera}
+                                    onChange={(e) => {
+                                        actualizarCampo("cadera", setCadera, e.target.value);
+                                    }}
+                                />
+                                {errorVisible("cadera") && <span className="nuevo-plan__error-campo" id="error-cadera">{errorVisible("cadera")}</span>}
+                            </label>
+                        )}
+                    </div>
+                </section>
 
                 <div className="nuevo-plan__acciones">
                     <button
                         type="submit"
                         className="boton boton--primario"
-                        disabled={cargando}
+                        disabled={cargando || confirmando}
                     >
-                        {cargando ? "Calculando..." : "Calcular vista previa"}
+                        {cargando ? "Calculando tu plan..." : "Revisar mi plan"}
                     </button>
-                    <Link className="boton boton--secundario" to="/panel">
+                    <Link className="boton boton--secundario " to="/panel">
                         Volver al panel
                     </Link>
                 </div>
-            </form>
+            </form>}
 
-            {error && <p className="nuevo-plan__error" role="alert">{error}</p>}
+            {error && (
+                <p className="nuevo-plan__error" role="alert">
+                    <strong>No pudimos completar la solicitud.</strong>
+                    <span>{error}</span>
+                </p>
+            )}
 
             {previa && (
                 <div className="nuevo-plan__resultado">
+                    {previa.puede_confirmar && (
+                        <div className="nuevo-plan__acciones-navegacion">
+                            <p>Tu plan está listo para guardar. Revisa el resumen y confirma cuando quieras.</p>
+                            <button
+                                type="button"
+                                className="boton boton--secundario"
+                                onClick={invalidarPrevia}
+                                disabled={confirmando}
+                            >
+                                Editar datos
+                            </button>
+                        </div>
+                    )}
                     <section className="nuevo-plan__tarjeta">
                         <h2>Composición inicial</h2>
                         <p>
@@ -278,7 +506,7 @@ export default function NuevoPlan() {
                                     disabled={confirmando}
                                     onClick={confirmar}
                                 >
-                                    {confirmando ? "Guardando..." : "Confirmar plan"}
+                                    {confirmando ? "Guardando tu plan..." : "Confirmar y guardar plan"}
                                 </button>
                             </div>
                         </>

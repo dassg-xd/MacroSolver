@@ -172,26 +172,6 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                 </article>
             )}
 
-            <article className="como__bloque como__bloque--formulas">
-                <h3>7. Fórmulas</h3>
-                <ul>
-                    <li>
-                        <strong>Modelo:</strong> {calculo.formulas.modelo}
-                    </li>
-                    <li>
-                        <strong>TDEE:</strong> {calculo.formulas.tdee}
-                    </li>
-                    <li>
-                        <strong>Euler:</strong> {calculo.formulas.euler}
-                    </li>
-                    <li>
-                        <strong>Secante:</strong> {calculo.formulas.secante}
-                    </li>
-                    <li>
-                        <strong>Macros:</strong> {calculo.formulas.macros}
-                    </li>
-                </ul>
-            </article>
         </section>
     );
 }
