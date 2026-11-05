@@ -1,0 +1,169 @@
+.nuevo-plan {
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.nuevo-plan__cabecera h1 {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -1px;
+}
+
+.nuevo-plan__cabecera p {
+  margin: 0;
+  color: #5d5960;
+  font-size: 12px;
+}
+
+.nuevo-plan__formulario {
+  padding: 24px;
+  border: 1px solid #e6e1db;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.nuevo-plan__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.nuevo-plan__grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 11px;
+}
+
+.nuevo-plan__grid input {
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #dcd7d1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.nuevo-plan__acciones {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.nuevo-plan__error {
+  padding: 10px 12px;
+  border: 1px solid #ffc9cc;
+  border-radius: 8px;
+  background: #fff4f4;
+  color: #8f151b;
+  font-size: 11px;
+}
+
+.nuevo-plan__resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nuevo-plan__tarjeta {
+  padding: 18px 20px;
+  border: 1px solid #e6e1db;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.nuevo-plan__tarjeta h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.nuevo-plan__tarjeta p {
+  margin: 0;
+  color: #5d5960;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.nuevo-plan__ingesta {
+  font-size: 28px;
+  font-weight: 700;
+  color: #c41e24;
+}
+
+.nuevo-plan__bloqueos {
+  padding: 18px 20px;
+  border: 1px solid #ffc9cc;
+  border-radius: 12px;
+  background: #fff4f4;
+}
+
+.nuevo-plan__bloqueos h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #8f151b;
+}
+
+.nuevo-plan__bloqueos ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  color: #8f151b;
+  font-size: 12px;
+}
+
+.nuevo-plan__avisos {
+  padding: 18px 20px;
+  border: 1px solid #ffe9b3;
+  border-radius: 12px;
+  background: #fffaf0;
+}
+
+.nuevo-plan__avisos h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #8a6a00;
+}
+
+.nuevo-plan__avisos ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #8a6a00;
+  font-size: 12px;
+}
+
+.nuevo-plan__confirmar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.nuevo-plan__grafica {
+  padding: 18px 20px;
+  border: 1px solid #e6e1db;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.nuevo-plan__grafica h2 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.nuevo-plan__grafica p {
+  margin: 0;
+  color: #5d5960;
+  font-size: 12px;
+}
+
+@media (max-width: 720px) {
+  .nuevo-plan__grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .nuevo-plan__grid {
+    grid-template-columns: 1fr;
+  }
+}

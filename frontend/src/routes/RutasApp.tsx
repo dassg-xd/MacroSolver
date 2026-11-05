@@ -3,8 +3,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "../components/Layout";
 import Login from "../features/auth/Login";
 import Registro from "../features/auth/Registro";
-import Bienvenida from "../features/panel/Bienvenida";
 import Panel from "../features/panel/Panel";
+import Bienvenida from "../features/panel/Bienvenida";
+import NuevoPlan from "../features/plan/NuevoPlan";
+import PantallaCalculo from "../features/plan/PantallaCalculo";
 import Perfil from "../features/perfil/Perfil";
 import { RutaProtegida, RutaPublica } from "./RutaProtegida";
 
@@ -37,6 +39,8 @@ export function RutasApp() {
             >
                 <Route path="/panel" element={<Panel />} />
                 <Route path="/perfil" element={<Perfil />} />
+                <Route path="/nuevo-plan" element={<NuevoPlan />} />
+                <Route path="/plan/como-se-calculo" element={<PantallaCalculo />} />
                 <Route path="/bienvenida" element={<Bienvenida />} />
             </Route>
 
