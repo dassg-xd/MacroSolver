@@ -4,11 +4,14 @@ La confirmación usa la función PostgreSQL ``crear_plan`` (migración 03) para
 desactivar el plan anterior e insertar el nuevo en una sola transacción. El
 cliente REST de Supabase no puede abrir transacciones por sí mismo.
 """
+import logging
 from typing import Any, Mapping
 
 from postgrest import APIError
 
 from app.services.configSupabase import cliente_supabase
+
+log = logging.getLogger(__name__)
 
 # La RPC recibe los nombres con prefijo p_ para no confundirlos con columnas.
 _PARAMETROS_RPC = {
@@ -69,6 +72,12 @@ class PlanRepository:
         except APIError as error:
             if _es_funcion_inexistente(error):
                 raise ErrorCrearPlan(_MENSAJE_MIGRACION) from error
+            log.error(
+                "Supabase rechazó la RPC crear_plan (code=%s, message=%s, hint=%s)",
+                error.code,
+                error.message,
+                error.hint,
+            )
             raise ErrorCrearPlan(
                 "La base de datos rechazó el plan. Revisa los datos e intenta "
                 "de nuevo."

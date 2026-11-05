@@ -115,6 +115,24 @@ def test_crear_plan_201(cliente, repositorio):
     assert repositorio.activo["masa_libre_inicial_kg"] is not None
 
 
+def test_preview_y_crear_plan_sin_medidas_opcionales(cliente, repositorio):
+    datos = datos_preview()
+    datos.pop("cuello_cm")
+    datos.pop("cintura_cm")
+    datos.pop("cadera_cm")
+
+    previa = cliente.post("/plans/preview", headers=encabezado(), json=datos)
+    assert previa.status_code == 200
+    assert previa.json()["puede_confirmar"] is True
+    assert previa.json()["composicion"]["metodo"] == "deurenberg"
+
+    creado = cliente.post("/plans", headers=encabezado(), json=datos)
+    assert creado.status_code == 201
+    assert creado.json()["composicion"]["metodo"] == "deurenberg"
+    assert repositorio.activo["cuello_cm"] is None
+    assert repositorio.activo["cintura_cm"] is None
+
+
 def test_crear_plan_bloqueado_422(cliente):
     r = cliente.post(
         "/plans",

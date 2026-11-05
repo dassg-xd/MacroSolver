@@ -32,6 +32,31 @@ alter table public.plan add constraint plan_masa_libre_check
     check (masa_libre_inicial_kg > 0
            and abs(grasa_inicial_kg + masa_libre_inicial_kg - peso_inicial_kg) <= 0.05);
 
+-- La RPC necesita archivar el plan activo previo como inactivo. Conserva los
+-- estados admitidos actualmente y agrega ese estado al CHECK existente.
+do $$
+declare
+    v_estado_check text;
+begin
+    select pg_get_expr(conbin, conrelid)
+      into v_estado_check
+      from pg_constraint
+     where conrelid = 'public.plan'::regclass
+       and conname = 'plan_estado_check'
+       and contype = 'c';
+
+    if v_estado_check is not null
+       and position('inactivo' in v_estado_check) = 0 then
+        alter table public.plan drop constraint plan_estado_check;
+        execute format(
+            'alter table public.plan add constraint plan_estado_check check ((%s) or estado = %L)',
+            v_estado_check,
+            'inactivo'
+        );
+    end if;
+end;
+$$;
+
 -- 3. Función transaccional ----------------------------------------------
 create or replace function public.crear_plan(
     p_usuario_id bigint,
