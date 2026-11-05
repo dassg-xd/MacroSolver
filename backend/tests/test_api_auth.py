@@ -5,10 +5,11 @@ import jwt
 import pytest
 from fastapi.testclient import TestClient
 
-from app.dependencias import obtener_repositorio_usuarios
+from app.dependencias import obtener_auth_service, obtener_repositorio_usuarios
 from app.main import app
+from app.services.auth_service import AuthService, GestorIntentosFallidos
 from app.services.configuracion import configuraciones
-from app.services.security import crear_access_token
+from app.services.security import crear_access_token, hash_contrasena
 
 USUARIO = {
     "id": 7,
@@ -73,3 +74,36 @@ def test_me_token_con_otra_firma(cliente):
 def test_me_usuario_borrado(cliente):
     r = cliente.get("/me", headers=encabezado(crear_access_token("999")))
     assert r.status_code == 401
+
+
+def test_login_bloquea_tras_tres_intentos_en_la_api():
+    class RepositorioLogin:
+        def buscar_por_correo(self, correo: str):
+            return {
+                **USUARIO,
+                "hash_contrasena": hash_contrasena("clave123"),
+            }
+
+    servicio = AuthService(
+        usuarios=RepositorioLogin(),
+        intentos=GestorIntentosFallidos(),
+    )
+    app.dependency_overrides[obtener_auth_service] = lambda: servicio
+    cliente = TestClient(app)
+    try:
+        for _ in range(2):
+            r = cliente.post(
+                "/auth/login",
+                json={"correo": "ana@correo.com", "contrasena": "incorrecta1"},
+            )
+            assert r.status_code == 401
+            assert r.json()["detail"] == "Correo o contraseña incorrectos."
+
+        r = cliente.post(
+            "/auth/login",
+            json={"correo": "ana@correo.com", "contrasena": "incorrecta1"},
+        )
+        assert r.status_code == 429
+        assert "15 minutos" in r.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()

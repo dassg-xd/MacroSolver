@@ -10,7 +10,7 @@ cliente = TestClient(app)
 
 REGISTRO = {
     "correo": "ana@correo.com",
-    "contrasena": "clave-segura",
+    "contrasena": "clave-segura1",
     "nombre": "Ana",
     "sexo": "Femenino",
     "fecha_nacimiento": "1995-04-12",

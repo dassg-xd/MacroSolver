@@ -1,17 +1,20 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.dependencias import obtener_auth_service
 from app.schemas.auth import LoginRequest, RegistroRequest, TokenResponse
 from app.services.auth_service import AuthService, ErrorAutenticacion
 
 router = APIRouter(prefix="/auth", tags=["Autenticación"])
-auth_service = AuthService()
 
 @router.post(
     "/registro",
     response_model=TokenResponse,
     status_code=status.HTTP_201_CREATED,
 )
-def registrar(datos: RegistroRequest) -> TokenResponse:
+def registrar(
+    datos: RegistroRequest,
+    auth_service: AuthService = Depends(obtener_auth_service),
+) -> TokenResponse:
     perfil = datos.model_dump(
         mode="json",
         exclude={"correo", "contrasena"},
@@ -31,7 +34,10 @@ def registrar(datos: RegistroRequest) -> TokenResponse:
 
 
 @router.post("/login", response_model=TokenResponse)
-def iniciar_sesion(datos: LoginRequest) -> TokenResponse:
+def iniciar_sesion(
+    datos: LoginRequest,
+    auth_service: AuthService = Depends(obtener_auth_service),
+) -> TokenResponse:
     try:
         return auth_service.iniciar_sesion(
             correo=str(datos.correo).strip().lower(),
