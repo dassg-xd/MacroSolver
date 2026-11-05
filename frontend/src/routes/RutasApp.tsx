@@ -5,6 +5,7 @@ import Login from "../features/auth/Login";
 import Registro from "../features/auth/Registro";
 import Bienvenida from "../features/panel/Bienvenida";
 import Panel from "../features/panel/Panel";
+import Perfil from "../features/perfil/Perfil";
 import { RutaProtegida, RutaPublica } from "./RutaProtegida";
 
 export function RutasApp() {
@@ -35,6 +36,7 @@ export function RutasApp() {
                 }
             >
                 <Route path="/panel" element={<Panel />} />
+                <Route path="/perfil" element={<Perfil />} />
                 <Route path="/bienvenida" element={<Bienvenida />} />
             </Route>
 

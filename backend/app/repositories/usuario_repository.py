@@ -69,3 +69,23 @@ class UsuarioRepository:
             raise RuntimeError("Supabase no devolvió el usuario creado.")
 
         return respuesta.data
+
+    def actualizar(
+        self,
+        usuario_id: int,
+        cambios: Mapping[str, Any],
+    ) -> dict[str, Any] | None:
+        """Actualiza solo los campos enviados y devuelve el perfil público."""
+        if not cambios:
+            return self.buscar_por_id(usuario_id)
+
+        respuesta = (
+            cliente_supabase.table("usuario")
+            .update(dict(cambios))
+            .eq("id", usuario_id)
+            .select(self._COLUMNAS_PUBLICAS)
+            .limit(1)
+            .execute()
+        )
+
+        return respuesta.data[0] if respuesta.data else None
