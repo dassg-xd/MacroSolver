@@ -10,7 +10,7 @@ from app.schemas.auth import RegistroRequest, calcular_edad
 def datos(**cambios):
     base = {
         "correo": "ana@correo.com",
-        "contrasena": "clave-segura",
+        "contrasena": "clave-segura1",
         "nombre": "Ana",
         "sexo": "Femenino",
         "fecha_nacimiento": "1995-04-12",
@@ -68,7 +68,19 @@ def test_contrasena_solo_espacios():
 
 
 def test_contrasena_de_8_es_valida():
-    RegistroRequest(**datos(contrasena="12345678"))
+    RegistroRequest(**datos(contrasena="clave123"))
+
+
+def test_contrasena_sin_letras():
+    with pytest.raises(ValidationError) as e:
+        RegistroRequest(**datos(contrasena="12345678"))
+    assert "al menos una letra" in mensajes(e.value)
+
+
+def test_contrasena_sin_numeros():
+    with pytest.raises(ValidationError) as e:
+        RegistroRequest(**datos(contrasena="clave-segura"))
+    assert "al menos un número" in mensajes(e.value)
 
 
 def test_calcular_edad():

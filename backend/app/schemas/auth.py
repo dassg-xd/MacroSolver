@@ -40,6 +40,10 @@ class RegistroRequest(BaseModel):
             )
         if not valor.strip():
             raise ValueError("La contraseña no puede ser solo espacios.")
+        if not any(caracter.isalpha() for caracter in valor):
+            raise ValueError("La contraseña debe incluir al menos una letra.")
+        if not any(caracter.isdigit() for caracter in valor):
+            raise ValueError("La contraseña debe incluir al menos un número.")
         if len(valor.encode("utf-8")) > 72:
             raise ValueError("La contraseña no puede superar 72 bytes en UTF-8.")
         return valor

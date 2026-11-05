@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-_RAIZ_PROYECTO = Path(__file__).resolve().parents[3]
+_RAIZ_PROYECTO = Path(__file__).resolve().parents[2]
 
 class Configuracion(BaseSettings):
     model_config = SettingsConfigDict(
@@ -15,7 +15,7 @@ class Configuracion(BaseSettings):
     supabase_url: str = Field(..., min_length=1)
     supabase_secret_key: str = Field(..., min_length=1)
     jwt_secret: str = Field(..., min_length=32)
-    jwt_expiration_minutes: int = Field(default=180, gt=0)
+    jwt_expiration_minutes: int = Field(default=1440, gt=0)
     cors_origins: str = Field(..., min_length=1)
 
     @property

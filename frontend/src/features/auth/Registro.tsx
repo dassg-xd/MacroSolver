@@ -1,7 +1,8 @@
 import { useState, type SubmitEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logoMacroSolver from "../../assets/componente1.png";
 import { mensajeDeError } from "../../api/mensajeError";
-import { registrarUsuario } from "./services/authService";
+import { useSesion } from "./SesionContext";
 import type { DatosRegistro } from "../../types/auth";
 import "../../styles/AuthStyles.css";
 
@@ -13,7 +14,19 @@ type ErroresCampos = {
 
 const FACTORES_ACTIVIDAD = ["1.2", "1.375", "1.55", "1.725", "1.9"];
 
+function edadCumplida(fecha: Date): number {
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - fecha.getFullYear();
+  const mes = hoy.getMonth() - fecha.getMonth();
+  if (mes < 0 || (mes === 0 && hoy.getDate() < fecha.getDate())) {
+    edad -= 1;
+  }
+  return edad;
+}
+
 export default function Registro() {
+  const { registrar } = useSesion();
+  const navegar = useNavigate();
   const [paso, setPaso] = useState<1 | 2>(1);
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
@@ -82,6 +95,9 @@ export default function Registro() {
     if (!fecha || Number.isNaN(fecha.getTime()) || fecha >= new Date()) {
       nuevosErrores.fecha_nacimiento =
         "La fecha de nacimiento debe ser anterior a hoy.";
+    } else if (edadCumplida(fecha) < 18) {
+      nuevosErrores.fecha_nacimiento =
+        "Debes tener al menos 18 años para usar MacroSolver.";
     }
 
     const altura = Number(alturaCm);
@@ -125,8 +141,9 @@ export default function Registro() {
     setError("");
 
     try {
-      await registrarUsuario(datos);
+      await registrar(datos);
       setRegistroCompleto(true);
+      navegar("/bienvenida", { replace: true });
     } catch (errorRegistro: unknown) {
       setError(mensajeDeError(errorRegistro));
     } finally {
@@ -143,9 +160,9 @@ export default function Registro() {
   return (
     <main className="registro">
       <aside className="registro__panel">
-        <a className="registro__marca" href="/" aria-label="MacroSolver, inicio">
+        <Link className="registro__marca" to="/" aria-label="MacroSolver, inicio">
           <img src={logoMacroSolver} alt="MacroSolver" />
-        </a>
+        </Link>
 
         <div className="registro__mensaje">
           <h1>
@@ -198,7 +215,7 @@ export default function Registro() {
               {paso === 1 ? (
                 <>
                   <p className="registro__login">
-                    ¿Ya tienes una? <a href="/login">Inicia sesión</a>
+                    ¿Ya tienes una? <Link to="/login">Inicia sesión</Link>
                   </p>
 
                   <label htmlFor="nombre">Nombre</label>
