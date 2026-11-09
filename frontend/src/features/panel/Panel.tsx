@@ -71,6 +71,9 @@ export default function Panel() {
                         <Link className="panel__cta" to="/nuevo-plan">
                             Nuevo plan
                         </Link>
+                        <Link className="panel__enlace" to="/calendario">
+                            Registrar hoy
+                        </Link>
                         <Link className="panel__enlace" to="/plan/como-se-calculo">
                             Cómo se calculó
                         </Link>
@@ -100,9 +103,10 @@ export default function Panel() {
                     <strong>3</strong>
                     <h3>Registra tus días</h3>
                     <p>
-                        El calendario y el seguimiento llegan en la siguiente
-                        entrega de la épica 3.
+                        Anota cada día tus calorías, tu peso y tu actividad
+                        física en el calendario.
                     </p>
+                    <Link to="/calendario">Ir al calendario</Link>
                 </article>
             </div>
         </section>
