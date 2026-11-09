@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { useSesion } from "../auth/SesionContext";
 import { vistaPreviaPlan, confirmarPlan } from "./planService";
-import type { VistaPreviaPlan, DatosPlan } from "../../types/plan";
+import type { VistaPreviaPlan, DatosPlan, TipoMeta } from "../../types/plan";
 import ComoSeCalculo from "./ComoSeCalculo";
 import { mensajeDeError } from "../../api/mensajeError";
 import "../../styles/NuevoPlan.css";
@@ -11,6 +11,7 @@ import "../../styles/NuevoPlan.css";
 type CampoPlan =
     | "pesoInicial"
     | "pesoMeta"
+    | "grasaPerder"
     | "fechaInicio"
     | "fechaMeta"
     | "cuello"
@@ -37,7 +38,9 @@ function diasEntre(inicio: string, meta: string): number | null {
 
 function validarCampos(datos: {
     pesoInicial: string;
+    tipoMeta: TipoMeta;
     pesoMeta: string;
+    grasaPerder: string;
     fechaInicio: string;
     fechaMeta: string;
     cuello: string;
@@ -58,7 +61,16 @@ function validarCampos(datos: {
         errores.pesoInicial = "El peso debe estar entre 30 y 300 kg.";
     }
 
-    if (!datos.pesoMeta) {
+    if (datos.tipoMeta === "grasa") {
+        const grasa = Number(datos.grasaPerder);
+        if (!datos.grasaPerder) {
+            errores.grasaPerder = "Ingresa cuántos kg de grasa quieres perder.";
+        } else if (!Number.isFinite(grasa) || grasa <= 0 || grasa > 100) {
+            errores.grasaPerder = "Debe ser un número mayor que 0 y hasta 100 kg.";
+        } else if (Number.isFinite(pesoInicial) && grasa >= pesoInicial) {
+            errores.grasaPerder = "La grasa a perder debe ser menor que tu peso.";
+        }
+    } else if (!datos.pesoMeta) {
         errores.pesoMeta = "Ingresa tu peso objetivo.";
     } else if (!Number.isFinite(pesoMeta) || pesoMeta < 30 || pesoMeta > 300) {
         errores.pesoMeta = "El peso debe estar entre 30 y 300 kg.";
@@ -117,7 +129,9 @@ export default function NuevoPlan() {
     const navegar = useNavigate();
 
     const [pesoInicial, setPesoInicial] = useState("");
+    const [tipoMeta, setTipoMeta] = useState<TipoMeta>("peso");
     const [pesoMeta, setPesoMeta] = useState("");
+    const [grasaPerder, setGrasaPerder] = useState("");
     const [fechaInicio, setFechaInicio] = useState(fechaHoyLocal);
     const [fechaMeta, setFechaMeta] = useState("");
     const [cuello, setCuello] = useState("");
@@ -136,7 +150,9 @@ export default function NuevoPlan() {
 
     const errores = validarCampos({
         pesoInicial,
+        tipoMeta,
         pesoMeta,
+        grasaPerder,
         fechaInicio,
         fechaMeta,
         cuello,
@@ -165,10 +181,25 @@ export default function NuevoPlan() {
         setError("");
     }
 
+    function cambiarTipoMeta(tipo: TipoMeta) {
+        setTipoMeta(tipo);
+        invalidarPrevia();
+    }
+
+    function usarMetaEnGrasa(kg: number) {
+        setTipoMeta("grasa");
+        setGrasaPerder(String(kg));
+        invalidarPrevia();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
     function construirDatos(): DatosPlan {
         return {
             peso_inicial_kg: Number(pesoInicial),
-            peso_objetivo_kg: Number(pesoMeta),
+            tipo_meta: tipoMeta,
+            ...(tipoMeta === "grasa"
+                ? { grasa_a_perder_kg: Number(grasaPerder) }
+                : { peso_objetivo_kg: Number(pesoMeta) }),
             fecha_inicio: fechaInicio,
             fecha_meta: fechaMeta,
             cuello_cm: cuello ? Number(cuello) : undefined,
@@ -238,6 +269,32 @@ export default function NuevoPlan() {
                             <p>Indica desde dónde empiezas y a dónde quieres llegar.</p>
                         </div>
                     </div>
+                    <div className="nuevo-plan__tipo-meta" role="radiogroup" aria-label="Tipo de meta">
+                        <button
+                            type="button"
+                            role="radio"
+                            aria-checked={tipoMeta === "peso"}
+                            className={tipoMeta === "peso" ? "activo" : ""}
+                            onClick={() => cambiarTipoMeta("peso")}
+                        >
+                            Meta en peso
+                        </button>
+                        <button
+                            type="button"
+                            role="radio"
+                            aria-checked={tipoMeta === "grasa"}
+                            className={tipoMeta === "grasa" ? "activo" : ""}
+                            onClick={() => cambiarTipoMeta("grasa")}
+                        >
+                            Meta en grasa
+                        </button>
+                    </div>
+                    {tipoMeta === "grasa" && (
+                        <p className="nuevo-plan__ayuda-meta">
+                            Al bajar de peso también se pierde algo de músculo y agua. Dinos
+                            cuánta grasa quieres perder y calculamos el peso al que llegarías.
+                        </p>
+                    )}
                     <div className="nuevo-plan__grid nuevo-plan__grid--meta">
                         <label className={errorVisible("pesoInicial") ? "nuevo-plan__campo--invalido" : ""}>
                             Peso inicial <span>(kg)</span>
@@ -255,6 +312,24 @@ export default function NuevoPlan() {
                             />
                             {errorVisible("pesoInicial") && <span className="nuevo-plan__error-campo" id="error-peso-inicial">{errorVisible("pesoInicial")}</span>}
                         </label>
+                        {tipoMeta === "grasa" ? (
+                        <label className={errorVisible("grasaPerder") ? "nuevo-plan__campo--invalido" : ""}>
+                            Grasa a perder <span>(kg)</span>
+                            <input
+                                aria-invalid={Boolean(errorVisible("grasaPerder"))}
+                                aria-describedby={errorVisible("grasaPerder") ? "error-grasa-perder" : undefined}
+                                type="number"
+                                min="0.5"
+                                max="100"
+                                step="0.1"
+                                value={grasaPerder}
+                                onChange={(e) => {
+                                    actualizarCampo("grasaPerder", setGrasaPerder, e.target.value);
+                                }}
+                            />
+                            {errorVisible("grasaPerder") && <span className="nuevo-plan__error-campo" id="error-grasa-perder">{errorVisible("grasaPerder")}</span>}
+                        </label>
+                        ) : (
                         <label className={errorVisible("pesoMeta") ? "nuevo-plan__campo--invalido" : ""}>
                             Peso meta <span>(kg)</span>
                             <input
@@ -271,6 +346,7 @@ export default function NuevoPlan() {
                             />
                             {errorVisible("pesoMeta") && <span className="nuevo-plan__error-campo" id="error-peso-meta">{errorVisible("pesoMeta")}</span>}
                         </label>
+                        )}
                         <label className={errorVisible("fechaInicio") ? "nuevo-plan__campo--invalido" : ""}>
                             Fecha de inicio
                             <input
@@ -401,6 +477,17 @@ export default function NuevoPlan() {
                             </button>
                         </div>
                     )}
+                    {previa.meta?.tipo === "grasa" && previa.meta.grasa_a_perder_kg !== null && (
+                        <section className="nuevo-plan__tarjeta nuevo-plan__tarjeta--grasa">
+                            <h2>Tu meta</h2>
+                            <p>
+                                Perder {previa.meta.grasa_a_perder_kg.toFixed(1)} kg de grasa te
+                                lleva a unos <strong>{previa.meta.peso_objetivo_kg.toFixed(1)} kg</strong>.
+                                La diferencia es la masa libre que se pierde junto con la grasa.
+                            </p>
+                        </section>
+                    )}
+
                     <section className="nuevo-plan__tarjeta">
                         <h2>Composición inicial</h2>
                         <p>
@@ -468,7 +555,15 @@ export default function NuevoPlan() {
                                 {previa.equivalente_grasa.pct_grasa_final.toFixed(1)} % de grasa
                                 al final).
                             </p>
-                            {!previa.equivalente_grasa.segura && (
+                            {previa.equivalente_grasa.segura ? (
+                                <button
+                                    type="button"
+                                    className="boton boton--secundario nuevo-plan__usar-grasa"
+                                    onClick={() => usarMetaEnGrasa(previa.equivalente_grasa!.grasa_a_perder_kg)}
+                                >
+                                    Usar meta en grasa
+                                </button>
+                            ) : (
                                 <p className="nuevo-plan__nota-alerta">
                                     Esa meta queda por debajo de un nivel seguro de grasa
                                     corporal o de IMC, así que no la recomendamos.

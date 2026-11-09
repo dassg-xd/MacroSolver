@@ -262,7 +262,6 @@ def vista_previa(
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
-    W_meta = float(datos.peso_objetivo_kg)
 
     comp = estimar_grasa(
         perfil,
@@ -271,6 +270,30 @@ def vista_previa(
         _float_o_none(datos.cintura_cm),
         _float_o_none(datos.cadera_cm),
     )
+
+    # Meta en grasa: se traduce a peso con Forbes y sigue el mismo disparo.
+    bloqueo_grasa: dict[str, str] | None = None
+    grasa_a_perder: float | None = None
+    if datos.tipo_meta == "grasa":
+        grasa_a_perder = float(datos.grasa_a_perder_kg)
+        try:
+            meta_grasa = meta_por_grasa(comp.F0, comp.L0, perfil.sexo, grasa_a_perder)
+        except ErrorMotor as error:
+            bloqueo_grasa = {"codigo": "grasa_insuficiente", "mensaje": error.mensaje}
+            W_meta = W0
+        else:
+            W_meta = round(meta_grasa.peso_meta_kg, 2)
+            if not meta_grasa.segura:
+                bloqueo_grasa = {
+                    "codigo": "grasa_meta_muy_baja",
+                    "mensaje": (
+                        f"Perder {grasa_a_perder:.1f} kg de grasa te dejaría con "
+                        f"{meta_grasa.pct_grasa_final:.1f} % de grasa; el mínimo "
+                        f"seguro es {meta_grasa.pct_grasa_minimo:.0f} %. Elige una meta menor."
+                    ),
+                }
+    else:
+        W_meta = float(datos.peso_objetivo_kg)
 
     base: dict[str, Any] = {
         "puede_confirmar": False,
@@ -288,12 +311,30 @@ def vista_previa(
         "sensibilidad": None,
         "calculo": None,
         "equivalente_grasa": (
-            equivalente_en_grasa(comp, perfil, W0 - W_meta) if W_meta < W0 else None
+            equivalente_en_grasa(comp, perfil, W0 - W_meta)
+            if datos.tipo_meta == "peso" and W_meta < W0
+            else None
         ),
+        "meta": {
+            "tipo": datos.tipo_meta,
+            "peso_objetivo_kg": _r(W_meta, 2),
+            "grasa_a_perder_kg": _r(grasa_a_perder, 2) if grasa_a_perder is not None else None,
+        },
     }
 
     if comp.metodo == "deurenberg":
         base["advertencias"].append(ADVERTENCIA_DEURENBERG)
+
+    if bloqueo_grasa:
+        base["bloqueos"].append(bloqueo_grasa)
+        base["viabilidad"] = _viabilidad_dict(
+            _viabilidad_vacia(perfil, W0, mensaje=(
+                "No se evaluó la viabilidad porque la meta de grasa no es posible o "
+                "no es segura."
+            )),
+            inicio,
+        )
+        return base
 
     # 1. La meta debe ser una pérdida de peso.
     if W_meta >= W0:
@@ -404,7 +445,8 @@ def vista_previa(
         "grasa_kg": _r(comp.F0 - tr.F[-1], 2),
         "masa_libre_kg": _r(comp.L0 - tr.L[-1], 2),
     }
-    aviso_libre = aviso_masa_libre(perdida)
+    # Con meta en grasa la tarjeta «Tu meta» ya explica el reparto.
+    aviso_libre = aviso_masa_libre(perdida) if datos.tipo_meta == "peso" else None
     if aviso_libre:
         advertencias.append(aviso_libre)
 
@@ -441,7 +483,8 @@ def crear_plan(
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
-    W_meta = float(datos.peso_objetivo_kg)
+    # Con meta en grasa, el peso meta es el que calculó la vista previa.
+    W_meta = float(previa["meta"]["peso_objetivo_kg"])
     comp = estimar_grasa(
         perfil,
         W0,

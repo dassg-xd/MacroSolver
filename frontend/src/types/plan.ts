@@ -1,6 +1,10 @@
+export type TipoMeta = "peso" | "grasa";
+
 export interface DatosPlan {
     peso_inicial_kg: number;
-    peso_objetivo_kg: number;
+    tipo_meta?: TipoMeta;
+    peso_objetivo_kg?: number;
+    grasa_a_perder_kg?: number;
     fecha_inicio?: string;
     fecha_meta: string;
     cuello_cm?: number;
@@ -49,6 +53,12 @@ export interface EquivalenteGrasa {
     imc_meta: number;
     pct_grasa_final: number;
     segura: boolean;
+}
+
+export interface MetaPlan {
+    tipo: TipoMeta;
+    peso_objetivo_kg: number;
+    grasa_a_perder_kg: number | null;
 }
 
 export interface PerdidaPlan {
@@ -123,6 +133,7 @@ export interface VistaPreviaPlan {
     sensibilidad: SensibilidadPlan | null;
     calculo: CalculoPlan | null;
     equivalente_grasa: EquivalenteGrasa | null;
+    meta: MetaPlan | null;
 }
 
 export interface PlanActivo {

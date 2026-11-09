@@ -399,3 +399,42 @@
   color: #8f151b;
   font-size: 12px;
 }
+
+.nuevo-plan__tipo-meta {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border: 1px solid #e3ddd6;
+  border-radius: 10px;
+  background: #f7f5f2;
+}
+
+.nuevo-plan__tipo-meta button {
+  min-height: 34px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #5d5960;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.nuevo-plan__tipo-meta button.activo {
+  background: #171719;
+  color: #fff;
+}
+
+.nuevo-plan__ayuda-meta {
+  margin: -4px 0 14px;
+  color: #5d5960;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.nuevo-plan__usar-grasa {
+  margin-top: 12px;
+}
