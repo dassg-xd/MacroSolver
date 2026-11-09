@@ -238,6 +238,11 @@
   background: #f1faf4;
 }
 
+.calendario__muestra--desviado {
+  border-color: #f2d3a2;
+  background: #fdf7ec;
+}
+
 .calendario__muestra--estimado {
   border: 1px dashed #b3afb4;
   background: #f7f5f2;
@@ -291,12 +296,12 @@
 .dia__campos,
 .dia__agregar {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 10px;
 }
 
 .dia__agregar {
-  grid-template-columns: 1fr 90px;
+  grid-template-columns: minmax(0, 1fr) 90px;
 }
 
 .dia__campo {
@@ -310,6 +315,8 @@
 
 .dia__campo input,
 .dia__campo select {
+  width: 100%;
+  min-width: 0;
   min-height: 40px;
   padding: 0 10px;
   border: 1px solid #dcd7d1;
@@ -394,7 +401,7 @@
 
 @media (max-width: 900px) {
   .calendario__cuerpo {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

@@ -113,7 +113,7 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                     <input
                         inputMode="numeric"
                         value={kcal}
-                        placeholder="Ej. 1 950"
+                        placeholder="Ej. 1950"
                         onChange={(e) => setKcal(e.target.value)}
                     />
                 </label>

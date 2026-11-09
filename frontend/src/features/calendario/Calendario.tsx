@@ -186,7 +186,8 @@ export default function Calendario() {
                     )}
 
                     <ul className="calendario__leyenda">
-                        <li><i className="calendario__muestra calendario__muestra--cumplido" />Calorías registradas</li>
+                        <li><i className="calendario__muestra calendario__muestra--cumplido" />Calorías dentro de ±10 %</li>
+                        <li><i className="calendario__muestra calendario__muestra--desviado" />Fuera de ±10 %</li>
                         <li><i className="calendario__marca calendario__marca--peso" />Peso</li>
                         <li><i className="calendario__marca calendario__marca--actividad" />Actividad</li>
                         <li><i className="calendario__muestra calendario__muestra--estimado" />Estimado con el plan</li>
