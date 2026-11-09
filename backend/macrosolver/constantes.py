@@ -3,7 +3,8 @@
 RHO_F = 9400.0          # densidad energética de la grasa, kcal/kg
 RHO_L = 1800.0          # densidad energética de la masa libre de grasa, kcal/kg
 RHO_SIMPLE = 7700.0     # densidad única del modelo lineal (euler_simple)
-C_F = 10.4 * RHO_L / RHO_F   # constante de Forbes ≈ 1,99 kg
+FORBES_KG = 10.4         # Forbes: dL/dF = 10,4 / F (kg)
+C_F = FORBES_KG * RHO_L / RHO_F   # constante de Forbes ≈ 1,99 kg
 
 DEFICIT_MAXIMO = 700.0  # kcal/día, regla del proyecto (5.6)
 INGESTA_MINIMA = {"hombre": 1500.0, "mujer": 1200.0}
@@ -12,6 +13,10 @@ FACTORES_ACTIVIDAD = (1.2, 1.375, 1.55, 1.725, 1.9)
 FACTOR_BASE_EJERCICIO = 1.2   # días con actividad registrada (5.12)
 
 PCT_GRASA_MIN, PCT_GRASA_MAX = 5.0, 60.0
+# Piso de grasa final para una meta en grasa (grasa esencial con margen).
+PCT_GRASA_FINAL_MIN = {"hombre": 8.0, "mujer": 15.0}
+# Si la masa libre supera esta fracción de la pérdida, se avisa al usuario.
+FRACCION_MASA_LIBRE_AVISO = 1.0 / 3.0
 
 TOL_SECANTE_KG = 0.01
 MAX_ITER_SECANTE = 30

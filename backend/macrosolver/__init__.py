@@ -10,6 +10,7 @@ from .ciclo import Seguimiento, VistaPrevia, calcular_seguimiento, calcular_vist
 from .composicion import Composicion, composicion_desde_pct, estimar_grasa, grasa_deurenberg, grasa_marina
 from .energia import coeficientes_tdee, equilibrio, imc, tdee, tmb
 from .estadisticas import Semana, estadisticas_semanales, gasto_ejercicio_dia
+from .forbes import MetaGrasa, grasa_para_peso, masa_libre_para_grasa, meta_por_grasa, peso_para_grasa
 from .macros import Macros, macros
 from .modelo import (euler_simple, fraccion_libre, recurrencia_exacta_lineal, referencia_rk4,
                      simular_composicion, solucion_exacta_lineal)
