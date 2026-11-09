@@ -484,14 +484,20 @@ export default function NuevoPlan() {
                             <section className="nuevo-plan__grafica">
                                 <h2>Curva ideal</h2>
                                 {/* Recharts importado en ComoSeCalculo; aquí resumen textual */}
-                                <p>
-                                    El peso pasa de {previa.composicion.grasa_inicial_kg.toFixed(
-                                        1
-                                    )}{" "}
-                                    kg de grasa inicial a la meta en{" "}
-                                    {previa.plazo_dias} días, con una banda de
-                                    tolerancia de 1 kg.
-                                </p>
+                                {previa.curva && previa.curva.peso_kg.length > 0 ? (
+                                    <p>
+                                        El peso pasa de{" "}
+                                        {previa.curva.peso_kg[0].toFixed(1)} kg a{" "}
+                                        {previa.curva.peso_kg[previa.curva.peso_kg.length - 1].toFixed(1)}{" "}
+                                        kg en {previa.plazo_dias} días, con una banda de
+                                        tolerancia de 1 kg.
+                                    </p>
+                                ) : (
+                                    <p>
+                                        La curva llega a la meta en {previa.plazo_dias} días,
+                                        con una banda de tolerancia de 1 kg.
+                                    </p>
+                                )}
                             </section>
 
                             <ComoSeCalculo
