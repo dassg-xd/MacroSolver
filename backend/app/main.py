@@ -1,3 +1,27 @@
+"""API de MacroSolver.
+
+Arranque normal (desde backend/):  uvicorn app.main:app --reload
+También se puede ejecutar este archivo directamente (botón ▶ de VS Code):
+lanza uvicorn con el Python de backend/.venv aunque el intérprete elegido sea otro.
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+if __name__ == "__main__":
+    _BACKEND = Path(__file__).resolve().parents[1]
+    _VENV = _BACKEND / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    _PYTHON = str(_VENV) if _VENV.exists() else sys.executable
+    print(f"Iniciando MacroSolver con {_PYTHON}", flush=True)
+    print("API: http://127.0.0.1:8000  ·  Documentación: http://127.0.0.1:8000/docs", flush=True)
+    sys.exit(
+        subprocess.call(
+            [_PYTHON, "-m", "uvicorn", "app.main:app", "--reload", "--reload-dir", "app"],
+            cwd=_BACKEND,
+        )
+    )
+
 import httpx
 from fastapi import FastAPI
 
