@@ -25,6 +25,7 @@ from macrosolver import (
 )
 from macrosolver.constantes import (
     DEFICIT_MAXIMO,
+    FRACCION_MASA_LIBRE_AVISO,
     MAX_ITER_SECANTE,
     TOL_SECANTE_KG,
     TOLERANCIA_REPLANEACION,
@@ -193,6 +194,20 @@ def _calculo_dict(
         "viabilidad": _viabilidad_dict(viabilidad, inicio),
         "formulas": FORMULAS,
     }
+
+
+def aviso_masa_libre(perdida: Mapping[str, float]) -> str | None:
+    """Aviso cuando más de un tercio de la pérdida sería masa libre (Forbes)."""
+    peso = perdida["peso_kg"]
+    if peso <= 0 or perdida["masa_libre_kg"] / peso <= FRACCION_MASA_LIBRE_AVISO:
+        return None
+    pct = 100 * perdida["masa_libre_kg"] / peso
+    return (
+        f"De los {peso:.1f} kg que bajarías, se estima que solo "
+        f"{perdida['grasa_kg']:.1f} kg serían grasa y {perdida['masa_libre_kg']:.1f} kg "
+        f"({pct:.0f} %) masa libre, sobre todo músculo con su agua. Comer la proteína "
+        "indicada y entrenar fuerza ayuda a conservar el músculo."
+    )
 
 
 # --------------------------------------------------------------------- casos de uso
@@ -364,17 +379,22 @@ def vista_previa(
     if I < ingesta_minima(W0, perfil) * 1.05:
         advertencias.append("La ingesta está cerca del mínimo seguro.")
 
+    perdida = {
+        "peso_kg": _r(W0 - tr.W[-1], 2),
+        "grasa_kg": _r(comp.F0 - tr.F[-1], 2),
+        "masa_libre_kg": _r(comp.L0 - tr.L[-1], 2),
+    }
+    aviso_libre = aviso_masa_libre(perdida)
+    if aviso_libre:
+        advertencias.append(aviso_libre)
+
     base.update({
         "puede_confirmar": True,
         "advertencias": advertencias,
         "ingesta_kcal": _r(I),
         "macros": _macros_dict(valores),
         "curva": _curva_dict(tr),
-        "perdida": {
-            "peso_kg": _r(W0 - tr.W[-1], 2),
-            "grasa_kg": _r(comp.F0 - tr.F[-1], 2),
-            "masa_libre_kg": _r(comp.L0 - tr.L[-1], 2),
-        },
+        "perdida": perdida,
         "sensibilidad": _sensibilidad_dict(sensibilidad),
         "calculo": _calculo_dict(perfil, comp, via, sec, I, N, sensibilidad, inicio),
     })
