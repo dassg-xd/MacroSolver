@@ -118,6 +118,16 @@ class CurvaResponse(BaseModel):
     banda_superior_kg: list[float]
 
 
+class EquivalenteGrasaResponse(BaseModel):
+    """Meta de peso con la que los kg pedidos serían todos de grasa (Forbes)."""
+
+    grasa_a_perder_kg: float
+    peso_meta_kg: float
+    imc_meta: float
+    pct_grasa_final: float
+    segura: bool
+
+
 class PerdidaResponse(BaseModel):
     peso_kg: float
     grasa_kg: float
@@ -184,6 +194,7 @@ class VistaPreviaResponse(BaseModel):
     perdida: PerdidaResponse | None
     sensibilidad: SensibilidadResponse | None
     calculo: CalculoResponse | None
+    equivalente_grasa: EquivalenteGrasaResponse | None = None
 
 
 class PlanResponse(BaseModel):

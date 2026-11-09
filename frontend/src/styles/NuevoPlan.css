@@ -385,3 +385,17 @@
     animation: none;
   }
 }
+
+.nuevo-plan__tarjeta--grasa {
+  border-left: 4px solid #171719;
+}
+
+.nuevo-plan__tarjeta--grasa strong {
+  color: #171719;
+}
+
+.nuevo-plan__tarjeta p.nuevo-plan__nota-alerta {
+  margin-top: 8px;
+  color: #8f151b;
+  font-size: 12px;
+}

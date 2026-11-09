@@ -452,6 +452,31 @@ export default function NuevoPlan() {
                         </section>
                     )}
 
+                    {previa.equivalente_grasa && (
+                        <section className="nuevo-plan__tarjeta nuevo-plan__tarjeta--grasa">
+                            <h2>
+                                ¿Y si quieres perder{" "}
+                                {previa.equivalente_grasa.grasa_a_perder_kg.toFixed(1)} kg de grasa?
+                            </h2>
+                            <p>
+                                Al bajar de peso también se pierde masa libre (músculo y su
+                                agua). Para que esos{" "}
+                                {previa.equivalente_grasa.grasa_a_perder_kg.toFixed(1)} kg sean
+                                de grasa, la meta tendría que ser de unos{" "}
+                                <strong>{previa.equivalente_grasa.peso_meta_kg.toFixed(1)} kg</strong>{" "}
+                                (IMC {previa.equivalente_grasa.imc_meta.toFixed(1)},{" "}
+                                {previa.equivalente_grasa.pct_grasa_final.toFixed(1)} % de grasa
+                                al final).
+                            </p>
+                            {!previa.equivalente_grasa.segura && (
+                                <p className="nuevo-plan__nota-alerta">
+                                    Esa meta queda por debajo de un nivel seguro de grasa
+                                    corporal o de IMC, así que no la recomendamos.
+                                </p>
+                            )}
+                        </section>
+                    )}
+
                     {previa.puede_confirmar && previa.ingesta_kcal && (
                         <>
                             <section className="nuevo-plan__tarjeta">

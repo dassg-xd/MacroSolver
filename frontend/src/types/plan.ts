@@ -43,6 +43,14 @@ export interface CurvaPlan {
     banda_superior_kg: number[];
 }
 
+export interface EquivalenteGrasa {
+    grasa_a_perder_kg: number;
+    peso_meta_kg: number;
+    imc_meta: number;
+    pct_grasa_final: number;
+    segura: boolean;
+}
+
 export interface PerdidaPlan {
     peso_kg: number;
     grasa_kg: number;
@@ -114,6 +122,7 @@ export interface VistaPreviaPlan {
     perdida: PerdidaPlan | null;
     sensibilidad: SensibilidadPlan | null;
     calculo: CalculoPlan | null;
+    equivalente_grasa: EquivalenteGrasa | null;
 }
 
 export interface PlanActivo {

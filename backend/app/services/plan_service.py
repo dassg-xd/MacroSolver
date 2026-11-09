@@ -18,6 +18,7 @@ from macrosolver import (
     evaluar_viabilidad,
     imc,
     macros,
+    meta_por_grasa,
     referencia_rk4,
     rango_ingesta,
     simular_composicion,
@@ -196,6 +197,22 @@ def _calculo_dict(
     }
 
 
+def equivalente_en_grasa(comp: Composicion, perfil: Perfil, kg: float) -> dict[str, Any] | None:
+    """Meta de peso para que los `kg` pedidos sean de grasa, o None si no es posible."""
+    try:
+        meta = meta_por_grasa(comp.F0, comp.L0, perfil.sexo, kg)
+    except ErrorMotor:
+        return None
+    imc_meta = imc(meta.peso_meta_kg, perfil.altura_cm)
+    return {
+        "grasa_a_perder_kg": _r(kg, 2),
+        "peso_meta_kg": _r(meta.peso_meta_kg, 1),
+        "imc_meta": _r(imc_meta),
+        "pct_grasa_final": _r(meta.pct_grasa_final),
+        "segura": meta.segura and imc_meta >= IMC_MINIMO_META,
+    }
+
+
 def aviso_masa_libre(perdida: Mapping[str, float]) -> str | None:
     """Aviso cuando más de un tercio de la pérdida sería masa libre (Forbes)."""
     peso = perdida["peso_kg"]
@@ -270,6 +287,9 @@ def vista_previa(
         "perdida": None,
         "sensibilidad": None,
         "calculo": None,
+        "equivalente_grasa": (
+            equivalente_en_grasa(comp, perfil, W0 - W_meta) if W_meta < W0 else None
+        ),
     }
 
     if comp.metodo == "deurenberg":

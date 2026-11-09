@@ -163,3 +163,10 @@ def test_estimar_composicion(cliente):
     assert r.status_code == 200
     assert r.json()["metodo"] == "marina"
     assert r.json()["grasa_kg"] > 0
+
+
+def test_preview_incluye_equivalente_en_grasa(cliente):
+    r = cliente.post("/plans/preview", json=datos_preview(), headers=encabezado())
+    eq = r.json()["equivalente_grasa"]
+    assert eq["grasa_a_perder_kg"] == 5.0
+    assert eq["peso_meta_kg"] < 75.0     # perder 5 kg de grasa exige bajar más de 5 kg
