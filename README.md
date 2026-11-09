@@ -59,16 +59,18 @@ $$\rho_F \cdot \Delta F + \rho_L \cdot \Delta L = \sum B$$
 
 | Sección | Método | Ruta | Descripción |
 | --- | --- | --- | --- |
-| **Autenticación** | `POST` | `/auth/register` | Registro de nuevos usuarios |
+| **Autenticación** | `POST` | `/auth/registro` | Registro de nuevos usuarios |
 | | `POST` | `/auth/login` | Inicio de sesión y obtención de token |
 | **Perfil** | `GET` / `PATCH` | `/me` | Consulta y actualización de datos de usuario |
 | **Planes** | `POST` | `/plans/estimar-composicion` | Cálculo aproximado de masa grasa y magra |
 | | `POST` | `/plans/preview` | Vista previa, simulación y viabilidad de meta |
 | | `POST` | `/plans` | Confirmación y activación de un plan |
 | | `GET` | `/plans/active` | Obtención del plan actualmente activo |
-| **Seguimiento** | `PUT` | `/plans/active/calorias` | Registro diario de calorías |
-| | `PUT` | `/plans/active/pesos` | Registro diario de peso corporal |
-| | `GET` | `/plans/active/calendario` | Datos agregados del mes |
+| **Seguimiento** | `PUT` | `/plans/active/calorias` | Registro diario de calorías (`{fecha, kcal}`; `kcal: null` lo borra) |
+| | `PUT` | `/plans/active/pesos` | Registro diario de peso (`{fecha, peso_kg}`; `null` lo borra) |
+| | `PUT` | `/plans/active/actividades` | Reemplaza las actividades del día (`{fecha, actividades: [{actividad_id, minutos}]}`) |
+| | `GET` | `/actividades` | Catálogo de actividades físicas con su MET |
+| | `GET` | `/plans/active/calendario?mes=AAAA-MM` | Días del mes con estado, registros y cumplimiento (±10 %) |
 | | `GET` | `/plans/active/seguimiento` | Curvas simuladas, tendencia y proyección |
 | | `POST` | `/plans/active/replanear` | Generación de nuevo plan por re-planeación |
 | | `GET` | `/plans/active/estadisticas` | Indicadores de adherencia y variaciones semanales |
