@@ -6,6 +6,7 @@ from app.services.securityConfig import configurar_cors
 from app.errores import registrar_manejadores
 from app.routes.auth import router as auth_router
 from app.routes.planes import router as planes_router
+from app.routes.registros import router as registros_router
 from app.routes.usuario import router as usuario_router
 
 app = FastAPI(title="MacroSolver")
@@ -14,6 +15,7 @@ registrar_manejadores(app)
 app.include_router(auth_router)
 app.include_router(usuario_router)
 app.include_router(planes_router)
+app.include_router(registros_router)
 
 @app.get("/")
 def raiz():
