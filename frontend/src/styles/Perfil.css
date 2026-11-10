@@ -1,0 +1,118 @@
+.perfil {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  max-width: 760px;
+}
+
+.perfil__saludo {
+  margin: 0;
+  color: #c41e24;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.perfil__cabecera h1 {
+  margin: 4px 0 6px;
+  font-size: clamp(28px, 4vw, 36px);
+  letter-spacing: -1px;
+}
+
+.perfil__cabecera p {
+  max-width: 640px;
+  margin: 0;
+  color: #5d5960;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.perfil__tarjeta {
+  padding: 24px;
+  border: 1px solid #e6e1db;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 3%);
+}
+
+.perfil__fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.perfil__tarjeta label {
+  display: block;
+  margin: 12px 0 5px;
+  font-size: 11px;
+}
+
+.perfil__tarjeta input,
+.perfil__tarjeta select {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 1px solid #dcd7d1;
+  border-radius: 9px;
+  background: #fff;
+  color: #171719;
+  font: inherit;
+  font-size: 12px;
+}
+
+.perfil__tarjeta input[readonly] {
+  background: #f4f1ed;
+  color: #77737a;
+}
+
+.perfil__tarjeta input:focus,
+.perfil__tarjeta select:focus {
+  outline: 2px solid rgb(210 31 40 / 18%);
+  border-color: #d21f28;
+}
+
+.perfil__ayuda {
+  margin: 5px 0 0;
+  color: #77737a;
+  font-size: 10px;
+}
+
+.perfil__alerta,
+.perfil__exito {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.perfil__alerta {
+  border: 1px solid #ffc9cc;
+  background: #fff4f4;
+  color: #8f151b;
+}
+
+.perfil__exito {
+  border: 1px solid #cfe8d8;
+  background: #f1faf4;
+  color: #246b3d;
+}
+
+.perfil__acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+@media (max-width: 620px) {
+  .perfil__fila {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .perfil__acciones {
+    flex-direction: column-reverse;
+  }
+}

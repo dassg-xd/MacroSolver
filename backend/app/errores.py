@@ -12,6 +12,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from macrosolver import ErrorMotor
+from app.services.plan_service import ErrorPlan
 
 log = logging.getLogger("macrosolver.api")
 
@@ -94,6 +95,12 @@ async def _error_motor(_: Request, exc: ErrorMotor) -> JSONResponse:
     )
 
 
+async def _error_plan(_: Request, exc: ErrorPlan) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.mensaje, "codigo": exc.codigo},
+    )
+
 async def _inesperado(request: Request, exc: Exception) -> JSONResponse:
     log.exception("Error no controlado en %s %s", request.method, request.url.path)
     return JSONResponse(
@@ -106,4 +113,5 @@ async def _inesperado(request: Request, exc: Exception) -> JSONResponse:
 def registrar_manejadores(app: FastAPI) -> None:
     app.add_exception_handler(RequestValidationError, _validacion)
     app.add_exception_handler(ErrorMotor, _error_motor)
+    app.add_exception_handler(ErrorPlan, _error_plan)
     app.add_exception_handler(Exception, _inesperado)
