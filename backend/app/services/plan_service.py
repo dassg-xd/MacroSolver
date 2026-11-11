@@ -255,15 +255,22 @@ def estimar_composicion(
 def vista_previa(
     usuario: Mapping[str, Any],
     datos: DatosPlanRequest,
+    *,
+    perfil_fijo: Perfil | None = None,
+    composicion: Composicion | None = None,
 ) -> dict[str, Any]:
-    """HU-05 a HU-09: viabilidad, ingesta, macros, curva y cómo se calculó."""
+    """HU-05 a HU-09: viabilidad, ingesta, macros, curva y cómo se calculó.
+
+    perfil_fijo y composicion se usan al re-planear: el perfil es la copia del
+    plan y la composición viene de la simulación, no de las medidas.
+    """
     datos = datos if hasattr(datos, "fecha_inicio") else DatosPlanRequest(**dict(datos))
-    perfil = perfil_desde_usuario(usuario)
+    perfil = perfil_fijo or perfil_desde_usuario(usuario)
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
 
-    comp = estimar_grasa(
+    comp = composicion or estimar_grasa(
         perfil,
         W0,
         _float_o_none(datos.cuello_cm),
@@ -322,7 +329,7 @@ def vista_previa(
         },
     }
 
-    if comp.metodo == "deurenberg":
+    if comp.metodo == "deurenberg" and composicion is None:
         base["advertencias"].append(ADVERTENCIA_DEURENBERG)
 
     if bloqueo_grasa:
@@ -467,9 +474,13 @@ def crear_plan(
     usuario: Mapping[str, Any],
     datos: DatosPlanRequest,
     repositorio: Any,
+    *,
+    perfil_fijo: Perfil | None = None,
+    composicion: Composicion | None = None,
+    sexo: str | None = None,
 ) -> dict[str, Any]:
     """HU-05: recalcula en servidor y guarda el plan con la RPC transaccional."""
-    previa = vista_previa(usuario, datos)
+    previa = vista_previa(usuario, datos, perfil_fijo=perfil_fijo, composicion=composicion)
     if not previa["puede_confirmar"]:
         mensajes = " ".join(bloqueo["mensaje"] for bloqueo in previa["bloqueos"])
         raise ErrorPlan(
@@ -479,13 +490,13 @@ def crear_plan(
         )
 
     datos = datos if hasattr(datos, "fecha_inicio") else DatosPlanRequest(**dict(datos))
-    perfil = perfil_desde_usuario(usuario)
+    perfil = perfil_fijo or perfil_desde_usuario(usuario)
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
     # Con meta en grasa, el peso meta es el que calculó la vista previa.
     W_meta = float(previa["meta"]["peso_objetivo_kg"])
-    comp = estimar_grasa(
+    comp = composicion or estimar_grasa(
         perfil,
         W0,
         _float_o_none(datos.cuello_cm),
@@ -505,7 +516,7 @@ def crear_plan(
                 "proteina_g": _r(previa["macros"]["proteina_g"]),
                 "grasa_g": _r(previa["macros"]["grasa_g"]),
                 "carbohidratos_g": _r(previa["macros"]["carbohidratos_g"]),
-                "sexo": usuario["sexo"],
+                "sexo": sexo or usuario["sexo"],
                 "edad_anios": perfil.edad,
                 "altura_cm": _r(perfil.altura_cm, 1),
                 "factor_actividad": _r(perfil.f_act, 3),

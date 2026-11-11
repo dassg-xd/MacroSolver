@@ -36,3 +36,37 @@ def seguimiento(
         return seguimiento_service.seguimiento(usuario, planes, registros)
     except ErrorPlan as error:
         raise _http_error(error) from error
+
+
+@router.post("/plans/active/replanear/preview", response_model=ReplaneacionPreviaResponse)
+def replanear_preview(
+    datos: ReplanearRequest | None = None,
+    usuario: dict[str, Any] = Depends(obtener_usuario_actual),
+    planes: Any = Depends(obtener_repositorio_planes),
+    registros: Any = Depends(obtener_repositorio_registros),
+) -> dict[str, Any]:
+    """Plan propuesto junto al actual. No guarda nada."""
+    try:
+        return seguimiento_service.vista_previa_replaneacion(
+            usuario, datos.fecha_meta if datos else None, planes, registros
+        )
+    except ErrorPlan as error:
+        raise _http_error(error) from error
+
+
+@router.post(
+    "/plans/active/replanear", response_model=PlanResponse, status_code=status.HTTP_201_CREATED
+)
+def replanear(
+    datos: ReplanearRequest | None = None,
+    usuario: dict[str, Any] = Depends(obtener_usuario_actual),
+    planes: Any = Depends(obtener_repositorio_planes),
+    registros: Any = Depends(obtener_repositorio_registros),
+) -> dict[str, Any]:
+    """Crea el plan encadenado; el anterior queda inactivo."""
+    try:
+        return seguimiento_service.replanear(
+            usuario, datos.fecha_meta if datos else None, planes, registros
+        )
+    except ErrorPlan as error:
+        raise _http_error(error) from error

@@ -67,3 +67,65 @@ def test_seguimiento_con_ejercicio(escenario):
     registros.reemplazar_actividades(42, dias_atras(25), [{"actividad_id": 5, "minutos": 60}])
     s = c.get("/plans/active/seguimiento").json()
     assert s["curva_ejercicio"] is not None and len(s["curva_ejercicio"]) == N + 1
+
+
+# ----------------------------------------------------------------- re-planeación
+def test_replanear_sin_pesos_422(escenario):
+    _, _, c = escenario()
+    r = c.post("/plans/active/replanear/preview")
+    assert r.status_code == 422
+    assert "peso" in r.json()["detail"]
+
+
+def test_vista_previa_de_replaneacion(escenario):
+    planes, registros, c = escenario()
+    desviar(planes, registros, 30)
+    r = c.post("/plans/active/replanear/preview")
+    assert r.status_code == 200, r.text
+    p = r.json()
+    assert p["puede_confirmar"] is True, p["bloqueos"]
+    assert p["plazo_dias"] == 60                       # días restantes desde el último peso
+    assert p["fecha_inicio"] == dias_atras(0).isoformat()
+    assert p["fecha_meta"] == (dias_atras(30) + timedelta(days=N)).isoformat()
+    rep = p["replaneacion"]
+    assert rep["sugerida"] is True and rep["peso_real_kg"] == 80.0 and rep["dia_ultimo_peso"] == 30
+    assert p["ingesta_kcal"] < rep["actual"]["ingesta_kcal"]   # menos tiempo, mismo peso
+    assert len(planes.todos) == 1                      # no guarda nada
+
+
+def test_replanear_crea_plan_encadenado_y_copia_registros(escenario):
+    planes, registros, c = escenario()
+    desviar(planes, registros, 30)
+    r = c.post("/plans/active/replanear")
+    assert r.status_code == 201, r.text
+    nuevo = planes.activo
+    assert nuevo["id"] != 42 and nuevo["plan_previo_id"] == 42
+    assert nuevo["peso_inicial_kg"] == 80.0 and nuevo["plazo_dias"] == 60
+    assert nuevo["sexo"] == "Femenino" and nuevo["edad_anios"] == 31
+    assert abs(nuevo["grasa_inicial_kg"] + nuevo["masa_libre_inicial_kg"] - 80.0) <= 0.05
+    assert next(p for p in planes.todos if p["id"] == 42)["estado"] == "inactivo"
+    # Las calorías del nuevo día 0 (hoy) pasan al plan nuevo.
+    assert registros.calorias[nuevo["id"]] == {dias_atras(0): 2600.0}
+
+
+def test_replaneacion_inviable_ofrece_fecha_viable(escenario):
+    planes, registros, c = escenario(dias=75)
+    desviar(planes, registros, 75)
+    p = c.post("/plans/active/replanear/preview").json()
+    assert p["puede_confirmar"] is False
+    assert p["bloqueos"][0]["codigo"] == "plazo_no_viable"
+    viable = p["viabilidad"]["fecha_viable"]
+    assert viable is not None
+    assert c.post("/plans/active/replanear").status_code == 422
+
+    p2 = c.post("/plans/active/replanear/preview", json={"fecha_meta": viable}).json()
+    assert p2["puede_confirmar"] is True, p2["bloqueos"]
+    assert c.post("/plans/active/replanear", json={"fecha_meta": viable}).status_code == 201
+    assert planes.activo["plan_previo_id"] == 42
+
+
+def test_replanear_con_meta_alcanzada(escenario):
+    planes, registros, c = escenario()
+    registros.guardar_peso(42, dias_atras(5), 75.5)
+    r = c.post("/plans/active/replanear/preview")
+    assert r.status_code == 422 and "meta" in r.json()["detail"]
