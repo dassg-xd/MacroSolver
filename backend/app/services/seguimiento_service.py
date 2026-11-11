@@ -273,3 +273,28 @@ def estadisticas(usuario: Mapping[str, Any], planes: Any, registros: Any) -> dic
             for s in semanas
         ],
     }
+
+
+# --------------------------------------------------------------------- historial
+def historial(usuario: Mapping[str, Any], planes: Any, registros: Any) -> list[dict[str, Any]]:
+    """HU-08: planes del usuario, del más reciente al más antiguo."""
+    resultado = []
+    for plan in planes.listar(usuario["id"]):
+        inicio, meta = registro_service.limites_plan(plan)
+        ultimo = registros.ultimo_peso_hasta(int(plan["id"]), meta)
+        inicial = float(plan["peso_inicial_kg"])
+        resultado.append({
+            "id": int(plan["id"]),
+            "estado": plan["estado"],
+            "plan_previo_id": plan.get("plan_previo_id"),
+            "fecha_inicio": inicio,
+            "fecha_meta": meta,
+            "plazo_dias": int(plan["plazo_dias"]),
+            "peso_inicial_kg": _r(inicial),
+            "peso_objetivo_kg": _r(plan["peso_objetivo_kg"]),
+            "ingesta_kcal": _r(plan["ingesta_kcal"], 1),
+            "ultimo_peso_kg": _r(ultimo),
+            "cambio_kg": _r(ultimo - inicial) if ultimo is not None else None,
+            "creado_en": plan["creado_en"],
+        })
+    return resultado

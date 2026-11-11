@@ -145,3 +145,15 @@ def test_estadisticas(escenario):
     assert e["semanas"][-1]["parcial"] is True
     assert sum(s["dias_registrados"] for s in e["semanas"]) == 31
     assert sum(s["sesiones"] for s in e["semanas"]) == 1
+
+
+# ----------------------------------------------------------------- historial
+def test_historial(escenario):
+    planes, registros, c = escenario()
+    desviar(planes, registros, 30)
+    c.post("/plans/active/replanear")
+    h = c.get("/plans").json()
+    assert [p["estado"] for p in h] == ["activo", "inactivo"]
+    assert h[0]["plan_previo_id"] == h[1]["id"] == 42
+    assert h[1]["ultimo_peso_kg"] == 80.0 and h[1]["cambio_kg"] == 0.0
+    assert h[0]["ultimo_peso_kg"] is None

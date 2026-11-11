@@ -59,6 +59,17 @@ class PlanRepository:
         )
         return respuesta.data[0] if respuesta.data else None
 
+    def listar(self, usuario_id: int) -> list[dict[str, Any]]:
+        """Todos los planes del usuario, del más reciente al más antiguo."""
+        respuesta = (
+            cliente_supabase.table("plan")
+            .select("*")
+            .eq("usuario_id", usuario_id)
+            .order("creado_en", desc=True)
+            .execute()
+        )
+        return respuesta.data or []
+
     def crear(self, usuario_id: int, plan: Mapping[str, Any]) -> dict[str, Any]:
         parametros = {
             _PARAMETROS_RPC[campo]: valor

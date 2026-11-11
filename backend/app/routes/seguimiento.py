@@ -82,3 +82,13 @@ def estadisticas(
         return seguimiento_service.estadisticas(usuario, planes, registros)
     except ErrorPlan as error:
         raise _http_error(error) from error
+
+
+@router.get("/plans", response_model=list[PlanHistorial])
+def historial(
+    usuario: dict[str, Any] = Depends(obtener_usuario_actual),
+    planes: Any = Depends(obtener_repositorio_planes),
+    registros: Any = Depends(obtener_repositorio_registros),
+) -> list[dict[str, Any]]:
+    """Planes del usuario, del más reciente al más antiguo."""
+    return seguimiento_service.historial(usuario, planes, registros)
