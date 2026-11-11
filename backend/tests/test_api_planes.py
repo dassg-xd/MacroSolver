@@ -163,3 +163,59 @@ def test_estimar_composicion(cliente):
     assert r.status_code == 200
     assert r.json()["metodo"] == "marina"
     assert r.json()["grasa_kg"] > 0
+
+
+def test_preview_incluye_equivalente_en_grasa(cliente):
+    r = cliente.post("/plans/preview", json=datos_preview(), headers=encabezado())
+    eq = r.json()["equivalente_grasa"]
+    assert eq["grasa_a_perder_kg"] == 5.0
+    assert eq["peso_meta_kg"] < 75.0     # perder 5 kg de grasa exige bajar más de 5 kg
+
+
+def datos_grasa(**cambios):
+    base = datos_preview(tipo_meta="grasa", grasa_a_perder_kg=4, fecha_meta=(date.today() + timedelta(days=150)).isoformat())
+    base.pop("peso_objetivo_kg")
+    base.update(cambios)
+    return base
+
+
+def test_preview_con_meta_en_grasa(cliente):
+    r = cliente.post("/plans/preview", json=datos_grasa(), headers=encabezado())
+    assert r.status_code == 200
+    cuerpo = r.json()
+    assert cuerpo["meta"]["tipo"] == "grasa"
+    assert cuerpo["meta"]["grasa_a_perder_kg"] == 4.0
+    assert cuerpo["meta"]["peso_objetivo_kg"] < 76.0      # más de 4 kg de peso
+    assert cuerpo["equivalente_grasa"] is None
+    if cuerpo["puede_confirmar"]:
+        assert cuerpo["perdida"]["grasa_kg"] == pytest.approx(4.0, abs=0.05)
+
+
+def test_crear_plan_con_meta_en_grasa_guarda_el_peso_equivalente(cliente, repositorio):
+    previa = cliente.post("/plans/preview", json=datos_grasa(), headers=encabezado()).json()
+    assert previa["puede_confirmar"], previa["bloqueos"]
+    r = cliente.post("/plans", json=datos_grasa(), headers=encabezado())
+    assert r.status_code == 201
+    assert repositorio.activo["peso_objetivo_kg"] == previa["meta"]["peso_objetivo_kg"]
+
+
+def test_meta_en_grasa_insegura_se_bloquea(cliente):
+    r = cliente.post("/plans/preview", json=datos_grasa(grasa_a_perder_kg=60), headers=encabezado())
+    cuerpo = r.json()
+    assert cuerpo["puede_confirmar"] is False
+    assert cuerpo["bloqueos"][0]["codigo"] in ("grasa_insuficiente", "grasa_meta_muy_baja")
+
+
+def test_meta_en_grasa_sin_kg_es_422(cliente):
+    datos = datos_grasa()
+    datos.pop("grasa_a_perder_kg")
+    r = cliente.post("/plans/preview", json=datos, headers=encabezado())
+    assert r.status_code == 422
+    assert "grasa" in r.json()["detail"]
+
+
+def test_meta_en_peso_sin_peso_es_422(cliente):
+    datos = datos_preview()
+    datos.pop("peso_objetivo_kg")
+    r = cliente.post("/plans/preview", json=datos, headers=encabezado())
+    assert r.status_code == 422

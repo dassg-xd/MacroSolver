@@ -16,6 +16,8 @@ PLAZO_MINIMO_DIAS = 2
 PLAZO_MAXIMO_DIAS = 730
 
 MetodoGrasa = Literal["marina", "deurenberg"]
+TipoMeta = Literal["peso", "grasa"]
+GRASA_MAXIMA_A_PERDER_KG = Decimal("100")
 
 
 class DatosPlanRequest(BaseModel):
@@ -24,7 +26,11 @@ class DatosPlanRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     peso_inicial_kg: Decimal = Field(ge=META_MINIMA_KG, le=META_MAXIMA_KG)
-    peso_objetivo_kg: Decimal = Field(ge=META_MINIMA_KG, le=META_MAXIMA_KG)
+    # Meta en peso (por defecto) o en kg de grasa a perder. Con la meta en grasa
+    # el servidor calcula el peso equivalente con la regla de Forbes.
+    tipo_meta: TipoMeta = "peso"
+    peso_objetivo_kg: Decimal | None = Field(default=None, ge=META_MINIMA_KG, le=META_MAXIMA_KG)
+    grasa_a_perder_kg: Decimal | None = Field(default=None, gt=0, le=GRASA_MAXIMA_A_PERDER_KG)
     fecha_inicio: date | None = None
     fecha_meta: date
     cuello_cm: Decimal | None = Field(default=None, ge=20, le=250)
@@ -33,6 +39,11 @@ class DatosPlanRequest(BaseModel):
 
     @model_validator(mode="after")
     def validar_fechas(self) -> "DatosPlanRequest":
+        if self.tipo_meta == "peso" and self.peso_objetivo_kg is None:
+            raise ValueError("Ingresa el peso meta.")
+        if self.tipo_meta == "grasa" and self.grasa_a_perder_kg is None:
+            raise ValueError("Ingresa cuántos kg de grasa quieres perder.")
+
         hoy = date.today()
         inicio = self.fecha_inicio or hoy
 
@@ -118,6 +129,22 @@ class CurvaResponse(BaseModel):
     banda_superior_kg: list[float]
 
 
+class EquivalenteGrasaResponse(BaseModel):
+    """Meta de peso con la que los kg pedidos serían todos de grasa (Forbes)."""
+
+    grasa_a_perder_kg: float
+    peso_meta_kg: float
+    imc_meta: float
+    pct_grasa_final: float
+    segura: bool
+
+
+class MetaResponse(BaseModel):
+    tipo: TipoMeta
+    peso_objetivo_kg: float
+    grasa_a_perder_kg: float | None
+
+
 class PerdidaResponse(BaseModel):
     peso_kg: float
     grasa_kg: float
@@ -184,6 +211,8 @@ class VistaPreviaResponse(BaseModel):
     perdida: PerdidaResponse | None
     sensibilidad: SensibilidadResponse | None
     calculo: CalculoResponse | None
+    equivalente_grasa: EquivalenteGrasaResponse | None = None
+    meta: MetaResponse | None = None
 
 
 class PlanResponse(BaseModel):

@@ -34,6 +34,10 @@ export default function Layout() {
                     <NavLink to="/panel" end>
                         Panel
                     </NavLink>
+                    <NavLink to="/calendario">Calendario</NavLink>
+                    <NavLink to="/estadisticas">Estadísticas</NavLink>
+                    <NavLink to="/historial">Historial</NavLink>
+                    <NavLink to="/guia">Guía</NavLink>
                     <NavLink to="/nuevo-plan">Nuevo plan</NavLink>
                 </nav>
 

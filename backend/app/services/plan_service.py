@@ -18,6 +18,7 @@ from macrosolver import (
     evaluar_viabilidad,
     imc,
     macros,
+    meta_por_grasa,
     referencia_rk4,
     rango_ingesta,
     simular_composicion,
@@ -25,6 +26,7 @@ from macrosolver import (
 )
 from macrosolver.constantes import (
     DEFICIT_MAXIMO,
+    FRACCION_MASA_LIBRE_AVISO,
     MAX_ITER_SECANTE,
     TOL_SECANTE_KG,
     TOLERANCIA_REPLANEACION,
@@ -195,6 +197,36 @@ def _calculo_dict(
     }
 
 
+def equivalente_en_grasa(comp: Composicion, perfil: Perfil, kg: float) -> dict[str, Any] | None:
+    """Meta de peso para que los `kg` pedidos sean de grasa, o None si no es posible."""
+    try:
+        meta = meta_por_grasa(comp.F0, comp.L0, perfil.sexo, kg)
+    except ErrorMotor:
+        return None
+    imc_meta = imc(meta.peso_meta_kg, perfil.altura_cm)
+    return {
+        "grasa_a_perder_kg": _r(kg, 2),
+        "peso_meta_kg": _r(meta.peso_meta_kg, 1),
+        "imc_meta": _r(imc_meta),
+        "pct_grasa_final": _r(meta.pct_grasa_final),
+        "segura": meta.segura and imc_meta >= IMC_MINIMO_META,
+    }
+
+
+def aviso_masa_libre(perdida: Mapping[str, float]) -> str | None:
+    """Aviso cuando más de un tercio de la pérdida sería masa libre (Forbes)."""
+    peso = perdida["peso_kg"]
+    if peso <= 0 or perdida["masa_libre_kg"] / peso <= FRACCION_MASA_LIBRE_AVISO:
+        return None
+    pct = 100 * perdida["masa_libre_kg"] / peso
+    return (
+        f"De los {peso:.1f} kg que bajarías, se estima que solo "
+        f"{perdida['grasa_kg']:.1f} kg serían grasa y {perdida['masa_libre_kg']:.1f} kg "
+        f"({pct:.0f} %) masa libre, sobre todo músculo con su agua. Comer la proteína "
+        "indicada y entrenar fuerza ayuda a conservar el músculo."
+    )
+
+
 # --------------------------------------------------------------------- casos de uso
 def estimar_composicion(
     usuario: Mapping[str, Any],
@@ -223,22 +255,52 @@ def estimar_composicion(
 def vista_previa(
     usuario: Mapping[str, Any],
     datos: DatosPlanRequest,
+    *,
+    perfil_fijo: Perfil | None = None,
+    composicion: Composicion | None = None,
 ) -> dict[str, Any]:
-    """HU-05 a HU-09: viabilidad, ingesta, macros, curva y cómo se calculó."""
+    """HU-05 a HU-09: viabilidad, ingesta, macros, curva y cómo se calculó.
+
+    perfil_fijo y composicion se usan al re-planear: el perfil es la copia del
+    plan y la composición viene de la simulación, no de las medidas.
+    """
     datos = datos if hasattr(datos, "fecha_inicio") else DatosPlanRequest(**dict(datos))
-    perfil = perfil_desde_usuario(usuario)
+    perfil = perfil_fijo or perfil_desde_usuario(usuario)
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
-    W_meta = float(datos.peso_objetivo_kg)
 
-    comp = estimar_grasa(
+    comp = composicion or estimar_grasa(
         perfil,
         W0,
         _float_o_none(datos.cuello_cm),
         _float_o_none(datos.cintura_cm),
         _float_o_none(datos.cadera_cm),
     )
+
+    # Meta en grasa: se traduce a peso con Forbes y sigue el mismo disparo.
+    bloqueo_grasa: dict[str, str] | None = None
+    grasa_a_perder: float | None = None
+    if datos.tipo_meta == "grasa":
+        grasa_a_perder = float(datos.grasa_a_perder_kg)
+        try:
+            meta_grasa = meta_por_grasa(comp.F0, comp.L0, perfil.sexo, grasa_a_perder)
+        except ErrorMotor as error:
+            bloqueo_grasa = {"codigo": "grasa_insuficiente", "mensaje": error.mensaje}
+            W_meta = W0
+        else:
+            W_meta = round(meta_grasa.peso_meta_kg, 2)
+            if not meta_grasa.segura:
+                bloqueo_grasa = {
+                    "codigo": "grasa_meta_muy_baja",
+                    "mensaje": (
+                        f"Perder {grasa_a_perder:.1f} kg de grasa te dejaría con "
+                        f"{meta_grasa.pct_grasa_final:.1f} % de grasa; el mínimo "
+                        f"seguro es {meta_grasa.pct_grasa_minimo:.0f} %. Elige una meta menor."
+                    ),
+                }
+    else:
+        W_meta = float(datos.peso_objetivo_kg)
 
     base: dict[str, Any] = {
         "puede_confirmar": False,
@@ -255,10 +317,31 @@ def vista_previa(
         "perdida": None,
         "sensibilidad": None,
         "calculo": None,
+        "equivalente_grasa": (
+            equivalente_en_grasa(comp, perfil, W0 - W_meta)
+            if datos.tipo_meta == "peso" and W_meta < W0
+            else None
+        ),
+        "meta": {
+            "tipo": datos.tipo_meta,
+            "peso_objetivo_kg": _r(W_meta, 2),
+            "grasa_a_perder_kg": _r(grasa_a_perder, 2) if grasa_a_perder is not None else None,
+        },
     }
 
-    if comp.metodo == "deurenberg":
+    if comp.metodo == "deurenberg" and composicion is None:
         base["advertencias"].append(ADVERTENCIA_DEURENBERG)
+
+    if bloqueo_grasa:
+        base["bloqueos"].append(bloqueo_grasa)
+        base["viabilidad"] = _viabilidad_dict(
+            _viabilidad_vacia(perfil, W0, mensaje=(
+                "No se evaluó la viabilidad porque la meta de grasa no es posible o "
+                "no es segura."
+            )),
+            inicio,
+        )
+        return base
 
     # 1. La meta debe ser una pérdida de peso.
     if W_meta >= W0:
@@ -364,17 +447,23 @@ def vista_previa(
     if I < ingesta_minima(W0, perfil) * 1.05:
         advertencias.append("La ingesta está cerca del mínimo seguro.")
 
+    perdida = {
+        "peso_kg": _r(W0 - tr.W[-1], 2),
+        "grasa_kg": _r(comp.F0 - tr.F[-1], 2),
+        "masa_libre_kg": _r(comp.L0 - tr.L[-1], 2),
+    }
+    # Con meta en grasa la tarjeta «Tu meta» ya explica el reparto.
+    aviso_libre = aviso_masa_libre(perdida) if datos.tipo_meta == "peso" else None
+    if aviso_libre:
+        advertencias.append(aviso_libre)
+
     base.update({
         "puede_confirmar": True,
         "advertencias": advertencias,
         "ingesta_kcal": _r(I),
         "macros": _macros_dict(valores),
         "curva": _curva_dict(tr),
-        "perdida": {
-            "peso_kg": _r(W0 - tr.W[-1], 2),
-            "grasa_kg": _r(comp.F0 - tr.F[-1], 2),
-            "masa_libre_kg": _r(comp.L0 - tr.L[-1], 2),
-        },
+        "perdida": perdida,
         "sensibilidad": _sensibilidad_dict(sensibilidad),
         "calculo": _calculo_dict(perfil, comp, via, sec, I, N, sensibilidad, inicio),
     })
@@ -385,9 +474,13 @@ def crear_plan(
     usuario: Mapping[str, Any],
     datos: DatosPlanRequest,
     repositorio: Any,
+    *,
+    perfil_fijo: Perfil | None = None,
+    composicion: Composicion | None = None,
+    sexo: str | None = None,
 ) -> dict[str, Any]:
     """HU-05: recalcula en servidor y guarda el plan con la RPC transaccional."""
-    previa = vista_previa(usuario, datos)
+    previa = vista_previa(usuario, datos, perfil_fijo=perfil_fijo, composicion=composicion)
     if not previa["puede_confirmar"]:
         mensajes = " ".join(bloqueo["mensaje"] for bloqueo in previa["bloqueos"])
         raise ErrorPlan(
@@ -397,12 +490,13 @@ def crear_plan(
         )
 
     datos = datos if hasattr(datos, "fecha_inicio") else DatosPlanRequest(**dict(datos))
-    perfil = perfil_desde_usuario(usuario)
+    perfil = perfil_fijo or perfil_desde_usuario(usuario)
     inicio = datos.fecha_inicio or date.today()
     N = datos.plazo_dias
     W0 = float(datos.peso_inicial_kg)
-    W_meta = float(datos.peso_objetivo_kg)
-    comp = estimar_grasa(
+    # Con meta en grasa, el peso meta es el que calculó la vista previa.
+    W_meta = float(previa["meta"]["peso_objetivo_kg"])
+    comp = composicion or estimar_grasa(
         perfil,
         W0,
         _float_o_none(datos.cuello_cm),
@@ -422,7 +516,7 @@ def crear_plan(
                 "proteina_g": _r(previa["macros"]["proteina_g"]),
                 "grasa_g": _r(previa["macros"]["grasa_g"]),
                 "carbohidratos_g": _r(previa["macros"]["carbohidratos_g"]),
-                "sexo": usuario["sexo"],
+                "sexo": sexo or usuario["sexo"],
                 "edad_anios": perfil.edad,
                 "altura_cm": _r(perfil.altura_cm, 1),
                 "factor_actividad": _r(perfil.f_act, 3),

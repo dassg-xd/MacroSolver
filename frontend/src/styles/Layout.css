@@ -235,3 +235,35 @@
     padding-top: 22px;
   }
 }
+
+/* Con seis pestañas la barra no cabe en pantallas angostas: la navegación
+   baja a una segunda fila que se desliza de lado. */
+.barra__nav a {
+  white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .barra {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    row-gap: 0;
+    padding-top: 10px;
+  }
+
+  .barra__nav {
+    order: 3;
+    flex: 0 0 100%;
+    gap: 18px;
+    overflow-x: auto;
+    padding-top: 4px;
+    scrollbar-width: none;
+  }
+
+  .barra__nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .barra__nav a {
+    padding: 10px 0;
+  }
+}

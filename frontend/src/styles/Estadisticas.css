@@ -1,0 +1,9 @@
+.estadisticas__grafica {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.tarjeta__nota a {
+  color: #c41e24;
+  font-weight: 700;
+}

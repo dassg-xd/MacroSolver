@@ -141,3 +141,38 @@ def test_crear_plan_guarda_y_devuelve_plan():
     assert repo.plan_guardado["metodo_grasa"] == "marina"
     assert repo.plan_guardado["estado"] == "activo"
     assert plan["dias_restantes"] >= 0
+
+
+# ---------------------------------------------------------------- aviso de masa libre
+def test_aviso_masa_libre_aparece_si_supera_un_tercio():
+    from app.services.plan_service import aviso_masa_libre
+
+    aviso = aviso_masa_libre({"peso_kg": 4.0, "grasa_kg": 2.2, "masa_libre_kg": 1.8})
+    assert aviso is not None
+    assert "2.2 kg serían grasa" in aviso and "45 %" in aviso
+
+
+def test_aviso_masa_libre_no_aparece_si_es_poca():
+    from app.services.plan_service import aviso_masa_libre
+
+    assert aviso_masa_libre({"peso_kg": 6.0, "grasa_kg": 4.5, "masa_libre_kg": 1.5}) is None
+
+
+# ---------------------------------------------------------------- equivalente en grasa
+def test_equivalente_en_grasa():
+    from macrosolver import Composicion, Perfil
+    from app.services.plan_service import equivalente_en_grasa
+
+    comp = Composicion(pct_grasa=19.0, F0=13.3, L0=56.7, metodo="deurenberg")
+    eq = equivalente_en_grasa(comp, Perfil("hombre", 25, 175, 1.55), 4.0)
+    assert eq["grasa_a_perder_kg"] == 4.0
+    assert 62.0 < eq["peso_meta_kg"] < 63.0      # 4 kg de grasa ≈ 7,7 kg de peso
+    assert eq["segura"] is True
+
+
+def test_equivalente_en_grasa_imposible():
+    from macrosolver import Composicion, Perfil
+    from app.services.plan_service import equivalente_en_grasa
+
+    comp = Composicion(pct_grasa=19.0, F0=13.3, L0=56.7, metodo="deurenberg")
+    assert equivalente_en_grasa(comp, Perfil("hombre", 25, 175, 1.55), 15.0) is None
