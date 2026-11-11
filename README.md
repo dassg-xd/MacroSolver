@@ -66,14 +66,17 @@ $$\rho_F \cdot \Delta F + \rho_L \cdot \Delta L = \sum B$$
 | | `POST` | `/plans/preview` | Vista previa, simulación y viabilidad de meta |
 | | `POST` | `/plans` | Confirmación y activación de un plan |
 | | `GET` | `/plans/active` | Obtención del plan actualmente activo |
+| | `GET` | `/plans` | Historial de planes del usuario, del más reciente al más antiguo |
 | **Seguimiento** | `PUT` | `/plans/active/calorias` | Registro diario de calorías (`{fecha, kcal}`; `kcal: null` lo borra) |
 | | `PUT` | `/plans/active/pesos` | Registro diario de peso (`{fecha, peso_kg}`; `null` lo borra) |
 | | `PUT` | `/plans/active/actividades` | Reemplaza las actividades del día (`{fecha, actividades: [{actividad_id, minutos}]}`) |
 | | `GET` | `/actividades` | Catálogo de actividades físicas con su MET |
 | | `GET` | `/plans/active/calendario?mes=AAAA-MM` | Días del mes con estado, registros y cumplimiento (±10 %) |
-| | `GET` | `/plans/active/seguimiento` | Curvas simuladas, tendencia y proyección |
-| | `POST` | `/plans/active/replanear` | Generación de nuevo plan por re-planeación |
-| | `GET` | `/plans/active/estadisticas` | Indicadores de adherencia y variaciones semanales |
+| | `GET` | `/plans/active/seguimiento` | Curva ideal, curva por adherencia, pesos reales, tendencia, llegada estimada y sugerencia de re-planeación |
+| | `POST` | `/plans/active/replanear/preview` | Plan propuesto junto al actual, sin guardar (`{fecha_meta}` opcional para aceptar la fecha viable) |
+| | `POST` | `/plans/active/replanear` | Crea el plan encadenado; el anterior queda inactivo |
+| | `GET` | `/plans/active/estadisticas` | Adherencia, peso promedio y ejercicio por semana (domingo a sábado) |
+| | `GET` | `/guias?comidas=4` | Macros del plan repartidos en 3, 4 o 5 comidas y consejos |
 | | `GET` | `/plans/active/calculo` | Reporte técnico de iteraciones y sensibilidad |
 | **Salud del Sistema**| `GET` | `/health` | Verificación de estado de la API |
 
@@ -86,61 +89,84 @@ $$\rho_F \cdot \Delta F + \rho_L \cdot \Delta L = \sum B$$
 * Python 3.13.17+
 * Node.js 24.19.0+
 
+### Base de datos (Supabase)
+
+En el SQL Editor del proyecto, ejecutar en orden los scripts de `backend/sql`:
+
+1. `01_verificar_esquema-v0.03.sql` (solo lectura: muestra restricciones, índices, triggers y RLS).
+2. `02_corregir_esquema-v0.03.sql`
+3. `03_plan_v0.04.sql` (columnas de composición y la función `crear_plan`).
+4. `04_permitir_plan_inactivo.sql`
+
 ### Configuración del Backend
 
-1. Clonar el repositorio y acceder al directorio del backend:
+1. Entrar a la carpeta del backend y crear el entorno virtual:
    ```bash
    cd backend
-   ```
-
-2. Crear y activar el entorno virtual:
-   ```bash
    python -m venv .venv
    source .venv/bin/activate  # En Windows: .venv\Scripts\activate
-   ```
-
-3. Instalar las dependencias:
-   ```bash
    pip install -r requirements.txt
    ```
 
-4. Configurar las variables de entorno creando un archivo `.env`:
+2. Copiar `backend/.env.example` como `backend/.env` y completar:
    ```env
-   DATABASE_URL=postgresql://usuario:password@localhost:5432/macrosolver
-   JWT_SECRET=tu_clave_secreta
+   SUPABASE_URL=https://TU_PROYECTO.supabase.co
+   SUPABASE_SECRET_KEY=sb_secret_...        # Settings > API Keys > Secret
+   JWT_SECRET=un-texto-de-32-caracteres-o-mas
+   JWT_EXPIRATION_MINUTES=1440
+   CORS_ORIGINS=http://localhost:5173
    ```
 
-5. Iniciar el servidor de desarrollo:
+3. Iniciar el servidor (con el entorno activado, desde `backend/`):
    ```bash
    uvicorn app.main:app --reload
    ```
+   También sirve ejecutar `backend/app/main.py` directamente (botón ▶ de VS Code): arranca
+   uvicorn con el Python de `backend/.venv`.
+
+4. Comprobar: http://127.0.0.1:8000/docs muestra los endpoints y
+   http://127.0.0.1:8000/health responde `"ok": true` si hay conexión con Supabase.
 
 ### Configuración del Frontend
 
-1. Acceder al directorio del frontend:
+1. Copiar `frontend/.env.example` como `frontend/.env`. Sin este archivo el frontend no
+   encuentra el backend:
+   ```env
+   VITE_API_URL=http://localhost:8000
+   ```
+
+2. En otra terminal, instalar las dependencias e iniciar:
    ```bash
    cd frontend
-   ```
-
-2. Instalar las dependencias de Node:
-   ```bash
    npm install
-   ```
-
-3. Iniciar el servidor de desarrollo:
-   ```bash
    npm run dev
    ```
+
+3. Abrir http://localhost:5173. El backend y el frontend deben quedar corriendo a la vez.
 
 ---
 
 ## Ejecución de Pruebas Automáticas
 
-Para validar la convergencia de los métodos numéricos (V1 a V6) y las pruebas de los endpoints:
-
 ```bash
 cd backend
 pytest
+```
+
+Las pruebas no usan la red ni la base de datos:
+
+* **Motor numérico:** validaciones V1 a V8 (orden de Euler frente a RK4, Secante frente a
+  bisección, regresión, conservación de energía, sensibilidad, convención de índices y plazo
+  mínimo), las 6 pruebas de la beta y la relación grasa-peso de Forbes.
+* **API:** sesión, registro, planes, registros diarios, calendario, seguimiento, re-planeación,
+  estadísticas, historial y guía, con repositorios en memoria.
+
+Para revisar el frontend:
+
+```bash
+cd frontend
+npm run build
+npm run lint
 ```
 
 ---
