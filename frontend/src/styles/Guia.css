@@ -1,0 +1,85 @@
+.guia__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.guia__encabezado h2 {
+  margin: 0;
+}
+
+.guia__opciones {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #e3ddd6;
+  border-radius: 10px;
+  background: #f7f5f2;
+}
+
+.guia__opciones button {
+  min-height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #5d5960;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.guia__opciones button.activo {
+  background: #171719;
+  color: #fff;
+}
+
+.guia__nota {
+  margin-top: 12px !important;
+}
+
+.guia__consejos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guia__consejos li {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f7f5f2;
+  color: #3e3a40;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.guia__glosario {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0 0;
+}
+
+.guia__glosario dt {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.guia__glosario dd {
+  margin: 2px 0 0;
+  color: #5d5960;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .guia__consejos {
+    grid-template-columns: 1fr;
+  }
+}
