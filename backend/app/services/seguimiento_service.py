@@ -298,3 +298,45 @@ def historial(usuario: Mapping[str, Any], planes: Any, registros: Any) -> list[d
             "creado_en": plan["creado_en"],
         })
     return resultado
+
+
+# --------------------------------------------------------------------- guía
+# Reglas fijas (HU-15): porcentaje de la ingesta del día en cada comida.
+REPARTO_COMIDAS: dict[int, list[tuple[str, int]]] = {
+    3: [("Desayuno", 30), ("Almuerzo", 40), ("Cena", 30)],
+    4: [("Desayuno", 25), ("Almuerzo", 35), ("Merienda", 15), ("Cena", 25)],
+    5: [("Desayuno", 20), ("Media mañana", 10), ("Almuerzo", 35), ("Merienda", 10), ("Cena", 25)],
+}
+
+CONSEJOS = [
+    "Reparte la proteína en todas las comidas: ayuda a conservar el músculo y da saciedad.",
+    "Planea las comidas del día siguiente; improvisar es lo que más desvía las calorías.",
+    "Registra lo que comes el mismo día. Un día sin registro se simula con la ingesta del plan.",
+    "Pésate en las mismas condiciones (al despertar, después del baño) para que los pesos sean comparables.",
+    "Un día fuera del objetivo no arruina el plan: importa el promedio de la semana.",
+    "Si entrenas fuerza, mantenla durante el déficit: reduce la pérdida de masa libre.",
+]
+
+
+def guia(usuario: Mapping[str, Any], comidas: int, planes: Any) -> dict[str, Any]:
+    """HU-15: macros del plan activo repartidos en 3, 4 o 5 comidas."""
+    if comidas not in REPARTO_COMIDAS:
+        raise ErrorPlan("El número de comidas debe ser 3, 4 o 5.", 422, "comidas_invalidas")
+    plan = registro_service._plan_activo(usuario, planes)
+    ingesta = float(plan["ingesta_kcal"])
+    macros = {k: float(plan[k]) for k in ("proteina_g", "grasa_g", "carbohidratos_g")}
+    return {
+        "comidas": comidas,
+        "ingesta_kcal": _r(ingesta, 0),
+        **{k: _r(v, 0) for k, v in macros.items()},
+        "reparto": [
+            {
+                "nombre": nombre,
+                "porcentaje": pct,
+                "kcal": _r(ingesta * pct / 100, 0),
+                **{k: _r(v * pct / 100, 0) for k, v in macros.items()},
+            }
+            for nombre, pct in REPARTO_COMIDAS[comidas]
+        ],
+        "consejos": CONSEJOS,
+    }

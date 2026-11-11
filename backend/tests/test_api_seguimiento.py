@@ -157,3 +157,37 @@ def test_historial(escenario):
     assert h[0]["plan_previo_id"] == h[1]["id"] == 42
     assert h[1]["ultimo_peso_kg"] == 80.0 and h[1]["cambio_kg"] == 0.0
     assert h[0]["ultimo_peso_kg"] is None
+
+
+# ----------------------------------------------------------------- guía
+@pytest.mark.parametrize("comidas", [3, 4, 5])
+def test_guia_reparte_los_macros(escenario, comidas):
+    planes, _, c = escenario()
+    g = c.get("/guias", params={"comidas": comidas}).json()
+    assert len(g["reparto"]) == comidas
+    assert sum(x["porcentaje"] for x in g["reparto"]) == 100
+    assert sum(x["kcal"] for x in g["reparto"]) == pytest.approx(planes.activo["ingesta_kcal"], abs=comidas)
+    assert sum(x["proteina_g"] for x in g["reparto"]) == pytest.approx(planes.activo["proteina_g"], abs=comidas)
+    assert len(g["consejos"]) >= 4
+
+
+def test_guia_comidas_invalidas(escenario):
+    _, _, c = escenario()
+    assert c.get("/guias", params={"comidas": 6}).status_code == 422
+
+
+# ----------------------------------------------------------------- generales
+def test_sin_token():
+    c = TestClient(app)
+    for ruta in ("/plans/active/seguimiento", "/plans/active/estadisticas", "/plans", "/guias"):
+        assert c.get(ruta).status_code == 401
+    assert c.post("/plans/active/replanear").status_code == 401
+
+
+def test_sin_plan_activo(escenario):
+    planes, _, c = escenario()
+    planes.todos.clear()
+    assert c.get("/plans/active/seguimiento").status_code == 404
+    assert c.get("/plans/active/estadisticas").status_code == 404
+    assert c.get("/guias").status_code == 404
+    assert c.get("/plans").json() == []

@@ -92,3 +92,15 @@ def historial(
 ) -> list[dict[str, Any]]:
     """Planes del usuario, del más reciente al más antiguo."""
     return seguimiento_service.historial(usuario, planes, registros)
+
+
+@router.get("/guias", response_model=GuiaResponse)
+def guia(
+    comidas: int = Query(default=4, description="Número de comidas al día: 3, 4 o 5."),
+    usuario: dict[str, Any] = Depends(obtener_usuario_actual),
+    planes: Any = Depends(obtener_repositorio_planes),
+) -> dict[str, Any]:
+    try:
+        return seguimiento_service.guia(usuario, comidas, planes)
+    except ErrorPlan as error:
+        raise _http_error(error) from error
