@@ -55,3 +55,30 @@ export function numeroDia(fecha: string): number {
 export function formatoKcal(valor: number): string {
     return Math.round(valor).toLocaleString("es-CO");
 }
+
+/** "2027-01-25" → "25 de enero". */
+export function fechaCorta(fecha: string): string {
+    const [, mes, dia] = fecha.slice(0, 10).split("-").map(Number);
+    return `${dia} de ${NOMBRES_MES[mes - 1]}`;
+}
+
+/** "2027-01-25" → "25 ene". */
+export function fechaBreve(fecha: string): string {
+    const [, mes, dia] = fecha.slice(0, 10).split("-").map(Number);
+    return `${dia} ${NOMBRES_MES[mes - 1].slice(0, 3)}`;
+}
+
+/** Número con coma decimal: 80.25 → "80,3". */
+export function num(valor: number, decimales = 1): string {
+    return valor.toLocaleString("es-CO", {
+        minimumFractionDigits: decimales,
+        maximumFractionDigits: decimales,
+    });
+}
+
+/** Cambio con signo: −1,8 / +0,4. */
+export function conSigno(valor: number, decimales = 1): string {
+    const texto = num(Math.abs(valor), decimales);
+    if (Math.abs(valor) < 0.5 * 10 ** -decimales) return texto;
+    return `${valor < 0 ? "−" : "+"}${texto}`;
+}
