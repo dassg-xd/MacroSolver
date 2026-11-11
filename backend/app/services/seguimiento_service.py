@@ -230,3 +230,46 @@ def _copiar_registros(d: DatosSeguimiento, plan_nuevo: int, desde: date, registr
         )
     for fecha, lista in por_fecha.items():
         registros.reemplazar_actividades(plan_nuevo, fecha, lista)
+
+
+# --------------------------------------------------------------------- estadísticas
+def estadisticas(usuario: Mapping[str, Any], planes: Any, registros: Any) -> dict[str, Any]:
+    """HU-20: adherencia, peso promedio y ejercicio por semana (domingo a sábado)."""
+    d = _cargar(usuario, planes, registros)
+    semanas = estadisticas_semanales(
+        d.inicio, d.dia_actual, d.ingesta, d.calorias, d.pesos, d.actividades
+    )
+    registrados = len(d.calorias)
+    cumplidos = sum(
+        1 for k in d.calorias.values() if abs(k - d.ingesta) <= ADHERENCIA_BANDA * d.ingesta
+    )
+    peso_actual = d.pesos[max(d.pesos)]
+    return {
+        "plan_id": d.plan_id,
+        "banda_cumplimiento": ADHERENCIA_BANDA,
+        "resumen": {
+            "dias_transcurridos": d.dia_actual + 1,
+            "dias_registrados": registrados,
+            "dias_cumplidos": cumplidos,
+            "adherencia_pct": _r(100 * cumplidos / registrados, 1) if registrados else None,
+            "promedio_kcal": _r(sum(d.calorias.values()) / registrados, 0) if registrados else None,
+            "objetivo_kcal": _r(d.ingesta, 1),
+            "peso_inicial_kg": _r(d.W0),
+            "peso_actual_kg": _r(peso_actual),
+            "cambio_kg": _r(peso_actual - d.W0),
+            "sesiones": sum(len(a) for a in d.actividades.values()),
+            "minutos": sum(m for a in d.actividades.values() for _, m in a),
+        },
+        "semanas": [
+            {
+                "inicio": s.inicio, "fin": s.fin,
+                "dias_registrados": s.dias_registrados, "dias_cumplidos": s.dias_cumplidos,
+                "adherencia_pct": _r(100 * s.adherencia, 1) if s.adherencia is not None else None,
+                "peso_promedio_kg": _r(s.peso_promedio),
+                "variacion_kg": _r(s.variacion),
+                "sesiones": s.sesiones, "minutos": s.minutos,
+                "kcal_ejercicio": _r(s.kcal_ejercicio, 0), "parcial": s.parcial,
+            }
+            for s in semanas
+        ],
+    }

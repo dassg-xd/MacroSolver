@@ -129,3 +129,19 @@ def test_replanear_con_meta_alcanzada(escenario):
     registros.guardar_peso(42, dias_atras(5), 75.5)
     r = c.post("/plans/active/replanear/preview")
     assert r.status_code == 422 and "meta" in r.json()["detail"]
+
+
+# ----------------------------------------------------------------- estadísticas
+def test_estadisticas(escenario):
+    planes, registros, c = escenario()
+    desviar(planes, registros, 30, kcal=planes.todos[0]["ingesta_kcal"])
+    registros.reemplazar_actividades(42, dias_atras(3), [{"actividad_id": 5, "minutos": 60}])
+    e = c.get("/plans/active/estadisticas").json()
+    res = e["resumen"]
+    assert res["dias_transcurridos"] == 31 and res["dias_registrados"] == 31
+    assert res["adherencia_pct"] == 100.0
+    assert res["cambio_kg"] == 0.0 and res["sesiones"] == 1 and res["minutos"] == 60
+    assert 5 <= len(e["semanas"]) <= 6
+    assert e["semanas"][-1]["parcial"] is True
+    assert sum(s["dias_registrados"] for s in e["semanas"]) == 31
+    assert sum(s["sesiones"] for s in e["semanas"]) == 1

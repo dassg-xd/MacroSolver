@@ -70,3 +70,15 @@ def replanear(
         )
     except ErrorPlan as error:
         raise _http_error(error) from error
+
+
+@router.get("/plans/active/estadisticas", response_model=EstadisticasResponse)
+def estadisticas(
+    usuario: dict[str, Any] = Depends(obtener_usuario_actual),
+    planes: Any = Depends(obtener_repositorio_planes),
+    registros: Any = Depends(obtener_repositorio_registros),
+) -> dict[str, Any]:
+    try:
+        return seguimiento_service.estadisticas(usuario, planes, registros)
+    except ErrorPlan as error:
+        raise _http_error(error) from error
