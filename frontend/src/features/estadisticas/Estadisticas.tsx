@@ -169,16 +169,24 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     <div
                         className="estadisticas__grafica"
                         role="img"
-                        aria-label={`Adherencia semanal calculada sobre días registrados. ${barras.length} semanas con datos.`}
+                        aria-label={`Gráfica de adherencia semanal calculada sobre días registrados. Eje horizontal: semana. Eje vertical: adherencia en porcentaje. ${barras.length} semanas con datos.`}
                     >
                         <ResponsiveContainer width="100%" height={220}>
-                            <BarChart data={barras} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+                            <BarChart data={barras} margin={{ top: 8, right: 8, bottom: 14, left: 0 }}>
                                 <CartesianGrid stroke="#efebe6" vertical={false} />
                                 <XAxis
                                     dataKey="semana"
                                     tick={{ fontSize: 12, fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={{ stroke: "#dcd7d1" }}
+                                    height={38}
+                                    label={{
+                                        value: "Semana",
+                                        position: "insideBottom",
+                                        offset: -8,
+                                        fontSize: 12,
+                                        fill: "#5d5960",
+                                    }}
                                 />
                                 <YAxis
                                     domain={[0, 100]}
@@ -187,7 +195,14 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                     tick={{ fontSize: 12, fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={false}
-                                    width={56}
+                                    width={66}
+                                    label={{
+                                        value: "Adherencia (%)",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fontSize: 12,
+                                        fill: "#5d5960",
+                                    }}
                                 />
                                 <Tooltip
                                     formatter={(valor, _nombre, item) => [
@@ -227,12 +242,12 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                         <div
                             className="estadisticas__grafica estadisticas__grafica--variacion"
                             role="img"
-                            aria-label={`Variación de peso en ${variaciones.length} semanas con observaciones. Los valores negativos indican descenso y los positivos aumento.`}
+                            aria-label={`Gráfica de variación de peso. Eje horizontal: semana. Eje vertical: variación en kilogramos. Los valores negativos indican descenso y los positivos aumento. ${variaciones.length} semanas con observaciones.`}
                         >
                             <ResponsiveContainer width="100%" height={220}>
                                 <BarChart
                                     data={variaciones}
-                                    margin={{ top: 8, right: 8, bottom: 0, left: -18 }}
+                                    margin={{ top: 8, right: 8, bottom: 14, left: 0 }}
                                 >
                                     <CartesianGrid stroke="#efebe6" vertical={false} />
                                     <XAxis
@@ -240,13 +255,28 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                         tick={{ fontSize: 12, fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={{ stroke: "#dcd7d1" }}
+                                        height={38}
+                                        label={{
+                                            value: "Semana",
+                                            position: "insideBottom",
+                                            offset: -8,
+                                            fontSize: 12,
+                                            fill: "#5d5960",
+                                        }}
                                     />
                                     <YAxis
                                         unit=" kg"
                                         tick={{ fontSize: 12, fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={false}
-                                        width={58}
+                                        width={68}
+                                        label={{
+                                            value: "Variación (kg)",
+                                            angle: -90,
+                                            position: "insideLeft",
+                                            fontSize: 12,
+                                            fill: "#5d5960",
+                                        }}
                                     />
                                     <ReferenceLine y={0} stroke="#77737a" />
                                     <Tooltip

@@ -52,9 +52,13 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
     for (let v = minimo; v <= maximo; v += paso) marcas.push(v);
 
     return (
-        <div className="grafica-seguimiento">
+        <div
+            className="grafica-seguimiento"
+            role="img"
+            aria-label="Gráfica de seguimiento del peso. Eje horizontal: día del plan. Eje vertical: peso en kilogramos."
+        >
             <ResponsiveContainer width="100%" height={320}>
-                <ComposedChart data={datos} margin={{ top: 10, right: 16, bottom: 4, left: -12 }}>
+                <ComposedChart data={datos} margin={{ top: 10, right: 16, bottom: 20, left: 0 }}>
                     <CartesianGrid stroke="#efebe6" vertical={false} />
                     <XAxis
                         dataKey="dia"
@@ -64,6 +68,13 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         tick={{ fontSize: 12, fill: "#77737a" }}
                         tickLine={false}
                         axisLine={{ stroke: "#dcd7d1" }}
+                        label={{
+                            value: "Día del plan",
+                            position: "insideBottom",
+                            offset: -10,
+                            fontSize: 12,
+                            fill: "#5d5960",
+                        }}
                     />
                     <YAxis
                         domain={[minimo, maximo]}
@@ -72,7 +83,14 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         tickLine={false}
                         axisLine={false}
                         unit=" kg"
-                        width={62}
+                        width={70}
+                        label={{
+                            value: "Peso (kg)",
+                            angle: -90,
+                            position: "insideLeft",
+                            fontSize: 12,
+                            fill: "#5d5960",
+                        }}
                     />
                     <Tooltip
                         formatter={(valor, nombre, elemento) => [

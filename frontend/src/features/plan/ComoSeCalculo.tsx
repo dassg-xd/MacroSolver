@@ -137,10 +137,10 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                     <div className="como__grafica">
                         <div
                             role="img"
-                            aria-label={`Curva ideal: ${curva.peso_kg[0].toFixed(1)} kg al inicio y ${curva.peso_kg[curva.peso_kg.length - 1].toFixed(1)} kg al final, con bandas de tolerancia.`}
+                            aria-label={`Curva ideal: el eje horizontal muestra el día del plan y el vertical el peso en kilogramos. ${curva.peso_kg[0].toFixed(1)} kg al inicio y ${curva.peso_kg[curva.peso_kg.length - 1].toFixed(1)} kg al final, con bandas de tolerancia.`}
                         >
                             <ResponsiveContainer width="100%" height={290}>
-                            <LineChart data={datos} margin={{ top: 10, right: 12, bottom: 20, left: 8 }}>
+                            <LineChart data={datos} margin={{ top: 10, right: 12, bottom: 22, left: 12 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis
                                     dataKey="dia"
@@ -151,9 +151,22 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                                         value: "Día del plan",
                                         position: "insideBottom",
                                         offset: -12,
+                                        fontSize: 12,
+                                        fill: "#5d5960",
                                     }}
                                 />
-                                <YAxis tick={{ fontSize: 12 }} unit=" kg" width={58} />
+                                <YAxis
+                                    tick={{ fontSize: 12 }}
+                                    unit=" kg"
+                                    width={70}
+                                    label={{
+                                        value: "Peso (kg)",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fontSize: 12,
+                                        fill: "#5d5960",
+                                    }}
+                                />
                                 <Tooltip
                                     contentStyle={{ fontSize: 14 }}
                                     formatter={(valor, nombre) => [
