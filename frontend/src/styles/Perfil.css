@@ -8,7 +8,7 @@
 .perfil__saludo {
   margin: 0;
   color: #c41e24;
-  font-size: 11px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -24,7 +24,7 @@
   max-width: 640px;
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
   line-height: 1.55;
 }
 
@@ -45,7 +45,7 @@
 .perfil__tarjeta label {
   display: block;
   margin: 12px 0 5px;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
 }
 
 .perfil__tarjeta input,
@@ -59,7 +59,7 @@
   background: #fff;
   color: #171719;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--texto-base);
 }
 
 .perfil__tarjeta input[readonly] {
@@ -76,7 +76,7 @@
 .perfil__ayuda {
   margin: 5px 0 0;
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-etiqueta);
 }
 
 .perfil__alerta,
@@ -85,7 +85,7 @@
   margin: 14px 0 0;
   padding: 10px 12px;
   border-radius: 8px;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
 }
 
 .perfil__alerta {
@@ -109,7 +109,7 @@
 .perfil__error-campo {
   margin: 5px 0 0;
   color: #a3161d;
-  font-size: 11px;
+  font-size: var(--texto-etiqueta);
 }
 
 .perfil__tarjeta [aria-invalid="true"] {

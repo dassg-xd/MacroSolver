@@ -11,7 +11,7 @@
   display: inline-block;
   margin-bottom: 12px;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
@@ -25,7 +25,7 @@
 .como-pantalla__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .como {
@@ -43,7 +43,7 @@
 .como__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .como__bloque {
@@ -55,13 +55,13 @@
 
 .como__bloque h3 {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-size: var(--texto-destacado);
 }
 
 .como__bloque p {
   margin: 0 0 8px;
   color: #3a3838;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.55;
 }
 
@@ -76,7 +76,7 @@
 .como__tabla table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
 }
 
 .como__tabla th,
@@ -90,7 +90,7 @@
   color: #77737a;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
 }
 
 .como__grafica {
@@ -100,7 +100,7 @@
 .como__nota {
   margin-top: 6px !important;
   color: #68636a !important;
-  font-size: 11px !important;
+  font-size: var(--texto-secundario) !important;
 }
 
 .como__formulas {
@@ -114,7 +114,7 @@
   min-height: 28px;
   color: #c41e24;
   cursor: pointer;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
 }
 
@@ -125,19 +125,19 @@
 }
 
 .como__formulas dt {
-  font-size: 11px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
 }
 
 .como__formulas dd {
   margin: 3px 0 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
 .como__vacio {
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }

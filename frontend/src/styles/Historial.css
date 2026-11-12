@@ -35,7 +35,7 @@
 
 .historial__datos dt {
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -43,7 +43,7 @@
 
 .historial__datos dd {
   margin: 3px 0 0;
-  font-size: 13px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -60,7 +60,7 @@
   align-items: center;
   min-height: 44px;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }

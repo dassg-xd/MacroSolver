@@ -61,14 +61,14 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         type="number"
                         domain={[0, s.plazo_dias]}
                         tickCount={7}
-                        tick={{ fontSize: 11, fill: "#77737a" }}
+                        tick={{ fontSize: 12, fill: "#77737a" }}
                         tickLine={false}
                         axisLine={{ stroke: "#dcd7d1" }}
                     />
                     <YAxis
                         domain={[minimo, maximo]}
                         ticks={marcas}
-                        tick={{ fontSize: 11, fill: "#77737a" }}
+                        tick={{ fontSize: 12, fill: "#77737a" }}
                         tickLine={false}
                         axisLine={false}
                         unit=" kg"
@@ -82,9 +82,9 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                                 : nombre,
                         ]}
                         labelFormatter={(dia) => `Día ${dia}`}
-                        contentStyle={{ fontSize: 12, borderRadius: 8, borderColor: "#e6e1db" }}
+                        contentStyle={{ fontSize: 14, borderRadius: 8, borderColor: "#e6e1db" }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 11, paddingTop: 8 }} iconSize={10} />
+                    <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} iconSize={10} />
                     <ReferenceLine
                         y={s.peso_objetivo_kg}
                         stroke="#b3afb4"
@@ -92,14 +92,14 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         label={{
                             value: `Meta ${num(s.peso_objetivo_kg)} kg`,
                             position: "insideBottomLeft",
-                            fontSize: 10,
+                            fontSize: 12,
                             fill: "#77737a",
                         }}
                     />
                     <ReferenceLine
                         x={s.dia_actual}
                         stroke="#b3afb4"
-                        label={{ value: "Hoy", position: "insideTopRight", fontSize: 10, fill: "#77737a" }}
+                        label={{ value: "Hoy", position: "insideTopRight", fontSize: 12, fill: "#77737a" }}
                     />
                     <Line
                         name="Curva ideal"

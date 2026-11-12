@@ -18,7 +18,7 @@
 .panel__saludo {
   margin: 0;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -28,7 +28,7 @@
   max-width: 640px;
   margin: 0;
   color: #5d5960;
-  font-size: 13px;
+  font-size: var(--texto-base);
   line-height: 1.55;
 }
 
@@ -59,13 +59,13 @@
   max-width: 560px;
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
   line-height: 1.55;
 }
 
 .panel__etiqueta {
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -80,7 +80,7 @@
   border-radius: 9px;
   background: #c91e27;
   color: #fff;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
@@ -91,7 +91,7 @@
 
 .panel__enlace {
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
@@ -135,13 +135,13 @@
 .panel__pasos p {
   margin: 0 0 10px;
   color: #5d5960;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
 }
 
 .panel__pasos a {
   color: #c41e24;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
@@ -179,7 +179,7 @@
   max-width: 620px;
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
 }
 
@@ -207,7 +207,7 @@
 .panel__macros span {
   display: block;
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
 }
 
 .panel__macros strong {

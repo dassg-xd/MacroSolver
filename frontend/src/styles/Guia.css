@@ -29,7 +29,7 @@
   color: #5d5960;
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
 }
 
@@ -40,7 +40,7 @@
   border-radius: 9px;
   background: #fff;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .guia__opciones button.activo {
@@ -66,7 +66,7 @@
   border-radius: 10px;
   background: #f7f5f2;
   color: #3e3a40;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
 }
 
@@ -77,14 +77,14 @@
 }
 
 .guia__glosario dt {
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
 }
 
 .guia__glosario dd {
   margin: 2px 0 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
 }
 

@@ -26,7 +26,7 @@
 .modal p {
   margin: 0 0 18px;
   color: var(--color-texto-secundario);
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   line-height: 1.5;
 }
 

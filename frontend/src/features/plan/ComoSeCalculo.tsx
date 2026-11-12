@@ -145,6 +145,7 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                                 <XAxis
                                     dataKey="dia"
                                     type="number"
+                                    tick={{ fontSize: 12 }}
                                     tickLine={false}
                                     label={{
                                         value: "Día del plan",
@@ -152,15 +153,16 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                                         offset: -12,
                                     }}
                                 />
-                                <YAxis unit=" kg" width={58} />
+                                <YAxis tick={{ fontSize: 12 }} unit=" kg" width={58} />
                                 <Tooltip
+                                    contentStyle={{ fontSize: 14 }}
                                     formatter={(valor, nombre) => [
                                         `${Number(valor).toFixed(2)} kg`,
                                         nombre,
                                     ]}
                                     labelFormatter={(dia) => `Día ${dia}`}
                                 />
-                                <Legend wrapperStyle={{ fontSize: 11 }} />
+                                <Legend wrapperStyle={{ fontSize: 13 }} />
                                 <Line
                                     type="monotone"
                                     dataKey="bandaSuperior"

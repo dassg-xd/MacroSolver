@@ -176,7 +176,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                 <CartesianGrid stroke="#efebe6" vertical={false} />
                                 <XAxis
                                     dataKey="semana"
-                                    tick={{ fontSize: 10, fill: "#77737a" }}
+                                    tick={{ fontSize: 12, fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={{ stroke: "#dcd7d1" }}
                                 />
@@ -184,7 +184,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                     domain={[0, 100]}
                                     ticks={[0, 50, 100]}
                                     unit=" %"
-                                    tick={{ fontSize: 10, fill: "#77737a" }}
+                                    tick={{ fontSize: 12, fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={false}
                                     width={56}
@@ -194,7 +194,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                         `${num(Number(valor), 0)} % (${item.payload.detalle} días)`,
                                         "Adherencia",
                                     ]}
-                                    contentStyle={{ fontSize: 12, borderRadius: 8, borderColor: "#e6e1db" }}
+                                    contentStyle={{ fontSize: 14, borderRadius: 8, borderColor: "#e6e1db" }}
                                     cursor={{ fill: "#f7f5f2" }}
                                 />
                                 <Bar dataKey="adherencia" radius={[5, 5, 0, 0]} maxBarSize={56} isAnimationActive={false}>
@@ -237,13 +237,13 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                     <CartesianGrid stroke="#efebe6" vertical={false} />
                                     <XAxis
                                         dataKey="semana"
-                                        tick={{ fontSize: 10, fill: "#77737a" }}
+                                        tick={{ fontSize: 12, fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={{ stroke: "#dcd7d1" }}
                                     />
                                     <YAxis
                                         unit=" kg"
-                                        tick={{ fontSize: 10, fill: "#77737a" }}
+                                        tick={{ fontSize: 12, fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={false}
                                         width={58}
@@ -255,7 +255,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                             "Variación semanal",
                                         ]}
                                         contentStyle={{
-                                            fontSize: 12,
+                                            fontSize: 14,
                                             borderRadius: 8,
                                             borderColor: "#e6e1db",
                                         }}

@@ -447,12 +447,16 @@ export default function NuevoPlan() {
                         className="boton boton--primario"
                         disabled={cargando || confirmando}
                     >
-                        {cargando ? "Calculando tu plan..." : "Revisar mi plan"}
+                        {cargando ? "Calculando la vista previa..." : "Ver vista previa del plan"}
                     </button>
                     <Link className="boton boton--secundario " to="/panel">
                         Volver al panel
                     </Link>
                 </div>
+                <p className="nuevo-plan__nota-previa">
+                    Esto calcula la viabilidad de tu meta. El plan solo se guarda
+                    cuando confirmes el resultado.
+                </p>
             </form>}
 
             {error && (

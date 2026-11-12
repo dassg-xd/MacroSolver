@@ -23,7 +23,7 @@
 .pagina__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 13px;
+  font-size: var(--texto-base);
   line-height: 1.5;
 }
 
@@ -37,7 +37,7 @@
   margin: 0;
   padding: 28px 0;
   color: #77737a;
-  font-size: 13px;
+  font-size: var(--texto-secundario);
   text-align: center;
 }
 
@@ -48,7 +48,7 @@
   border-radius: 9px;
   background: #fdf1f1;
   color: #a3161d;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .tarjeta {
@@ -65,14 +65,14 @@
 
 .tarjeta h2 {
   margin: 0 0 6px;
-  font-size: 17px;
+  font-size: var(--texto-destacado);
   letter-spacing: -0.3px;
 }
 
 .tarjeta > p {
   margin: 0 0 14px;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
   line-height: 1.55;
 }
 
@@ -82,7 +82,7 @@
 
 .tarjeta__nota {
   color: #77737a !important;
-  font-size: 11px !important;
+  font-size: var(--texto-secundario) !important;
 }
 
 .kpis {
@@ -105,7 +105,7 @@
 .kpi__etiqueta {
   display: block;
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -122,7 +122,7 @@
 .kpi__valor small {
   margin-left: 4px;
   color: #77737a;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -130,7 +130,7 @@
 .kpi__detalle {
   display: block;
   color: #5d5960;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
   line-height: 1.4;
 }
 
@@ -145,7 +145,7 @@
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .tabla th,
@@ -163,7 +163,7 @@
 
 .tabla th {
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -179,7 +179,7 @@
   border-radius: 999px;
   background: #f1eeea;
   color: #5d5960;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
