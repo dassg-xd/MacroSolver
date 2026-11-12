@@ -35,7 +35,7 @@ export default function Layout() {
 
                 <nav className="barra__nav" aria-label="Navegación principal">
                     <NavLink to="/panel" end>
-                        Panel
+                        Seguimiento
                     </NavLink>
                     <NavLink to="/calendario">Calendario</NavLink>
                     <NavLink to="/estadisticas">Estadísticas</NavLink>

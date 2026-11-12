@@ -99,10 +99,11 @@
 }
 
 .panel__acciones {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 18px;
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px auto 0;
 }
 
 .panel__pasos {
@@ -187,6 +188,16 @@
   line-height: 1.4;
 }
 
+.panel__kpis .kpi {
+  display: flex;
+  min-height: 154px;
+  flex-direction: column;
+}
+
+.panel__kpis .kpi__etiqueta {
+  min-height: 2.4em;
+}
+
 .panel__dos {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -196,22 +207,28 @@
 .panel__macros {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin: 8px 0 14px;
   padding: 0;
   list-style: none;
 }
 
 .panel__macros li {
-  padding: 10px 12px;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 14px;
+  border: 1px solid #eee9e4;
   border-radius: 9px;
   background: #f7f5f2;
 }
 
 .panel__macros span {
   display: block;
-  color: #77737a;
-  font-size: var(--texto-compacto);
+  color: var(--color-primario);
+  font-size: var(--texto-secundario);
+  font-weight: 700;
 }
 
 .panel__macros strong {
@@ -221,16 +238,57 @@
 }
 
 .panel__enlace--boton {
-  padding: 0;
-  border: none;
-  background: none;
   cursor: pointer;
+}
+
+.panel__acciones > .panel__enlace {
+  display: inline-flex;
+  min-width: 0;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 1px solid #e6e1db;
+  border-radius: 9px;
+  background: #f7f5f2;
+  text-align: center;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.panel__acciones > .panel__enlace:hover {
+  border-color: #c41e24;
+  background: #fff;
+}
+
+.panel__acciones > .panel__enlace:focus-visible {
+  outline: 3px solid var(--anillo-foco);
+  outline-offset: 2px;
+}
+
+.panel__acciones > .panel__enlace--boton {
   font-family: inherit;
+  cursor: pointer;
 }
 
 .grafica-seguimiento {
   width: 100%;
   margin: 6px 0 10px;
+}
+
+.grafica-seguimiento--seleccionando {
+  cursor: crosshair;
+  user-select: none;
+}
+
+.grafica-seguimiento__controles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #5d5960;
+  font-size: var(--texto-etiqueta);
 }
 
 /* Modal de re-planeación */
@@ -271,6 +329,12 @@
 
 @media (max-width: 760px) {
   .panel__dos {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .panel__kpis {
     grid-template-columns: 1fr;
   }
 }

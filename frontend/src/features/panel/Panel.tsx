@@ -113,13 +113,14 @@ export default function Panel() {
                 </article>
             )}
 
-            <div className="kpis">
+            <div className="kpis panel__kpis">
                 <article className="kpi">
                     <span className="kpi__etiqueta">Ingesta del plan</span>
                     <span className="kpi__valor">
                         {num(plan.ingesta_kcal, 0)}
-                        <small>kcal/día</small>
+                        <small> kcal/día</small>
                     </span>
+                    <br />
                     <span className="kpi__detalle">
                         {s.hoy.kcal === null
                             ? "Hoy aún no registras calorías"
@@ -130,8 +131,9 @@ export default function Panel() {
                     <span className="kpi__etiqueta">Peso actual</span>
                     <span className="kpi__valor">
                         {num(s.hoy.ultimo_peso_kg)}
-                        <small>kg</small>
+                        <small> kg</small>
                     </span>
+                    <br />
                     <span className="kpi__detalle">
                         {s.pesos.length > 1
                             ? `${conSigno(cambio)} kg desde el inicio`
@@ -141,6 +143,7 @@ export default function Panel() {
                 <article className="kpi">
                     <span className="kpi__etiqueta">Días restantes</span>
                     <span className="kpi__valor">{s.hoy.dias_restantes}</span>
+                    <br/>
                     <span className="kpi__detalle">
                         Hoy el plan espera {num(s.hoy.peso_ideal_kg)} kg
                     </span>
@@ -150,6 +153,7 @@ export default function Panel() {
                     <span className="kpi__valor">
                         {s.llegada.dia !== null ? `Día ${s.llegada.dia}` : "Sin fecha"}
                     </span>
+                    <br />
                     <span className="kpi__detalle">
                         {s.llegada.fecha ? `${fechaCorta(s.llegada.fecha)} · ` : ""}
                         {s.llegada.mensaje}
@@ -159,7 +163,7 @@ export default function Panel() {
 
             <article className="tarjeta">
                 <h2>Peso: plan, adherencia y realidad</h2>
-                <GraficaSeguimiento seguimiento={s} />
+                <GraficaSeguimiento key={s.plan_id} seguimiento={s} />
                 <p className="tarjeta__nota">
                     Los puntos verdes son pesos registrados; los cuadrados marcan días estimados
                     por falta de calorías registradas. La proyección es aproximada.

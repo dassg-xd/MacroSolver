@@ -1,8 +1,10 @@
+import { useRef, useState } from "react";
 import {
     CartesianGrid,
     ComposedChart,
     Legend,
     Line,
+    ReferenceArea,
     ReferenceLine,
     ResponsiveContainer,
     Scatter,
@@ -25,8 +27,65 @@ const COLORES = {
     real: "#1c6b3a",
 };
 
+interface SeleccionRango {
+    inicio: number;
+    fin: number;
+}
+
+function diaActivo(etiqueta: string | number | undefined): number | null {
+    if (etiqueta === undefined) return null;
+    const dia = Number(etiqueta);
+    return Number.isFinite(dia) ? dia : null;
+}
+
 /** Curva ideal, curva por adherencia, pesos reales y tendencia en un solo eje. */
 export default function GraficaSeguimiento({ seguimiento: s }: Props) {
+    const [rangoZoom, setRangoZoom] = useState<[number, number] | null>(null);
+    const [seleccion, setSeleccion] = useState<SeleccionRango | null>(null);
+    const [arrastrando, setArrastrando] = useState(false);
+    const inicioSeleccion = useRef<number | null>(null);
+
+    function iniciarSeleccion(etiqueta: string | number | undefined) {
+        const dia = diaActivo(etiqueta);
+        if (dia === null) return;
+        inicioSeleccion.current = dia;
+        setSeleccion({ inicio: dia, fin: dia });
+        setArrastrando(true);
+    }
+
+    function actualizarSeleccion(etiqueta: string | number | undefined) {
+        const inicio = inicioSeleccion.current;
+        if (inicio === null) return;
+        const dia = diaActivo(etiqueta);
+        if (dia === null) return;
+        setSeleccion((actual) =>
+            actual?.fin === dia
+                ? actual
+                : { inicio, fin: dia },
+        );
+    }
+
+    function cancelarSeleccion() {
+        inicioSeleccion.current = null;
+        setSeleccion(null);
+        setArrastrando(false);
+    }
+
+    function finalizarSeleccion(etiqueta: string | number | undefined) {
+        const inicio = inicioSeleccion.current;
+        const fin = diaActivo(etiqueta) ?? seleccion?.fin ?? inicio;
+
+        if (inicio !== null && fin !== null && Math.abs(fin - inicio) >= 2) {
+            const desde = Math.max(0, Math.min(inicio, fin));
+            const hasta = Math.min(s.plazo_dias, Math.max(inicio, fin));
+            setRangoZoom([desde, hasta]);
+        }
+
+        inicioSeleccion.current = null;
+        setSeleccion(null);
+        setArrastrando(false);
+    }
+
     const reales = new Map(s.pesos.map((p) => [p.dia, p.peso_kg]));
     const datos = s.dias.map((dia) => ({
         dia,
@@ -53,17 +112,39 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
 
     return (
         <div
-            className="grafica-seguimiento"
-            role="img"
-            aria-label="Gráfica de seguimiento del peso. Eje horizontal: día del plan. Eje vertical: peso en kilogramos."
+            className={`grafica-seguimiento${arrastrando ? " grafica-seguimiento--seleccionando" : ""}`}
+            role="group"
+            aria-label="Gráfica interactiva de seguimiento del peso."
         >
-            <ResponsiveContainer width="100%" height={320}>
-                <ComposedChart data={datos} margin={{ top: 10, right: 16, bottom: 20, left: 0 }}>
+            <div className="grafica-seguimiento__controles">
+                <span>
+                    Arrastra sobre la gráfica para ampliar un rango de días.
+                </span>
+                {rangoZoom && (
+                    <button
+                        type="button"
+                        className="boton boton--secundario"
+                        onClick={() => setRangoZoom(null)}
+                    >
+                        Restablecer zoom
+                    </button>
+                )}
+            </div>
+            <ResponsiveContainer width="100%" height={340}>
+                <ComposedChart
+                    data={datos}
+                    margin={{ top: 10, right: 16, bottom: 36, left: 0 }}
+                    onMouseDown={(estado) => iniciarSeleccion(estado.activeLabel)}
+                    onMouseMove={(estado) => actualizarSeleccion(estado.activeLabel)}
+                    onMouseUp={(estado) => finalizarSeleccion(estado.activeLabel)}
+                    onMouseLeave={cancelarSeleccion}
+                >
                     <CartesianGrid stroke="#efebe6" vertical={false} />
                     <XAxis
                         dataKey="dia"
                         type="number"
-                        domain={[0, s.plazo_dias]}
+                        domain={rangoZoom ?? [0, s.plazo_dias]}
+                        allowDataOverflow={rangoZoom !== null}
                         tickCount={7}
                         tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                         tickLine={false}
@@ -92,6 +173,18 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                             fill: "#5d5960",
                         }}
                     />
+                    {arrastrando && seleccion && seleccion.inicio !== seleccion.fin && (
+                        <ReferenceArea
+                            x1={Math.min(seleccion.inicio, seleccion.fin)}
+                            x2={Math.max(seleccion.inicio, seleccion.fin)}
+                            y1={maximo}
+                            y2={minimo}
+                            fill="#c41e24"
+                            fillOpacity={0.14}
+                            stroke="#c41e24"
+                            strokeOpacity={0.5}
+                        />
+                    )}
                     <Tooltip
                         formatter={(valor, nombre, elemento) => [
                             `${num(Number(valor), 2)} kg`,
@@ -100,9 +193,9 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                                 : nombre,
                         ]}
                         labelFormatter={(dia) => `Día ${dia}`}
-                        contentStyle={{ fontSize: "var(--texto-secundario)", borderRadius: 8, borderColor: "#e6e1db" }}
+                        contentStyle={{ fontSize: "var(--texto-secundario)", borderRadius: 8, borderColor: "#e6e1db"}}
                     />
-                    <Legend wrapperStyle={{ fontSize: "var(--texto-secundario)", paddingTop: 8 }} iconSize={10} />
+                    <Legend wrapperStyle={{ fontSize: "var(--texto-secundario)", paddingTop: 28 }} position={"bottom"}  iconSize={10} />
                     <ReferenceLine
                         y={s.peso_objetivo_kg}
                         stroke="#b3afb4"
