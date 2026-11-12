@@ -72,8 +72,30 @@
 
 .guia__glosario {
   display: grid;
-  gap: 10px;
-  margin: 8px 0 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 16px 0 0;
+}
+
+.guia__glosario-grupo {
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 2px solid #f1eeea;
+}
+
+.guia__glosario-grupo h3 {
+  margin: 0 0 12px;
+  color: #c41e24;
+  font-size: var(--texto-etiqueta);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.guia__glosario-grupo dl {
+  display: grid;
+  gap: 14px;
+  margin: 0;
 }
 
 .guia__glosario dt {
@@ -91,5 +113,10 @@
 @media (max-width: 640px) {
   .guia__consejos {
     grid-template-columns: 1fr;
+  }
+
+  .guia__glosario {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }

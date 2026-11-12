@@ -15,14 +15,32 @@ type Carga =
 
 const OPCIONES = [3, 4, 5];
 
-const GLOSARIO: [string, string][] = [
-    ["Ingesta del plan", "Las calorías diarias con las que el modelo llega a tu peso meta en la fecha elegida."],
-    ["Curva ideal", "El peso que tendrías cada día si comieras exactamente la ingesta del plan."],
-    ["Curva por adherencia", "El peso simulado con las calorías que sí registraste. Los días sin registro se simulan con la ingesta del plan y se marcan como estimados."],
-    ["Tendencia", "Una curva ajustada a tus pesos reales que suaviza las subidas y bajadas del día a día."],
-    ["Llegada estimada", "El día en que la curva por adherencia alcanza tu meta si sigues como vas."],
-    ["Re-planeación", "Si tu tendencia se aleja más de 1 kg del plan, la app propone un plan nuevo desde tu peso real. Solo cambia si lo aceptas."],
-    ["Día cumplido", "Un día cuyas calorías quedaron dentro de ±10 % de la ingesta del plan."],
+const GLOSARIO = [
+    {
+        id: "glosario-plan",
+        titulo: "Plan y meta",
+        terminos: [
+            ["Ingesta del plan", "Calorías diarias que el modelo estima para alcanzar tu meta en la fecha elegida."],
+            ["Curva ideal", "Peso estimado cada día si consumes exactamente las calorías del plan."],
+        ],
+    },
+    {
+        id: "glosario-progreso",
+        titulo: "Tu progreso",
+        terminos: [
+            ["Curva por adherencia", "Peso simulado con las calorías que registraste. Los días sin registro usan la ingesta del plan y se marcan como estimados."],
+            ["Tendencia", "Curva de tus pesos registrados que suaviza las subidas y bajadas del día a día."],
+            ["Llegada estimada", "Día en que la curva por adherencia alcanza tu meta si mantienes el ritmo actual."],
+        ],
+    },
+    {
+        id: "glosario-ajustes",
+        titulo: "Cumplimiento y ajustes",
+        terminos: [
+            ["Día cumplido", "Día en que tus calorías quedaron dentro de ±10 % de la ingesta del plan."],
+            ["Re-planeación", "Si tu tendencia se desvía más de 1 kg del plan, se propone un plan nuevo desde tu peso real. Solo cambia si lo aceptas."],
+        ],
+    },
 ];
 
 export default function Guia() {
@@ -199,14 +217,25 @@ export default function Guia() {
 
             <article className="tarjeta">
                 <h2>Qué significa cada número</h2>
-                <dl className="guia__glosario">
-                    {GLOSARIO.map(([termino, definicion]) => (
-                        <div key={termino}>
-                            <dt>{termino}</dt>
-                            <dd>{definicion}</dd>
-                        </div>
+                <div className="guia__glosario">
+                    {GLOSARIO.map(({ id, titulo, terminos }) => (
+                        <section
+                            className="guia__glosario-grupo"
+                            aria-labelledby={id}
+                            key={id}
+                        >
+                            <h3 id={id}>{titulo}</h3>
+                            <dl>
+                                {terminos.map(([termino, definicion]) => (
+                                    <div key={termino}>
+                                        <dt>{termino}</dt>
+                                        <dd>{definicion}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        </section>
                     ))}
-                </dl>
+                </div>
                 <p className="tarjeta__nota guia__nota">
                     Esta guía aplica reglas generales y no reemplaza la asesoría de un profesional
                     de la salud.
