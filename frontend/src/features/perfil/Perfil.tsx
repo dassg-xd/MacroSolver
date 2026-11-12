@@ -1,4 +1,5 @@
-import { useState, type SubmitEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
+import { RotateCcw, Save } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import type { DatosPerfil, UsuarioPublico } from "../../types/auth";
@@ -6,6 +7,9 @@ import { useSesion } from "../auth/SesionContext";
 import "../../styles/Perfil.css";
 
 const FACTORES = ["1.2", "1.375", "1.55", "1.725", "1.9"];
+
+type CampoPerfil = keyof FormularioPerfil;
+type ErroresPerfil = Partial<Record<CampoPerfil, string>>;
 
 interface FormularioPerfil {
     nombre: string;
@@ -50,6 +54,12 @@ export default function Perfil() {
     const [guardando, setGuardando] = useState(false);
     const [error, setError] = useState("");
     const [exito, setExito] = useState("");
+    const [aviso, setAviso] = useState("");
+    const [erroresCampos, setErroresCampos] = useState<ErroresPerfil>({});
+    const nombreRef = useRef<HTMLInputElement>(null);
+    const fechaRef = useRef<HTMLInputElement>(null);
+    const alturaRef = useRef<HTMLInputElement>(null);
+    const factorRef = useRef<HTMLSelectElement>(null);
 
     if (!usuario) {
         return null;
@@ -63,32 +73,52 @@ export default function Perfil() {
         valor: FormularioPerfil[K]
     ) {
         setFormulario((actual) => ({ ...actual, [campo]: valor }));
+        setErroresCampos((actuales) => ({ ...actuales, [campo]: undefined }));
         setError("");
         setExito("");
+        setAviso("");
     }
 
     async function enviar(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (guardando) {
+            return;
+        }
         setError("");
         setExito("");
+        setAviso("");
 
         const nombre = formulario.nombre.trim();
         const altura = Number(formulario.altura_cm);
+        const nuevosErrores: ErroresPerfil = {};
 
         if (!nombre) {
-            setError("Ingresa tu nombre.");
-            return;
+            nuevosErrores.nombre = "Ingresa tu nombre.";
         }
-        if (altura < 100 || altura > 250) {
-            setError("Escribe una altura entre 100 y 250 cm.");
-            return;
+        if (!Number.isFinite(altura) || altura < 100 || altura > 250) {
+            nuevosErrores.altura_cm = "Escribe una altura entre 100 y 250 cm.";
         }
         if (!formulario.fecha_nacimiento || edad === null || edad < 18) {
-            setError("Debes tener al menos 18 años para usar MacroSolver.");
-            return;
+            nuevosErrores.fecha_nacimiento =
+                "Debes tener al menos 18 años para usar MacroSolver.";
         }
         if (!FACTORES.includes(formulario.factor_actividad)) {
-            setError("Elige un factor de actividad válido.");
+            nuevosErrores.factor_actividad =
+                "Elige un factor de actividad válido.";
+        }
+
+        setErroresCampos(nuevosErrores);
+        if (Object.keys(nuevosErrores).length > 0) {
+            setError("Revisa los campos marcados.");
+            if (nuevosErrores.nombre) {
+                nombreRef.current?.focus();
+            } else if (nuevosErrores.fecha_nacimiento) {
+                fechaRef.current?.focus();
+            } else if (nuevosErrores.altura_cm) {
+                alturaRef.current?.focus();
+            } else {
+                factorRef.current?.focus();
+            }
             return;
         }
 
@@ -112,7 +142,7 @@ export default function Perfil() {
         }
 
         if (Object.keys(cambios).length === 0) {
-            setExito("No hay cambios por guardar.");
+            setAviso("No hay cambios por guardar.");
             return;
         }
 
@@ -146,13 +176,23 @@ export default function Perfil() {
                         <label htmlFor="nombre">Nombre</label>
                         <input
                             id="nombre"
+                            ref={nombreRef}
                             value={formulario.nombre}
                             maxLength={150}
                             autoComplete="name"
+                            aria-invalid={Boolean(erroresCampos.nombre)}
+                            aria-describedby={
+                                erroresCampos.nombre ? "perfil-error-nombre" : undefined
+                            }
                             onChange={(evento) =>
                                 cambiar("nombre", evento.target.value)
                             }
                         />
+                        {erroresCampos.nombre && (
+                            <p id="perfil-error-nombre" className="perfil__error-campo">
+                                {erroresCampos.nombre}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label htmlFor="correo">Correo</label>
@@ -181,12 +221,24 @@ export default function Perfil() {
                         <label htmlFor="fechaNacimiento">Fecha de nacimiento</label>
                         <input
                             id="fechaNacimiento"
+                            ref={fechaRef}
                             type="date"
                             value={formulario.fecha_nacimiento}
+                            aria-invalid={Boolean(erroresCampos.fecha_nacimiento)}
+                            aria-describedby={
+                                erroresCampos.fecha_nacimiento
+                                    ? "perfil-error-fecha"
+                                    : undefined
+                            }
                             onChange={(evento) =>
                                 cambiar("fecha_nacimiento", evento.target.value)
                             }
                         />
+                        {erroresCampos.fecha_nacimiento && (
+                            <p id="perfil-error-fecha" className="perfil__error-campo">
+                                {erroresCampos.fecha_nacimiento}
+                            </p>
+                        )}
                         {edad !== null && (
                             <p className="perfil__ayuda">{edad} años</p>
                         )}
@@ -198,22 +250,39 @@ export default function Perfil() {
                         <label htmlFor="altura">Altura (cm)</label>
                         <input
                             id="altura"
+                            ref={alturaRef}
                             type="number"
                             min="100"
                             max="250"
                             step="0.1"
                             inputMode="decimal"
                             value={formulario.altura_cm}
+                            aria-invalid={Boolean(erroresCampos.altura_cm)}
+                            aria-describedby={
+                                erroresCampos.altura_cm ? "perfil-error-altura" : undefined
+                            }
                             onChange={(evento) =>
                                 cambiar("altura_cm", evento.target.value)
                             }
                         />
+                        {erroresCampos.altura_cm && (
+                            <p id="perfil-error-altura" className="perfil__error-campo">
+                                {erroresCampos.altura_cm}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label htmlFor="factorActividad">Nivel de actividad</label>
                         <select
+                            ref={factorRef}
                             id="factorActividad"
                             value={formulario.factor_actividad}
+                            aria-invalid={Boolean(erroresCampos.factor_actividad)}
+                            aria-describedby={
+                                erroresCampos.factor_actividad
+                                    ? "perfil-error-factor"
+                                    : undefined
+                            }
                             onChange={(evento) =>
                                 cambiar("factor_actividad", evento.target.value)
                             }
@@ -224,6 +293,11 @@ export default function Perfil() {
                             <option value="1.725">Activo · 1,725</option>
                             <option value="1.9">Muy activo · 1,9</option>
                         </select>
+                        {erroresCampos.factor_actividad && (
+                            <p id="perfil-error-factor" className="perfil__error-campo">
+                                {erroresCampos.factor_actividad}
+                            </p>
+                        )}
                     </div>
                 </div>
 
@@ -254,6 +328,11 @@ export default function Perfil() {
                         {exito}
                     </p>
                 )}
+                {aviso && (
+                    <p className="perfil__info" role="status">
+                        {aviso}
+                    </p>
+                )}
 
                 <div className="perfil__acciones">
                     <button
@@ -261,11 +340,14 @@ export default function Perfil() {
                         className="boton boton--secundario"
                         onClick={() => {
                             setFormulario(datosDesde(usuario));
+                            setErroresCampos({});
                             setError("");
                             setExito("");
+                            setAviso("");
                         }}
                         disabled={guardando}
                     >
+                        <RotateCcw size={16} aria-hidden="true" />
                         Descartar cambios
                     </button>
                     <button
@@ -273,6 +355,7 @@ export default function Perfil() {
                         className="boton boton--primario"
                         disabled={guardando}
                     >
+                        <Save size={16} aria-hidden="true" />
                         {guardando ? "Guardando..." : "Guardar cambios"}
                     </button>
                 </div>

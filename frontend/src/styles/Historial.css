@@ -7,8 +7,20 @@
   list-style: none;
 }
 
+.historial__titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .historial__plan--activo {
   border-left: 4px solid #1c6b3a;
+}
+
+.historial__plan .etiqueta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .historial__plan header {
@@ -19,6 +31,9 @@
 }
 
 .historial__plan header h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
 }
 
@@ -29,9 +44,13 @@
   margin: 0;
 }
 
+.historial__datos > div {
+  min-width: 0;
+}
+
 .historial__datos dt {
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -39,19 +58,25 @@
 
 .historial__datos dd {
   margin: 3px 0 0;
-  font-size: 13px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .historial__enlaces {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 14px;
 }
 
 .historial__enlaces a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
@@ -59,5 +84,11 @@
 @media (max-width: 640px) {
   .historial__datos {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .historial__datos {
+    grid-template-columns: 1fr;
   }
 }

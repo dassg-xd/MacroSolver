@@ -1,9 +1,21 @@
 import { useState } from "react";
+import { Dumbbell, Plus, Save, Trash2 } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import { BloqueEsqueleto, EstadoEsqueleto } from "../../components/Esqueleto";
 import type { ActividadCatalogo, ActividadDia, DiaCalendario } from "../../types/registro";
 import { formatoKcal, tituloDia } from "./fechas";
 import { guardarActividades, guardarCalorias, guardarPeso } from "./registroService";
+
+export type ResultadoGuardado =
+    | { tipo: "completo"; fecha: string }
+    | {
+          tipo: "parcial";
+          fecha: string;
+          guardadas: number;
+          fallidas: number;
+          mensaje: string;
+      };
 
 interface Props {
     dia: DiaCalendario;
@@ -11,7 +23,8 @@ interface Props {
     banda: number;
     esDiaInicial: boolean;
     catalogo: ActividadCatalogo[];
-    onGuardado: () => void;
+    cargandoCatalogo: boolean;
+    onGuardado: (resultado: ResultadoGuardado) => void;
 }
 
 function aTexto(valor: number | null): string {
@@ -32,7 +45,7 @@ function mismasActividades(a: ActividadDia[], b: ActividadDia[]): boolean {
     );
 }
 
-export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, catalogo, onGuardado }: Props) {
+export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, catalogo, cargandoCatalogo, onGuardado }: Props) {
     const originales: ActividadDia[] = dia.actividades.map((a) => ({
         actividad_id: a.actividad_id,
         minutos: a.minutos,
@@ -90,12 +103,26 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
         setError(null);
         const resultados = await Promise.allSettled(pendientes);
         setGuardando(false);
-        const fallo = resultados.find((r): r is PromiseRejectedResult => r.status === "rejected");
-        if (fallo) {
-            setError(mensajeDeError(fallo.reason));
+        const fallidos = resultados.filter(
+            (resultado): resultado is PromiseRejectedResult =>
+                resultado.status === "rejected",
+        );
+        const guardadas = resultados.length - fallidos.length;
+        if (fallidos.length > 0) {
+            if (guardadas > 0) {
+                onGuardado({
+                    tipo: "parcial",
+                    fecha: dia.fecha,
+                    guardadas,
+                    fallidas: fallidos.length,
+                    mensaje: mensajeDeError(fallidos[0].reason),
+                });
+            } else {
+                setError(`No se guardó ningún cambio. ${mensajeDeError(fallidos[0].reason)}`);
+            }
             return;
         }
-        onGuardado();
+        onGuardado({ tipo: "completo", fecha: dia.fecha });
     }
 
     return (
@@ -133,7 +160,10 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 {esDiaInicial && " El peso del día de inicio es el peso inicial del plan."}
             </p>
 
-            <h3 className="dia__subtitulo">Actividad física</h3>
+            <h3 className="dia__subtitulo">
+                <Dumbbell className="icono-ui" size={17} aria-hidden="true" />
+                Actividad física
+            </h3>
             {actividades.length === 0 ? (
                 <p className="dia__nota">Sin actividades: cuenta como descanso.</p>
             ) : (
@@ -158,7 +188,7 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                                     aria-label={`Quitar ${info?.nombre ?? "actividad"}`}
                                     onClick={() => setActividades((lista) => lista.filter((_, j) => j !== i))}
                                 >
-                                    ×
+                                    <Trash2 size={16} aria-hidden="true" />
                                 </button>
                             </li>
                         );
@@ -167,16 +197,28 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
             )}
 
             <div className="dia__agregar">
-                <label className="dia__campo">
-                    <span>Actividad</span>
-                    <select value={nuevaActividad} onChange={(e) => setNuevaActividad(e.target.value)}>
-                        {catalogo.map((a) => (
-                            <option key={a.id} value={a.id}>
-                                {a.nombre} · {a.tipo === "fuerza" ? "fuerza" : "aeróbico"}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                {cargandoCatalogo ? (
+                    <div className="dia__campo">
+                        <span>Actividad</span>
+                        <EstadoEsqueleto
+                            mensaje="Cargando actividades..."
+                            className="dia__carga-actividad"
+                        >
+                            <BloqueEsqueleto className="esqueleto__campo" />
+                        </EstadoEsqueleto>
+                    </div>
+                ) : (
+                    <label className="dia__campo">
+                        <span>Actividad</span>
+                        <select value={nuevaActividad} onChange={(e) => setNuevaActividad(e.target.value)}>
+                            {catalogo.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                    {a.nombre} · {a.tipo === "fuerza" ? "fuerza" : "aeróbico"}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                )}
                 <label className="dia__campo dia__campo--corto">
                     <span>Minutos</span>
                     <input
@@ -192,7 +234,8 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 disabled={catalogo.length === 0}
                 onClick={agregarActividad}
             >
-                + Agregar actividad
+                <Plus size={16} aria-hidden="true" />
+                Agregar actividad
             </button>
 
             {error && (
@@ -207,6 +250,7 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 disabled={guardando}
                 onClick={guardarDia}
             >
+                <Save size={16} aria-hidden="true" />
                 {guardando ? "Guardando..." : "Guardar día"}
             </button>
             <p className="dia__pie">

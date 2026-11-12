@@ -16,15 +16,16 @@
 
 .pagina__cabecera h1 {
   margin: 0 0 6px;
-  font-size: clamp(26px, 4vw, 36px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1.1px;
 }
 
 .pagina__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .pagina__accion {
@@ -37,7 +38,7 @@
   margin: 0;
   padding: 28px 0;
   color: #77737a;
-  font-size: 13px;
+  font-size: var(--texto-secundario);
   text-align: center;
 }
 
@@ -48,7 +49,7 @@
   border-radius: 9px;
   background: #fdf1f1;
   color: #a3161d;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .tarjeta {
@@ -65,15 +66,16 @@
 
 .tarjeta h2 {
   margin: 0 0 6px;
-  font-size: 17px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.3px;
 }
 
 .tarjeta > p {
   margin: 0 0 14px;
   color: #5d5960;
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .tarjeta > p:last-child {
@@ -82,7 +84,7 @@
 
 .tarjeta__nota {
   color: #77737a !important;
-  font-size: 11px !important;
+  font-size: var(--texto-secundario) !important;
 }
 
 .kpis {
@@ -105,7 +107,7 @@
 .kpi__etiqueta {
   display: block;
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
@@ -114,15 +116,17 @@
 .kpi__valor {
   display: block;
   margin: 6px 0 2px;
-  font-size: 26px;
+  font-size: var(--texto-kpi);
   font-weight: 800;
   letter-spacing: -0.8px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi__valor small {
   margin-left: 4px;
   color: #77737a;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 400;
   letter-spacing: 0;
 }
@@ -130,7 +134,7 @@
 .kpi__detalle {
   display: block;
   color: #5d5960;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
   line-height: 1.4;
 }
 
@@ -145,7 +149,7 @@
 .tabla {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
 }
 
 .tabla th,
@@ -163,7 +167,7 @@
 
 .tabla th {
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -179,7 +183,7 @@
   border-radius: 999px;
   background: #f1eeea;
   color: #5d5960;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -207,6 +211,6 @@
   }
 
   .kpi__valor {
-    font-size: 21px;
+    font-size: var(--texto-kpi);
   }
 }

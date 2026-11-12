@@ -8,7 +8,7 @@
 .perfil__saludo {
   margin: 0;
   color: #c41e24;
-  font-size: 11px;
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -16,7 +16,8 @@
 
 .perfil__cabecera h1 {
   margin: 4px 0 6px;
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1px;
 }
 
@@ -24,8 +25,8 @@
   max-width: 640px;
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .perfil__tarjeta {
@@ -45,7 +46,7 @@
 .perfil__tarjeta label {
   display: block;
   margin: 12px 0 5px;
-  font-size: 11px;
+  font-size: var(--texto-etiqueta);
 }
 
 .perfil__tarjeta input,
@@ -59,7 +60,7 @@
   background: #fff;
   color: #171719;
   font: inherit;
-  font-size: 12px;
+  font-size: var(--texto-base);
 }
 
 .perfil__tarjeta input[readonly] {
@@ -76,15 +77,16 @@
 .perfil__ayuda {
   margin: 5px 0 0;
   color: #77737a;
-  font-size: 10px;
+  font-size: var(--texto-etiqueta);
 }
 
 .perfil__alerta,
-.perfil__exito {
+.perfil__exito,
+.perfil__info {
   margin: 14px 0 0;
   padding: 10px 12px;
   border-radius: 8px;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
 }
 
 .perfil__alerta {
@@ -97,6 +99,22 @@
   border: 1px solid #cfe8d8;
   background: #f1faf4;
   color: #246b3d;
+}
+
+.perfil__info {
+  border: 1px solid #e6e1db;
+  background: #f7f5f2;
+  color: #5d5960;
+}
+
+.perfil__error-campo {
+  margin: 5px 0 0;
+  color: #a3161d;
+  font-size: var(--texto-etiqueta);
+}
+
+.perfil__tarjeta [aria-invalid="true"] {
+  border-color: #a3161d;
 }
 
 .perfil__acciones {

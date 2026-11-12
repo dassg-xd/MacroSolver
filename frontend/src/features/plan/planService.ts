@@ -1,3 +1,5 @@
+import { isAxiosError } from "axios";
+
 import { clienteAxios } from "../../api";
 import type {
     DatosPlan,
@@ -35,8 +37,11 @@ export const obtenerPlanActivo = async (): Promise<PlanActivo | null> => {
     try {
         const response = await clienteAxios.get<PlanActivo>("/plans/active");
         return response.data;
-    } catch {
-        return null;
+    } catch (error: unknown) {
+        if (isAxiosError(error) && error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 };
 
@@ -46,7 +51,10 @@ export const obtenerCalculoActivo = async (): Promise<CalculoPlan | null> => {
             "/plans/active/calculo"
         );
         return response.data;
-    } catch {
-        return null;
+    } catch (error: unknown) {
+        if (isAxiosError(error) && error.response?.status === 404) {
+            return null;
+        }
+        throw error;
     }
 };

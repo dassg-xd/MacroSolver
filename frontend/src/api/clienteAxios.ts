@@ -46,8 +46,6 @@ axiosClient.interceptors.response.use(
                             : 'Tu sesión expiró. Inicia sesión de nuevo.',
                 })
             );
-        } else if (status === 403 && window.location.pathname !== '/no-autorizado') {
-            window.location.href = '/no-autorizado';
         }
         return Promise.reject(error);
     }

@@ -1,8 +1,33 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+    CalendarDays,
+    ChartLine,
+    CircleCheck,
+    Dumbbell,
+    Flame,
+    Plus,
+    Scale,
+} from "lucide-react";
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    ReferenceLine,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoIndicadores,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import type { Estadisticas as DatosEstadisticas, SemanaEstadistica } from "../../types/seguimiento";
 import { conSigno, fechaBreve, num } from "../calendario/fechas";
 import { esSinPlan, obtenerEstadisticas } from "../seguimiento/seguimientoService";
@@ -41,15 +66,39 @@ export default function Estadisticas() {
     }, []);
 
     return (
-        <section className="pagina">
+        <section className="pagina" aria-busy={carga === null}>
             <header className="pagina__cabecera">
                 <div>
-                    <h1>Estadísticas semanales</h1>
+                    <h1 className="estadisticas__titulo">
+                        <ChartLine className="icono-ui" size={21} aria-hidden="true" />
+                        Estadísticas semanales
+                    </h1>
                     <p>Semanas de domingo a sábado. La semana en curso es parcial.</p>
                 </div>
             </header>
 
-            {carga === null && <p className="pagina__estado">Cargando estadísticas...</p>}
+            {carga === null && (
+                <EstadoEsqueleto
+                    mensaje="Cargando estadísticas..."
+                    className="estadisticas__carga"
+                >
+                    <EsqueletoIndicadores />
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <EsqueletoTabla filas={4} />
+                    </article>
+                </EstadoEsqueleto>
+            )}
 
             {carga?.tipo === "error" && (
                 <p className="pagina__error" role="alert">
@@ -62,6 +111,7 @@ export default function Estadisticas() {
                     <h2>Todavía no tienes un plan activo</h2>
                     <p>Las estadísticas se calculan con los registros de tu plan.</p>
                     <Link className="boton boton--primario pagina__accion" to="/nuevo-plan">
+                        <Plus size={17} aria-hidden="true" />
                         Crear mi plan
                     </Link>
                 </article>
@@ -82,18 +132,30 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             ? conVariacion.reduce((suma, s) => suma + (s.variacion_kg ?? 0), 0) / conVariacion.length
             : null;
     const sesionesSemana = semanas.length > 0 ? r.sesiones / semanas.length : 0;
-    const barras = semanas.map((s) => ({
+    const barras = semanas
+        .filter((s) => s.adherencia_pct !== null)
+        .map((s) => ({
         semana: etiquetaSemana(s),
-        adherencia: s.adherencia_pct ?? 0,
+        adherencia: s.adherencia_pct ?? undefined,
         detalle: `${s.dias_cumplidos} de ${s.dias_registrados}`,
         parcial: s.parcial,
-    }));
+        }));
+    const variaciones = semanas
+        .filter((s) => s.variacion_kg !== null)
+        .map((s) => ({
+            semana: etiquetaSemana(s),
+            variacion: s.variacion_kg ?? undefined,
+            parcial: s.parcial,
+        }));
 
     return (
         <>
-            <div className="kpis">
+            <div className="kpis estadisticas__kpis">
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Adherencia acumulada</span>
+                    <span className="kpi__etiqueta">
+                        <CircleCheck className="icono-ui" size={16} aria-hidden="true" />
+                        Adherencia acumulada
+                    </span>
                     <span className="kpi__valor">
                         {r.dias_cumplidos} de {r.dias_registrados}
                     </span>
@@ -103,7 +165,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Promedio de calorías</span>
+                    <span className="kpi__etiqueta">
+                        <Flame className="icono-ui" size={16} aria-hidden="true" />
+                        Promedio de calorías
+                    </span>
                     <span className="kpi__valor">
                         {r.promedio_kcal !== null ? num(r.promedio_kcal, 0) : "—"}
                         <small>kcal</small>
@@ -111,7 +176,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     <span className="kpi__detalle">Objetivo: {num(r.objetivo_kcal, 0)} kcal</span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Cambio de peso</span>
+                    <span className="kpi__etiqueta">
+                        <Scale className="icono-ui" size={16} aria-hidden="true" />
+                        Cambio de peso
+                    </span>
                     <span className="kpi__valor">
                         {conSigno(r.cambio_kg)}
                         <small>kg</small>
@@ -123,7 +191,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Entrenamiento</span>
+                    <span className="kpi__etiqueta">
+                        <Dumbbell className="icono-ui" size={16} aria-hidden="true" />
+                        Entrenamiento
+                    </span>
                     <span className="kpi__valor">
                         {num(sesionesSemana)}
                         <small>sesiones/semana</small>
@@ -135,39 +206,65 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             </div>
 
             <article className="tarjeta">
-                <h2>Adherencia por semana</h2>
-                <p>Porcentaje de días registrados que quedaron dentro de ±{pct} % de la ingesta.</p>
-                {r.dias_registrados === 0 ? (
+                <h2 className="estadisticas__subtitulo">
+                    <CircleCheck className="icono-ui" size={18} aria-hidden="true" />
+                    Adherencia por semana
+                </h2>
+                <p>
+                    Porcentaje de días registrados que quedaron dentro de ±{pct} % de la ingesta.
+                    El denominador excluye los días sin registro.
+                </p>
+                {barras.length === 0 ? (
                     <p className="tarjeta__nota">
-                        Aún no hay calorías registradas. Anótalas en el{" "}
-                        <Link to="/calendario">calendario</Link>.
+                        Aún no hay semanas con calorías registradas. Anótalas en el{" "}
+                        <Link to="/calendario">calendario</Link>; las semanas sin datos no se
+                        representan como 0 %.
                     </p>
                 ) : (
-                    <div className="estadisticas__grafica">
+                    <div
+                        className="estadisticas__grafica"
+                        role="img"
+                        aria-label={`Gráfica de adherencia semanal calculada sobre días registrados. Eje horizontal: semana. Eje vertical: adherencia en porcentaje. ${barras.length} semanas con datos.`}
+                    >
                         <ResponsiveContainer width="100%" height={220}>
-                            <BarChart data={barras} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+                            <BarChart data={barras} margin={{ top: 8, right: 8, bottom: 14, left: 0 }}>
                                 <CartesianGrid stroke="#efebe6" vertical={false} />
                                 <XAxis
                                     dataKey="semana"
-                                    tick={{ fontSize: 10, fill: "#77737a" }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={{ stroke: "#dcd7d1" }}
+                                    height={38}
+                                    label={{
+                                        value: "Semana",
+                                        position: "insideBottom",
+                                        offset: -8,
+                                        fontSize: "var(--texto-eje-titulo)",
+                                        fill: "#5d5960",
+                                    }}
                                 />
                                 <YAxis
                                     domain={[0, 100]}
                                     ticks={[0, 50, 100]}
                                     unit=" %"
-                                    tick={{ fontSize: 10, fill: "#77737a" }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={false}
-                                    width={56}
+                                    width={66}
+                                    label={{
+                                        value: "Adherencia (%)",
+                                        angle: -90,
+                                        position: "insideLeft",
+                                        fontSize: "var(--texto-eje-titulo)",
+                                        fill: "#5d5960",
+                                    }}
                                 />
                                 <Tooltip
                                     formatter={(valor, _nombre, item) => [
                                         `${num(Number(valor), 0)} % (${item.payload.detalle} días)`,
                                         "Adherencia",
                                     ]}
-                                    contentStyle={{ fontSize: 12, borderRadius: 8, borderColor: "#e6e1db" }}
+                                    contentStyle={{ fontSize: "var(--texto-secundario)", borderRadius: 8, borderColor: "#e6e1db" }}
                                     cursor={{ fill: "#f7f5f2" }}
                                 />
                                 <Bar dataKey="adherencia" radius={[5, 5, 0, 0]} maxBarSize={56} isAnimationActive={false}>
@@ -180,13 +277,111 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </div>
                 )}
                 <p className="tarjeta__nota">
-                    * Semana en curso, parcial. La variación de peso usa el promedio de los pesos de
-                    cada semana para amortiguar las fluctuaciones diarias.
+                    * Semana en curso, parcial. La tabla conserva el detalle y muestra “—” cuando
+                    no hay denominador o peso medido.
                 </p>
             </article>
 
             <article className="tarjeta">
-                <h2>Detalle por semana</h2>
+                <h2 className="estadisticas__subtitulo">
+                    <Scale className="icono-ui" size={18} aria-hidden="true" />
+                    Variación semanal del peso
+                </h2>
+                <p>
+                    Cambio entre promedios de peso de semanas consecutivas, en kg. Debajo de cero
+                    indica descenso; por encima, aumento. El dato procede de la respuesta del plan.
+                </p>
+                {variaciones.length === 0 ? (
+                    <p className="tarjeta__nota">
+                        Aún no hay pesos de semanas consecutivas para mostrar una variación.
+                    </p>
+                ) : (
+                    <>
+                        <div
+                            className="estadisticas__grafica estadisticas__grafica--variacion"
+                            role="img"
+                            aria-label={`Gráfica de variación de peso. Eje horizontal: semana. Eje vertical: variación en kilogramos. Los valores negativos indican descenso y los positivos aumento. ${variaciones.length} semanas con observaciones.`}
+                        >
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart
+                                    data={variaciones}
+                                    margin={{ top: 8, right: 8, bottom: 14, left: 0 }}
+                                >
+                                    <CartesianGrid stroke="#efebe6" vertical={false} />
+                                    <XAxis
+                                        dataKey="semana"
+                                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
+                                        tickLine={false}
+                                        axisLine={{ stroke: "#dcd7d1" }}
+                                        height={38}
+                                        label={{
+                                            value: "Semana",
+                                            position: "insideBottom",
+                                            offset: -8,
+                                            fontSize: "var(--texto-eje-titulo)",
+                                            fill: "#5d5960",
+                                        }}
+                                    />
+                                    <YAxis
+                                        unit=" kg"
+                                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        width={68}
+                                        label={{
+                                            value: "Variación (kg)",
+                                            angle: -90,
+                                            position: "insideLeft",
+                                            fontSize: "var(--texto-eje-titulo)",
+                                            fill: "#5d5960",
+                                        }}
+                                    />
+                                    <ReferenceLine y={0} stroke="#77737a" />
+                                    <Tooltip
+                                        formatter={(valor) => [
+                                            `${conSigno(Number(valor), 2)} kg`,
+                                            "Variación semanal",
+                                        ]}
+                                        contentStyle={{
+                                            fontSize: "var(--texto-secundario)",
+                                            borderRadius: 8,
+                                            borderColor: "#e6e1db",
+                                        }}
+                                    />
+                                    <Bar
+                                        dataKey="variacion"
+                                        name="Variación semanal"
+                                        radius={[5, 5, 0, 0]}
+                                        maxBarSize={56}
+                                        isAnimationActive={false}
+                                    >
+                                        {variaciones.map((semana) => (
+                                            <Cell
+                                                key={semana.semana}
+                                                fill={
+                                                    (semana.variacion ?? 0) <= 0
+                                                        ? "#1c6b3a"
+                                                        : "#b8700c"
+                                                }
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <p className="tarjeta__nota">
+                            Se grafica solo cuando existe una variación; las semanas sin peso
+                            permanecen como “—” en la tabla.
+                        </p>
+                    </>
+                )}
+            </article>
+
+            <article className="tarjeta">
+                <h2 className="estadisticas__subtitulo">
+                    <CalendarDays className="icono-ui" size={18} aria-hidden="true" />
+                    Detalle por semana
+                </h2>
                 <div className="tabla-contenedor">
                     <table className="tabla">
                         <thead>

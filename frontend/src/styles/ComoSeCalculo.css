@@ -8,24 +8,30 @@
 }
 
 .como-pantalla__volver {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 12px;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-secundario);
   font-weight: 700;
   text-decoration: none;
 }
 
 .como-pantalla__cabecera h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 6px;
-  font-size: clamp(26px, 4vw, 34px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1px;
 }
 
 .como-pantalla__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
 }
 
 .como {
@@ -36,14 +42,15 @@
 
 .como__cabecera h2 {
   margin: 0 0 4px;
-  font-size: 22px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.5px;
 }
 
 .como__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
 }
 
 .como__bloque {
@@ -55,14 +62,14 @@
 
 .como__bloque h3 {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-size: var(--texto-destacado);
 }
 
 .como__bloque p {
   margin: 0 0 8px;
   color: #3a3838;
-  font-size: 12px;
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .como__bloque:last-child p {
@@ -76,7 +83,7 @@
 .como__tabla table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: var(--texto-secundario);
 }
 
 .como__tabla th,
@@ -90,14 +97,55 @@
   color: #77737a;
   font-weight: 700;
   text-transform: uppercase;
-  font-size: 10px;
+  font-size: var(--texto-compacto);
 }
 
 .como__grafica {
   margin-top: 8px;
 }
 
+.como__nota {
+  margin-top: 6px !important;
+  color: #68636a !important;
+  font-size: var(--texto-secundario) !important;
+  line-height: 1.4;
+}
+
+.como__formulas {
+  padding: 16px 18px;
+  border: 1px solid #e6e1db;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.como__formulas summary {
+  min-height: 28px;
+  color: #c41e24;
+  cursor: pointer;
+  font-size: var(--texto-secundario);
+  font-weight: 700;
+}
+
+.como__formulas dl {
+  display: grid;
+  gap: 12px;
+  margin: 14px 0 0;
+}
+
+.como__formulas dt {
+  font-size: var(--texto-secundario);
+  font-weight: 700;
+}
+
+.como__formulas dd {
+  margin: 3px 0 0;
+  color: #5d5960;
+  font-size: var(--texto-secundario);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
 .como__vacio {
   color: #5d5960;
-  font-size: 12px;
+  font-size: var(--texto-base);
 }

@@ -1,5 +1,6 @@
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, UserPlus } from "lucide-react";
 import logoMacroSolver from "../../assets/componente1.png";
 import { mensajeDeError } from "../../api/mensajeError";
 import { useSesion } from "./SesionContext";
@@ -7,6 +8,9 @@ import type { DatosRegistro } from "../../types/auth";
 import "../../styles/AuthStyles.css";
 
 type ErroresCampos = {
+  nombre?: string;
+  contrasena?: string;
+  confirmacion?: string;
   sexo?: string;
   fecha_nacimiento?: string;
   altura_cm?: string;
@@ -46,6 +50,19 @@ export default function Registro() {
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [registroCompleto, setRegistroCompleto] = useState(false);
+  const encabezadoRef = useRef<HTMLHeadingElement>(null);
+  const nombreRef = useRef<HTMLInputElement>(null);
+  const contrasenaRef = useRef<HTMLInputElement>(null);
+  const confirmacionRef = useRef<HTMLInputElement>(null);
+  const sexoRef = useRef<HTMLSelectElement>(null);
+  const fechaNacimientoRef = useRef<HTMLInputElement>(null);
+  const alturaRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (paso === 2) {
+      encabezadoRef.current?.focus();
+    }
+  }, [paso]);
 
   const cumpleLongitud = contrasena.length >= 8;
   const cumpleLetra = /[a-zA-Z]/.test(contrasena);
@@ -55,29 +72,43 @@ export default function Registro() {
 
   function continuar(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (enviando) {
+      return;
+    }
     setError("");
 
     if (paso === 1) {
       if (!nombre.trim()) {
-        setError("Ingresa tu nombre.");
+        setErroresCampos({ nombre: "Ingresa tu nombre." });
+        setError("");
+        nombreRef.current?.focus();
         return;
       }
 
       if (!cumpleLongitud || !cumpleLetra || !cumpleNumero) {
-        setError("La contraseña todavía no cumple los requisitos.");
+        const mensaje = "La contraseña todavía no cumple los requisitos.";
+        setErroresCampos({ contrasena: mensaje });
+        setError("");
+        contrasenaRef.current?.focus();
         return;
       }
 
       if (new TextEncoder().encode(contrasena).length > 72) {
-        setError("La contraseña no puede superar 72 bytes en UTF-8.");
+        const mensaje = "La contraseña no puede superar 72 bytes en UTF-8.";
+        setErroresCampos({ contrasena: mensaje });
+        setError("");
+        contrasenaRef.current?.focus();
         return;
       }
 
       if (contrasena !== confirmacion) {
-        setError("Las contraseñas no coinciden.");
+        setErroresCampos({ confirmacion: "Las contraseñas no coinciden." });
+        setError("");
+        confirmacionRef.current?.focus();
         return;
       }
 
+      setErroresCampos({});
       setPaso(2);
       return;
     }
@@ -114,6 +145,13 @@ export default function Registro() {
 
     if (Object.keys(nuevosErrores).length > 0) {
       setError("Revisa los campos marcados.");
+      if (nuevosErrores.sexo) {
+        sexoRef.current?.focus();
+      } else if (nuevosErrores.fecha_nacimiento) {
+        fechaNacimientoRef.current?.focus();
+      } else if (nuevosErrores.altura_cm) {
+        alturaRef.current?.focus();
+      }
       return;
     }
 
@@ -186,7 +224,11 @@ export default function Registro() {
       </aside>
 
       <section className="registro__contenido">
-        <form className="registro__tarjeta" onSubmit={continuar}>
+        <form
+          className="registro__tarjeta"
+          onSubmit={continuar}
+          aria-busy={enviando}
+        >
           <div className="registro__progreso">
             <span>
               Paso {paso} de 2 ·{" "}
@@ -208,7 +250,7 @@ export default function Registro() {
             </div>
           ) : (
             <>
-              <h2>
+              <h2 ref={encabezadoRef} tabIndex={-1}>
                 {paso === 1 ? "Crea tu cuenta" : "Datos para el cálculo"}
               </h2>
 
@@ -220,15 +262,31 @@ export default function Registro() {
 
                   <label htmlFor="nombre">Nombre</label>
                   <input
+                    ref={nombreRef}
                     id="nombre"
                     name="nombre"
                     autoComplete="name"
                     maxLength={150}
                     placeholder="Tu nombre"
                     value={nombre}
-                    onChange={(event) => setNombre(event.target.value)}
+                    aria-invalid={Boolean(erroresCampos.nombre)}
+                    aria-describedby={
+                      erroresCampos.nombre ? "error-nombre" : undefined
+                    }
+                    onChange={(event) => {
+                      setNombre(event.target.value);
+                      setErroresCampos((actuales) => ({
+                        ...actuales,
+                        nombre: undefined,
+                      }));
+                    }}
                     required
                   />
+                  {erroresCampos.nombre && (
+                    <p className="registro__error-campo" id="error-nombre">
+                      {erroresCampos.nombre}
+                    </p>
+                  )}
 
                   <label htmlFor="correo">Correo</label>
                   <input
@@ -245,12 +303,25 @@ export default function Registro() {
                   <label htmlFor="contrasena">Contraseña</label>
                   <div className="registro__campo-contrasena">
                     <input
+                      ref={contrasenaRef}
                       id="contrasena"
                       name="contrasena"
                       type={mostrarContrasena ? "text" : "password"}
                       autoComplete="new-password"
                       value={contrasena}
-                      onChange={(event) => setContrasena(event.target.value)}
+                      aria-invalid={Boolean(erroresCampos.contrasena)}
+                      aria-describedby={
+                        erroresCampos.contrasena
+                          ? "error-contrasena"
+                          : undefined
+                      }
+                      onChange={(event) => {
+                        setContrasena(event.target.value);
+                        setErroresCampos((actuales) => ({
+                          ...actuales,
+                          contrasena: undefined,
+                        }));
+                      }}
                       required
                     />
                     <button
@@ -264,14 +335,30 @@ export default function Registro() {
                         setMostrarContrasena((visible) => !visible)
                       }
                     >
-                      {mostrarContrasena ? "Ocultar" : "Ver"}
+                    {mostrarContrasena ? (
+                      <EyeOff size={16} aria-hidden="true" />
+                    ) : (
+                      <Eye size={16} aria-hidden="true" />
+                    )}
                     </button>
                   </div>
+                  {erroresCampos.contrasena && (
+                    <p
+                      className="registro__error-campo"
+                      id="error-contrasena"
+                    >
+                      {erroresCampos.contrasena}
+                    </p>
+                  )}
 
                   <p className="registro__ayuda">
                     La contraseña debe cumplir los requisitos de abajo.
                   </p>
-                  <ul className="registro__requisitos">
+                  <ul
+                    className="registro__requisitos"
+                    aria-live="polite"
+                    aria-atomic="true"
+                  >
                     <li className={cumpleLongitud ? "cumplido" : ""}>
                       {cumpleLongitud ? "✓" : "×"} Al menos 8 caracteres
                     </li>
@@ -286,13 +373,31 @@ export default function Registro() {
                   <label htmlFor="confirmacion">Confirma la contraseña</label>
                   <div className="registro__campo-contrasena">
                     <input
+                      ref={confirmacionRef}
                       id="confirmacion"
                       name="confirmacion"
                       type={mostrarConfirmacion ? "text" : "password"}
                       autoComplete="new-password"
                       placeholder="Escríbela de nuevo"
                       value={confirmacion}
-                      onChange={(event) => setConfirmacion(event.target.value)}
+                      aria-invalid={Boolean(
+                        erroresCampos.confirmacion ||
+                          (confirmacion && !contrasenasCoinciden),
+                      )}
+                      aria-describedby={
+                        erroresCampos.confirmacion
+                          ? "error-confirmacion"
+                          : confirmacion && !contrasenasCoinciden
+                            ? "error-confirmacion-live"
+                            : undefined
+                      }
+                      onChange={(event) => {
+                        setConfirmacion(event.target.value);
+                        setErroresCampos((actuales) => ({
+                          ...actuales,
+                          confirmacion: undefined,
+                        }));
+                      }}
                       required
                     />
                     <button
@@ -306,17 +411,33 @@ export default function Registro() {
                         setMostrarConfirmacion((visible) => !visible)
                       }
                     >
-                      {mostrarConfirmacion ? "Ocultar" : "Ver"}
+                      {mostrarConfirmacion ? (
+                        <EyeOff size={16} aria-hidden="true" />
+                      ) : (
+                        <Eye size={16} aria-hidden="true" />
+                      )}
                     </button>
                   </div>
+                  {erroresCampos.confirmacion && (
+                    <p
+                      className="registro__error-campo"
+                      id="error-confirmacion"
+                    >
+                      {erroresCampos.confirmacion}
+                    </p>
+                  )}
 
                   {confirmacion && !contrasenasCoinciden && (
-                    <p className="registro__error">
+                    <p
+                      className="registro__error"
+                      id="error-confirmacion-live"
+                    >
                       Las contraseñas no coinciden.
                     </p>
                   )}
 
                   <button className="registro__continuar" type="submit">
+                    <ArrowRight size={17} aria-hidden="true" />
                     Continuar
                   </button>
                   <p className="registro__pie">
@@ -339,9 +460,13 @@ export default function Registro() {
 
                   <label htmlFor="sexo">Sexo</label>
                   <select
+                    ref={sexoRef}
                     id="sexo"
                     value={sexo}
                     aria-invalid={Boolean(erroresCampos.sexo)}
+                    aria-describedby={
+                      erroresCampos.sexo ? "error-sexo" : undefined
+                    }
                     onChange={(event) => {
                       setSexo(event.target.value as typeof sexo);
                       setErroresCampos((actuales) => ({
@@ -355,7 +480,7 @@ export default function Registro() {
                     <option value="Femenino">Femenino</option>
                   </select>
                   {erroresCampos.sexo && (
-                    <p className="registro__error-campo" role="alert">
+                    <p className="registro__error-campo" id="error-sexo">
                       {erroresCampos.sexo}
                     </p>
                   )}
@@ -366,10 +491,16 @@ export default function Registro() {
                         Fecha de nacimiento
                       </label>
                       <input
+                        ref={fechaNacimientoRef}
                         id="fechaNacimiento"
                         type="date"
                         value={fechaNacimiento}
                         aria-invalid={Boolean(erroresCampos.fecha_nacimiento)}
+                        aria-describedby={
+                          erroresCampos.fecha_nacimiento
+                            ? "error-fecha-nacimiento"
+                            : undefined
+                        }
                         onChange={(event) => {
                           setFechaNacimiento(event.target.value);
                           setErroresCampos((actuales) => ({
@@ -379,7 +510,10 @@ export default function Registro() {
                         }}
                       />
                       {erroresCampos.fecha_nacimiento && (
-                        <p className="registro__error-campo" role="alert">
+                        <p
+                          className="registro__error-campo"
+                          id="error-fecha-nacimiento"
+                        >
                           {erroresCampos.fecha_nacimiento}
                         </p>
                       )}
@@ -388,6 +522,7 @@ export default function Registro() {
                     <div>
                       <label htmlFor="alturaCm">Altura (cm)</label>
                       <input
+                        ref={alturaRef}
                         id="alturaCm"
                         type="number"
                         min="100"
@@ -397,6 +532,9 @@ export default function Registro() {
                         placeholder="Ej. 176"
                         value={alturaCm}
                         aria-invalid={Boolean(erroresCampos.altura_cm)}
+                        aria-describedby={
+                          erroresCampos.altura_cm ? "error-altura" : undefined
+                        }
                         onChange={(event) => {
                           setAlturaCm(event.target.value);
                           setErroresCampos((actuales) => ({
@@ -406,7 +544,7 @@ export default function Registro() {
                         }}
                       />
                       {erroresCampos.altura_cm && (
-                        <p className="registro__error-campo" role="alert">
+                        <p className="registro__error-campo" id="error-altura">
                           {erroresCampos.altura_cm}
                         </p>
                       )}
@@ -453,6 +591,7 @@ export default function Registro() {
                       onClick={volverAlPasoUno}
                       disabled={enviando}
                     >
+                      <ArrowLeft size={16} aria-hidden="true" />
                       Atrás
                     </button>
                     <button
@@ -460,6 +599,7 @@ export default function Registro() {
                       type="submit"
                       disabled={enviando}
                     >
+                      <UserPlus size={17} aria-hidden="true" />
                       {enviando ? "Creando cuenta..." : "Crear cuenta"}
                     </button>
                   </div>

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
+import { CalendarDays, Check, RefreshCw, X } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
+import Dialogo from "../../components/Dialogo";
 import type { ReplaneacionPrevia } from "../../types/seguimiento";
 import { conSigno, fechaCorta, num } from "../calendario/fechas";
 import { replanear, vistaPreviaReplaneacion } from "./seguimientoService";
@@ -54,17 +61,26 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
     const rep = previa?.replaneacion;
 
     return (
-        <div className="modal-fondo" role="presentation" onClick={onCerrar}>
-            <div
-                className="modal replaneacion"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="titulo-replaneacion"
-                onClick={(evento) => evento.stopPropagation()}
-            >
-                <h2 id="titulo-replaneacion">Re-planear</h2>
+        <Dialogo
+            className="replaneacion"
+            tituloId="titulo-replaneacion"
+            onClose={onCerrar}
+        >
+            <h2 id="titulo-replaneacion" className="replaneacion__titulo">
+                <RefreshCw className="icono-ui" size={19} aria-hidden="true" />
+                Re-planear
+            </h2>
 
-                {cargando && <p>Calculando la propuesta...</p>}
+                {cargando && (
+                    <EstadoEsqueleto
+                        mensaje="Calculando la propuesta..."
+                        className="replaneacion__carga"
+                    >
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__linea esqueleto__linea--ancha" />
+                        <EsqueletoTabla filas={4} columnas={3} />
+                    </EstadoEsqueleto>
+                )}
 
                 {!cargando && carga?.tipo === "error" && (
                     <p className="pagina__error" role="alert">
@@ -92,6 +108,7 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
                                         className="boton boton--secundario"
                                         onClick={() => setFechaMeta(previa.viabilidad.fecha_viable!)}
                                     >
+                                        <CalendarDays size={16} aria-hidden="true" />
                                         Usar el {fechaCorta(previa.viabilidad.fecha_viable)} como nueva fecha
                                     </button>
                                 )}
@@ -159,6 +176,7 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
 
                 <div className="modal__acciones">
                     <button type="button" className="boton boton--secundario" onClick={onCerrar}>
+                        <X size={16} aria-hidden="true" />
                         Cancelar
                     </button>
                     <button
@@ -167,10 +185,10 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
                         disabled={cargando || guardando || !previa?.puede_confirmar}
                         onClick={confirmar}
                     >
+                        <Check size={16} aria-hidden="true" />
                         {guardando ? "Guardando..." : "Aceptar re-planeación"}
                     </button>
                 </div>
-            </div>
-        </div>
+        </Dialogo>
     );
 }

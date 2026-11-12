@@ -1,9 +1,40 @@
-@theme {
-  color-black: #0e0e10;
-  color-red: #e0242b;
-  color-deep-red: #c41e24;
-  color-cream: #f2efea;
-  color-text-grey: #a8a8ae;
+:root {
+  color-scheme: light;
+  --color-fondo: #f7f5f2;
+  --color-superficie: #ffffff;
+  --color-texto: #171719;
+  --color-texto-secundario: #5d5960;
+  --color-texto-sutil: #68636a;
+  --color-borde: #e6e1db;
+  --color-primario: #c41e24;
+  --color-primario-hover: #ad1820;
+  --color-exito: #1c6b3a;
+  --color-fondo-exito: #f1faf4;
+  --color-aviso: #755600;
+  --color-fondo-aviso: #fffaf0;
+  --color-error: #a3161d;
+  --color-fondo-error: #fdf1f1;
+  --anillo-foco: #7f171c;
+  --fuente-interfaz: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --texto-kpi: 2rem;
+  --texto-h1: 1.375rem;
+  --texto-h2: 1.125rem;
+  --texto-base: 1rem;
+  --texto-secundario: 0.875rem;
+  --texto-etiqueta: 0.7rem;
+  --texto-compacto: 0.7rem;
+  --texto-destacado: var(--texto-h2);
+  --texto-eje-titulo: 0.7rem;
+  --texto-eje-marca: 0.625rem;
+  --espacio-1: 4px;
+  --espacio-2: 8px;
+  --espacio-3: 12px;
+  --espacio-4: 16px;
+  --espacio-5: 24px;
+  --espacio-6: 32px;
+  --radio-control: 8px;
+  --radio-tarjeta: 12px;
+  --radio-grande: 16px;
 }
 
 * {
@@ -20,4 +51,51 @@ body,
 
 body {
   min-height: 100vh;
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--fuente-interfaz);
+  font-size: var(--texto-base);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: var(--texto-h1);
+  line-height: 1.15;
+}
+
+h2,
+h3 {
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: var(--texto-h2);
+}
+
+.icono-ui {
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+input,
+select,
+textarea {
+  font-size: var(--texto-base);
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid var(--anillo-foco);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { isAxiosError } from "axios";
 
 import { EVENTO_SESION_EXPIRADA } from "../../api/clienteAxios";
+import { mensajeDeError } from "../../api/mensajeError";
 import type {
     DatosLogin,
     DatosPerfil,
@@ -38,13 +40,18 @@ export function SesionProvider({ children }: { children: ReactNode }) {
                 }
                 guardarUsuario(perfil);
                 setUsuario(perfil);
+                setAvisoSesion("");
             })
-            .catch(() => {
+            .catch((error: unknown) => {
                 if (!vigente) {
                     return;
                 }
-                limpiarSesion();
                 setUsuario(null);
+                if (isAxiosError(error) && error.response?.status === 401) {
+                    limpiarSesion();
+                    return;
+                }
+                setAvisoSesion(mensajeDeError(error));
             })
             .finally(() => {
                 if (vigente) {

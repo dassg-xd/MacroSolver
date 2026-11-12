@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { LayoutDashboard, Plus } from "lucide-react";
 
 import { useSesion } from "../auth/SesionContext";
 import "../../styles/Panel.css";
@@ -29,9 +30,11 @@ export default function Bienvenida() {
                 </p>
                 <div className="panel__acciones">
                     <Link className="panel__cta" to="/nuevo-plan">
+                        <Plus size={17} aria-hidden="true" />
                         Crear mi plan
                     </Link>
                     <Link className="panel__enlace" to="/panel">
+                        <LayoutDashboard size={16} aria-hidden="true" />
                         Ir al panel
                     </Link>
                 </div>
