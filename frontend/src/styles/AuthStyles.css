@@ -72,7 +72,7 @@
 }
 
 .registro__tarjeta {
-  width: min(100%, 390px);
+  width: min(100%, 440px);
   padding: 28px 30px;
   box-sizing: border-box;
   border: 1px solid #e8e4df;
@@ -343,10 +343,6 @@
     grid-template-columns: 1fr;
     gap: 0;
   }
-}
-
-.login__tarjeta {
-  width: min(100%, 340px);
 }
 
 .login__tarjeta h2 {
