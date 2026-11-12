@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import logoMacroSolver from "../assets/componente1.png";
+import Dialogo from "./Dialogo";
 import { useSesion } from "../features/auth/SesionContext";
 import "../styles/Layout.css";
 
@@ -10,6 +11,7 @@ export default function Layout() {
     const navegar = useNavigate();
     const [menuAbierto, setMenuAbierto] = useState(false);
     const [cerrandoSesion, setCerrandoSesion] = useState(false);
+    const cuentaBotonRef = useRef<HTMLButtonElement>(null);
 
     const nombre = usuario?.nombre ?? "";
 
@@ -41,12 +43,22 @@ export default function Layout() {
                     <NavLink to="/nuevo-plan">Nuevo plan</NavLink>
                 </nav>
 
-                <div className="barra__cuenta">
+                <div
+                    className="barra__cuenta"
+                    onKeyDown={(evento) => {
+                        if (evento.key === "Escape" && menuAbierto) {
+                            setMenuAbierto(false);
+                            cuentaBotonRef.current?.focus();
+                        }
+                    }}
+                >
                     <button
+                        ref={cuentaBotonRef}
                         type="button"
                         className="barra__chip"
                         aria-expanded={menuAbierto}
-                        aria-haspopup="menu"
+                        aria-controls="menu-cuenta"
+                        aria-label={`Menú de cuenta${nombre ? ` de ${nombre}` : ""}`}
                         onClick={() => setMenuAbierto((abierto) => !abierto)}
                     >
                         <span className="barra__inicial" aria-hidden="true">
@@ -55,27 +67,28 @@ export default function Layout() {
                         <span>{nombre}</span>
                     </button>
 
-                    {menuAbierto && (
-                        <div className="barra__menu" role="menu">
-                            <NavLink
-                                to="/perfil"
-                                role="menuitem"
-                                onClick={() => setMenuAbierto(false)}
-                            >
-                                Mi perfil
-                            </NavLink>
-                            <button
-                                type="button"
-                                role="menuitem"
-                                onClick={() => {
-                                    setMenuAbierto(false);
-                                    setCerrandoSesion(true);
-                                }}
-                            >
-                                Cerrar sesión
-                            </button>
-                        </div>
-                    )}
+                    <nav
+                        id="menu-cuenta"
+                        className="barra__menu"
+                        aria-label="Opciones de cuenta"
+                        hidden={!menuAbierto}
+                    >
+                        <NavLink
+                            to="/perfil"
+                            onClick={() => setMenuAbierto(false)}
+                        >
+                            Mi perfil
+                        </NavLink>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setMenuAbierto(false);
+                                setCerrandoSesion(true);
+                            }}
+                        >
+                            Cerrar sesión
+                        </button>
+                    </nav>
                 </div>
             </header>
 
@@ -91,41 +104,33 @@ export default function Layout() {
             </footer>
 
             {cerrandoSesion && (
-                <div
-                    className="modal-fondo"
-                    role="presentation"
-                    onClick={() => setCerrandoSesion(false)}
+                <Dialogo
+                    tituloId="titulo-cerrar-sesion"
+                    onClose={() => setCerrandoSesion(false)}
+                    returnFocusRef={cuentaBotonRef}
                 >
-                    <div
-                        className="modal"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="titulo-cerrar-sesion"
-                        onClick={(evento) => evento.stopPropagation()}
-                    >
-                        <h2 id="titulo-cerrar-sesion">¿Cerrar sesión?</h2>
-                        <p>
-                            Tendrás que volver a iniciar sesión para ver tu plan y
-                            tus registros.
-                        </p>
-                        <div className="modal__acciones">
-                            <button
-                                type="button"
-                                className="boton boton--secundario"
-                                onClick={() => setCerrandoSesion(false)}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                type="button"
-                                className="boton boton--peligro"
-                                onClick={confirmarCierre}
-                            >
-                                Cerrar sesión
-                            </button>
-                        </div>
+                    <h2 id="titulo-cerrar-sesion">¿Cerrar sesión?</h2>
+                    <p>
+                        Tendrás que volver a iniciar sesión para ver tu plan y
+                        tus registros.
+                    </p>
+                    <div className="modal__acciones">
+                        <button
+                            type="button"
+                            className="boton boton--secundario"
+                            onClick={() => setCerrandoSesion(false)}
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            type="button"
+                            className="boton boton--peligro"
+                            onClick={confirmarCierre}
+                        >
+                            Cerrar sesión
+                        </button>
                     </div>
-                </div>
+                </Dialogo>
             )}
         </div>
     );

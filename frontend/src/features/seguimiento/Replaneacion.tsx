@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import Dialogo from "../../components/Dialogo";
 import type { ReplaneacionPrevia } from "../../types/seguimiento";
 import { conSigno, fechaCorta, num } from "../calendario/fechas";
 import { replanear, vistaPreviaReplaneacion } from "./seguimientoService";
@@ -54,15 +55,12 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
     const rep = previa?.replaneacion;
 
     return (
-        <div className="modal-fondo" role="presentation" onClick={onCerrar}>
-            <div
-                className="modal replaneacion"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="titulo-replaneacion"
-                onClick={(evento) => evento.stopPropagation()}
-            >
-                <h2 id="titulo-replaneacion">Re-planear</h2>
+        <Dialogo
+            className="replaneacion"
+            tituloId="titulo-replaneacion"
+            onClose={onCerrar}
+        >
+            <h2 id="titulo-replaneacion">Re-planear</h2>
 
                 {cargando && <p>Calculando la propuesta...</p>}
 
@@ -170,7 +168,6 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
                         {guardando ? "Guardando..." : "Aceptar re-planeación"}
                     </button>
                 </div>
-            </div>
-        </div>
+        </Dialogo>
     );
 }
