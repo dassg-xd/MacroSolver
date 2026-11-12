@@ -13,6 +13,12 @@ import {
 } from "recharts";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoIndicadores,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import type { Estadisticas as DatosEstadisticas, SemanaEstadistica } from "../../types/seguimiento";
 import { conSigno, fechaBreve, num } from "../calendario/fechas";
 import { esSinPlan, obtenerEstadisticas } from "../seguimiento/seguimientoService";
@@ -51,7 +57,7 @@ export default function Estadisticas() {
     }, []);
 
     return (
-        <section className="pagina">
+        <section className="pagina" aria-busy={carga === null}>
             <header className="pagina__cabecera">
                 <div>
                     <h1>Estadísticas semanales</h1>
@@ -59,7 +65,28 @@ export default function Estadisticas() {
                 </div>
             </header>
 
-            {carga === null && <p className="pagina__estado">Cargando estadísticas...</p>}
+            {carga === null && (
+                <EstadoEsqueleto
+                    mensaje="Cargando estadísticas..."
+                    className="estadisticas__carga"
+                >
+                    <EsqueletoIndicadores />
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <EsqueletoTabla filas={4} />
+                    </article>
+                </EstadoEsqueleto>
+            )}
 
             {carga?.tipo === "error" && (
                 <p className="pagina__error" role="alert">

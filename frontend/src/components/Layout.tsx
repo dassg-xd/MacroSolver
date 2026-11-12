@@ -2,7 +2,7 @@ import { Suspense, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import logoMacroSolver from "../assets/componente1.png";
-import EstadoPantalla from "./EstadoPantalla";
+import EsqueletoPagina from "./Esqueleto";
 import Dialogo from "./Dialogo";
 import { useSesion } from "../features/auth/SesionContext";
 import "../styles/Layout.css";
@@ -96,10 +96,7 @@ export default function Layout() {
             <main className="app__contenido">
                 <Suspense
                     fallback={
-                        <EstadoPantalla
-                            tipo="cargando"
-                            titulo="Cargando la pantalla..."
-                        />
+                        <EsqueletoPagina mensaje="Cargando la pantalla..." />
                     }
                 >
                     <Outlet />

@@ -214,6 +214,10 @@
   animation: nuevo-plan-aparecer 220ms ease-out;
 }
 
+.nuevo-plan__carga-previa {
+  margin-top: 16px;
+}
+
 .nuevo-plan__resumen {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, 0.9fr);

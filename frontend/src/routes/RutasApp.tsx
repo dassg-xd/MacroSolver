@@ -1,7 +1,7 @@
 import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 
-import EstadoPantalla from "../components/EstadoPantalla";
+import EsqueletoPagina from "../components/Esqueleto";
 import { RutaProtegida, RutaPublica } from "./RutaProtegida";
 
 const Layout = lazy(() => import("../components/Layout"));
@@ -18,12 +18,18 @@ const PantallaCalculo = lazy(() => import("../features/plan/PantallaCalculo"));
 const Perfil = lazy(() => import("../features/perfil/Perfil"));
 
 export function RutasApp() {
+    const { pathname } = useLocation();
+    const tipoEsqueleto =
+        pathname === "/login" || pathname === "/registro"
+            ? "autenticacion"
+            : "pagina";
+
     return (
         <Suspense
             fallback={
-                <EstadoPantalla
-                    tipo="cargando"
-                    titulo="Cargando la pantalla..."
+                <EsqueletoPagina
+                    tipo={tipoEsqueleto}
+                    mensaje="Cargando la pantalla..."
                 />
             }
         >

@@ -4,6 +4,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSesion } from "../auth/SesionContext";
 import { vistaPreviaPlan, confirmarPlan } from "./planService";
 import type { VistaPreviaPlan, DatosPlan, TipoMeta } from "../../types/plan";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoIndicadores,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import ComoSeCalculo from "./ComoSeCalculo";
 import { mensajeDeError } from "../../api/mensajeError";
 import "../../styles/NuevoPlan.css";
@@ -260,7 +266,13 @@ export default function NuevoPlan() {
                 </p>
             </header>
 
-            {!previa?.puede_confirmar && <form className="nuevo-plan__formulario" onSubmit={enviar} noValidate>
+            {!previa?.puede_confirmar && (
+                <form
+                    className="nuevo-plan__formulario"
+                    onSubmit={enviar}
+                    noValidate
+                    aria-busy={cargando}
+                >
                 <section className="nuevo-plan__grupo" aria-labelledby="nuevo-plan-meta">
                     <div className="nuevo-plan__grupo-cabecera">
                         <span className="nuevo-plan__paso">01</span>
@@ -457,7 +469,25 @@ export default function NuevoPlan() {
                     Esto calcula la viabilidad de tu meta. El plan solo se guarda
                     cuando confirmes el resultado.
                 </p>
-            </form>}
+                </form>
+            )}
+
+            {cargando && (
+                <EstadoEsqueleto
+                    mensaje="Calculando la vista previa de tu plan..."
+                    className="nuevo-plan__carga-previa"
+                >
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <EsqueletoTabla filas={3} columnas={2} />
+                    </article>
+                    <EsqueletoIndicadores cantidad={3} />
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                </EstadoEsqueleto>
+            )}
 
             {error && (
                 <p className="nuevo-plan__error" role="alert">

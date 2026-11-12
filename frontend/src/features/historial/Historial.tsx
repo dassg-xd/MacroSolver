@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import EstadoPantalla from "../../components/EstadoPantalla";
 import type { PlanHistorial } from "../../types/seguimiento";
 import { conSigno, fechaCorta, num } from "../calendario/fechas";
@@ -34,7 +39,7 @@ export default function Historial() {
     }, [intento]);
 
     return (
-        <section className="pagina">
+        <section className="pagina" aria-busy={carga === null}>
             <header className="pagina__cabecera">
                 <div>
                     <h1>Historial de planes</h1>
@@ -46,10 +51,18 @@ export default function Historial() {
             </header>
 
             {carga === null && (
-                <EstadoPantalla
-                    tipo="cargando"
-                    titulo="Cargando tus planes..."
-                />
+                <EstadoEsqueleto
+                    mensaje="Cargando tus planes..."
+                    className="historial__carga"
+                >
+                    {Array.from({ length: 3 }, (_, indice) => (
+                        <article className="esqueleto__tarjeta" key={indice}>
+                            <BloqueEsqueleto className="esqueleto__subtitulo" />
+                            <BloqueEsqueleto className="esqueleto__linea" />
+                            <EsqueletoTabla filas={2} />
+                        </article>
+                    ))}
+                </EstadoEsqueleto>
             )}
 
             {carga?.tipo === "error" && (

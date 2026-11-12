@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import Dialogo from "../../components/Dialogo";
 import type { ReplaneacionPrevia } from "../../types/seguimiento";
 import { conSigno, fechaCorta, num } from "../calendario/fechas";
@@ -62,7 +67,16 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
         >
             <h2 id="titulo-replaneacion">Re-planear</h2>
 
-                {cargando && <p>Calculando la propuesta...</p>}
+                {cargando && (
+                    <EstadoEsqueleto
+                        mensaje="Calculando la propuesta..."
+                        className="replaneacion__carga"
+                    >
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__linea esqueleto__linea--ancha" />
+                        <EsqueletoTabla filas={4} columnas={3} />
+                    </EstadoEsqueleto>
+                )}
 
                 {!cargando && carga?.tipo === "error" && (
                     <p className="pagina__error" role="alert">

@@ -4,6 +4,10 @@ import { Link } from "react-router-dom";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import type { ActividadCatalogo, Calendario as DatosCalendario, DiaCalendario } from "../../types/registro";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+} from "../../components/Esqueleto";
 import EstadoPantalla from "../../components/EstadoPantalla";
 import "../../styles/Calendario.css";
 import {
@@ -193,14 +197,12 @@ export default function Calendario() {
     }
 
     return (
-        <section className="calendario">
+        <section
+            className="calendario"
+            aria-busy={cargando}
+        >
             <Cabecera />
 
-            {cargaCatalogo.tipo === "cargando" && (
-                <p className="calendario__cargando" role="status">
-                    Cargando actividades...
-                </p>
-            )}
             {cargaCatalogo.tipo === "error" && (
                 <EstadoPantalla
                     tipo="error"
@@ -253,7 +255,7 @@ export default function Calendario() {
                 )}
 
             <div className="calendario__cuerpo">
-                <article className={`calendario__mes${cargando ? " calendario__mes--cargando" : ""}`}>
+                <article className={`calendario__mes${cargando && datos ? " calendario__mes--cargando" : ""}`}>
                     <header className="calendario__navegacion">
                         <button
                             type="button"
@@ -288,7 +290,21 @@ export default function Calendario() {
                         ))}
                     </div>
 
-                    {!datos && cargando && <p className="calendario__cargando">Cargando el mes...</p>}
+                    {!datos && cargando && (
+                        <EstadoEsqueleto
+                            mensaje="Cargando el mes..."
+                            className="calendario__carga-mes"
+                        >
+                            <div className="esqueleto__calendario">
+                                {Array.from({ length: 35 }, (_, indice) => (
+                                    <BloqueEsqueleto
+                                        className="esqueleto__dia"
+                                        key={indice}
+                                    />
+                                ))}
+                            </div>
+                        </EstadoEsqueleto>
+                    )}
 
                     {datos && (
                         <div
@@ -382,6 +398,7 @@ export default function Calendario() {
                         banda={datos.banda_cumplimiento}
                         esDiaInicial={diaSeleccionado.fecha === datos.fecha_inicio}
                         catalogo={catalogo}
+                        cargandoCatalogo={cargaCatalogo.tipo === "cargando"}
                         onGuardado={(resultado) => {
                             setResultadoGuardado(resultado);
                             setVersion((actual) => actual + 1);
@@ -392,6 +409,16 @@ export default function Calendario() {
                 {datos && !diaSeleccionado && (
                     <aside className="dia dia--vacio">
                         <p>Elige un día del plan, hasta hoy, para ver o editar su registro.</p>
+                    </aside>
+                )}
+
+                {!datos && cargando && (
+                    <aside className="dia calendario__panel-esqueleto" aria-hidden="true">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__campo" />
+                        <BloqueEsqueleto className="esqueleto__campo" />
+                        <BloqueEsqueleto className="esqueleto__boton" />
                     </aside>
                 )}
             </div>

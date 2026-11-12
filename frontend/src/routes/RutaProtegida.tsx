@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import type { ReactNode } from "react";
 
+import EsqueletoPagina from "../components/Esqueleto";
 import { useSesion } from "../features/auth/SesionContext";
 
 export function RutaProtegida({ children }: { children: ReactNode }) {
@@ -8,11 +9,7 @@ export function RutaProtegida({ children }: { children: ReactNode }) {
     const ubicacion = useLocation();
 
     if (cargando) {
-        return (
-            <p className="cargando-pantalla" role="status">
-                Cargando tu sesión...
-            </p>
-        );
+        return <EsqueletoPagina mensaje="Cargando tu sesión..." />;
     }
 
     if (!usuario) {
@@ -36,9 +33,10 @@ export function RutaPublica({ children }: { children: ReactNode }) {
 
     if (cargando) {
         return (
-            <p className="cargando-pantalla" role="status">
-                Cargando tu sesión...
-            </p>
+            <EsqueletoPagina
+                tipo="autenticacion"
+                mensaje="Cargando tu sesión..."
+            />
         );
     }
 

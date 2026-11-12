@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import EsqueletoPagina from "../../components/Esqueleto";
 import { useSesion } from "../auth/SesionContext";
 import { conSigno, fechaCorta, num, tituloDia } from "../calendario/fechas";
 import { obtenerPlanActivo } from "../plan/planService";
@@ -50,11 +51,7 @@ export default function Panel() {
     }, [version]);
 
     if (carga === null) {
-        return (
-            <section className="pagina">
-                <p className="pagina__estado">Cargando tu plan...</p>
-            </section>
-        );
+        return <EsqueletoPagina tipo="panel" mensaje="Cargando tu plan..." />;
     }
 
     if (carga.tipo === "error") {

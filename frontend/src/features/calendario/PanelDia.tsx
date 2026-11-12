@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import { BloqueEsqueleto, EstadoEsqueleto } from "../../components/Esqueleto";
 import type { ActividadCatalogo, ActividadDia, DiaCalendario } from "../../types/registro";
 import { formatoKcal, tituloDia } from "./fechas";
 import { guardarActividades, guardarCalorias, guardarPeso } from "./registroService";
@@ -21,6 +22,7 @@ interface Props {
     banda: number;
     esDiaInicial: boolean;
     catalogo: ActividadCatalogo[];
+    cargandoCatalogo: boolean;
     onGuardado: (resultado: ResultadoGuardado) => void;
 }
 
@@ -42,7 +44,7 @@ function mismasActividades(a: ActividadDia[], b: ActividadDia[]): boolean {
     );
 }
 
-export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, catalogo, onGuardado }: Props) {
+export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, catalogo, cargandoCatalogo, onGuardado }: Props) {
     const originales: ActividadDia[] = dia.actividades.map((a) => ({
         actividad_id: a.actividad_id,
         minutos: a.minutos,
@@ -191,16 +193,28 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
             )}
 
             <div className="dia__agregar">
-                <label className="dia__campo">
-                    <span>Actividad</span>
-                    <select value={nuevaActividad} onChange={(e) => setNuevaActividad(e.target.value)}>
-                        {catalogo.map((a) => (
-                            <option key={a.id} value={a.id}>
-                                {a.nombre} · {a.tipo === "fuerza" ? "fuerza" : "aeróbico"}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                {cargandoCatalogo ? (
+                    <div className="dia__campo">
+                        <span>Actividad</span>
+                        <EstadoEsqueleto
+                            mensaje="Cargando actividades..."
+                            className="dia__carga-actividad"
+                        >
+                            <BloqueEsqueleto className="esqueleto__campo" />
+                        </EstadoEsqueleto>
+                    </div>
+                ) : (
+                    <label className="dia__campo">
+                        <span>Actividad</span>
+                        <select value={nuevaActividad} onChange={(e) => setNuevaActividad(e.target.value)}>
+                            {catalogo.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                    {a.nombre} · {a.tipo === "fuerza" ? "fuerza" : "aeróbico"}
+                                </option>
+                            ))}
+                        </select>
+                    </label>
+                )}
                 <label className="dia__campo dia__campo--corto">
                     <span>Minutos</span>
                     <input

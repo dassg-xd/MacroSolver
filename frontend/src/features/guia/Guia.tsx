@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+    EsqueletoIndicadores,
+    EsqueletoTabla,
+} from "../../components/Esqueleto";
 import type { Guia as DatosGuia } from "../../types/seguimiento";
 import { num } from "../calendario/fechas";
 import { esSinPlan, obtenerGuia } from "../seguimiento/seguimientoService";
@@ -79,9 +85,21 @@ export default function Guia() {
             </header>
 
             {cargaActual === null && (
-                <p className="guia__estado" role="status">
-                    Actualizando la guía para {comidas} comidas...
-                </p>
+                <EstadoEsqueleto
+                    mensaje={`Actualizando la guía para ${comidas} comidas...`}
+                    className="guia__carga"
+                >
+                    <EsqueletoIndicadores />
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <EsqueletoTabla filas={4} columnas={5} />
+                    </article>
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__linea" />
+                        <BloqueEsqueleto className="esqueleto__linea esqueleto__linea--corta" />
+                    </article>
+                </EstadoEsqueleto>
             )}
 
             {cargaActual?.tipo === "error" && (

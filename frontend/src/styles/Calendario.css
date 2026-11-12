@@ -134,6 +134,22 @@
   text-align: center;
 }
 
+.calendario__carga-mes {
+  margin: 0;
+}
+
+.calendario__carga-mes .esqueleto-estado__contenido {
+  display: block;
+}
+
+.calendario__carga-mes .esqueleto__dia {
+  height: 74px;
+}
+
+.dia__carga-actividad .esqueleto-estado__contenido {
+  width: 100%;
+}
+
 .calendario__dia {
   position: relative;
   display: flex;
@@ -444,6 +460,14 @@
   .calendario__dia {
     min-height: 64px;
     padding: 4px 3px;
+  }
+
+  .calendario__carga-mes .esqueleto__calendario {
+    gap: 3px;
+  }
+
+  .calendario__carga-mes .esqueleto__dia {
+    height: 64px;
   }
 
   .calendario__kcal {

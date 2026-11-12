@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import {
+    BloqueEsqueleto,
+    EstadoEsqueleto,
+} from "../../components/Esqueleto";
 import EstadoPantalla from "../../components/EstadoPantalla";
 import { mensajeDeError } from "../../api/mensajeError";
 import { obtenerCalculoActivo, obtenerPlanActivo } from "../plan/planService";
@@ -52,7 +56,7 @@ export default function PantallaCalculo() {
     }
 
     return (
-        <section className="como-pantalla">
+        <section className="como-pantalla" aria-busy={carga.tipo === "cargando"}>
             <header className="como-pantalla__cabecera">
                 <Link className="como-pantalla__volver" to="/panel">
                     ← Volver al panel
@@ -67,7 +71,22 @@ export default function PantallaCalculo() {
             </header>
 
             {carga.tipo === "cargando" && (
-                <EstadoPantalla tipo="cargando" titulo="Cargando el cálculo..." />
+                <EstadoEsqueleto
+                    mensaje="Cargando el cálculo..."
+                    className="como__carga"
+                >
+                    {Array.from({ length: 3 }, (_, indice) => (
+                        <article className="esqueleto__tarjeta" key={indice}>
+                            <BloqueEsqueleto className="esqueleto__subtitulo" />
+                            <BloqueEsqueleto className="esqueleto__linea" />
+                            <BloqueEsqueleto className="esqueleto__linea esqueleto__linea--ancha" />
+                        </article>
+                    ))}
+                    <article className="esqueleto__tarjeta">
+                        <BloqueEsqueleto className="esqueleto__subtitulo" />
+                        <BloqueEsqueleto className="esqueleto__grafica" />
+                    </article>
+                </EstadoEsqueleto>
             )}
             {carga.tipo === "sin-plan" && (
                 <EstadoPantalla
