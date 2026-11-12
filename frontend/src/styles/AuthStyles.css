@@ -38,8 +38,8 @@
 
 .registro__mensaje h1 {
   margin: 0 0 14px;
-  font-size: clamp(26px, 3vw, 36px);
-  line-height: 1.05;
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1px;
 }
 
@@ -49,8 +49,8 @@
 
 .registro__mensaje p {
   color: #c2c0c0;
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .registro__grafica {
@@ -104,7 +104,8 @@
 
 .registro__tarjeta h2 {
   margin: 20px 0 2px;
-  font-size: 27px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.8px;
 }
 
@@ -123,7 +124,7 @@
 .registro__tarjeta label {
   display: block;
   margin: 12px 0 5px;
-  font-size: var(--texto-secundario);
+  font-size: var(--texto-etiqueta);
 }
 
 .registro__tarjeta input {
@@ -182,7 +183,7 @@
   background: #f6f4f1;
   color: #c9242c;
   font-size: var(--texto-etiqueta);
-  line-height: 1.7;
+  line-height: 1.4;
 }
 
 .registro__requisitos .cumplido {

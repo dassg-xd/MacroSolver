@@ -203,7 +203,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                 <CartesianGrid stroke="#efebe6" vertical={false} />
                                 <XAxis
                                     dataKey="semana"
-                                    tick={{ fontSize: 12, fill: "#77737a" }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={{ stroke: "#dcd7d1" }}
                                     height={38}
@@ -211,7 +211,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                         value: "Semana",
                                         position: "insideBottom",
                                         offset: -8,
-                                        fontSize: 12,
+                                        fontSize: "var(--texto-eje-titulo)",
                                         fill: "#5d5960",
                                     }}
                                 />
@@ -219,7 +219,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                     domain={[0, 100]}
                                     ticks={[0, 50, 100]}
                                     unit=" %"
-                                    tick={{ fontSize: 12, fill: "#77737a" }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                     tickLine={false}
                                     axisLine={false}
                                     width={66}
@@ -227,7 +227,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                         value: "Adherencia (%)",
                                         angle: -90,
                                         position: "insideLeft",
-                                        fontSize: 12,
+                                        fontSize: "var(--texto-eje-titulo)",
                                         fill: "#5d5960",
                                     }}
                                 />
@@ -236,7 +236,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                         `${num(Number(valor), 0)} % (${item.payload.detalle} días)`,
                                         "Adherencia",
                                     ]}
-                                    contentStyle={{ fontSize: 14, borderRadius: 8, borderColor: "#e6e1db" }}
+                                    contentStyle={{ fontSize: "var(--texto-secundario)", borderRadius: 8, borderColor: "#e6e1db" }}
                                     cursor={{ fill: "#f7f5f2" }}
                                 />
                                 <Bar dataKey="adherencia" radius={[5, 5, 0, 0]} maxBarSize={56} isAnimationActive={false}>
@@ -279,7 +279,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                     <CartesianGrid stroke="#efebe6" vertical={false} />
                                     <XAxis
                                         dataKey="semana"
-                                        tick={{ fontSize: 12, fill: "#77737a" }}
+                                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={{ stroke: "#dcd7d1" }}
                                         height={38}
@@ -287,13 +287,13 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                             value: "Semana",
                                             position: "insideBottom",
                                             offset: -8,
-                                            fontSize: 12,
+                                            fontSize: "var(--texto-eje-titulo)",
                                             fill: "#5d5960",
                                         }}
                                     />
                                     <YAxis
                                         unit=" kg"
-                                        tick={{ fontSize: 12, fill: "#77737a" }}
+                                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                                         tickLine={false}
                                         axisLine={false}
                                         width={68}
@@ -301,7 +301,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                             value: "Variación (kg)",
                                             angle: -90,
                                             position: "insideLeft",
-                                            fontSize: 12,
+                                            fontSize: "var(--texto-eje-titulo)",
                                             fill: "#5d5960",
                                         }}
                                     />
@@ -312,7 +312,7 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                                             "Variación semanal",
                                         ]}
                                         contentStyle={{
-                                            fontSize: 14,
+                                            fontSize: "var(--texto-secundario)",
                                             borderRadius: 8,
                                             borderColor: "#e6e1db",
                                         }}

@@ -65,21 +65,21 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         type="number"
                         domain={[0, s.plazo_dias]}
                         tickCount={7}
-                        tick={{ fontSize: 12, fill: "#77737a" }}
+                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                         tickLine={false}
                         axisLine={{ stroke: "#dcd7d1" }}
                         label={{
                             value: "Día del plan",
                             position: "insideBottom",
                             offset: -10,
-                            fontSize: 12,
+                            fontSize: "var(--texto-eje-titulo)",
                             fill: "#5d5960",
                         }}
                     />
                     <YAxis
                         domain={[minimo, maximo]}
                         ticks={marcas}
-                        tick={{ fontSize: 12, fill: "#77737a" }}
+                        tick={{ fontSize: "var(--texto-eje-marca)", fill: "#77737a" }}
                         tickLine={false}
                         axisLine={false}
                         unit=" kg"
@@ -88,7 +88,7 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                             value: "Peso (kg)",
                             angle: -90,
                             position: "insideLeft",
-                            fontSize: 12,
+                            fontSize: "var(--texto-eje-titulo)",
                             fill: "#5d5960",
                         }}
                     />
@@ -100,9 +100,9 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                                 : nombre,
                         ]}
                         labelFormatter={(dia) => `Día ${dia}`}
-                        contentStyle={{ fontSize: 14, borderRadius: 8, borderColor: "#e6e1db" }}
+                        contentStyle={{ fontSize: "var(--texto-secundario)", borderRadius: 8, borderColor: "#e6e1db" }}
                     />
-                    <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} iconSize={10} />
+                    <Legend wrapperStyle={{ fontSize: "var(--texto-secundario)", paddingTop: 8 }} iconSize={10} />
                     <ReferenceLine
                         y={s.peso_objetivo_kg}
                         stroke="#b3afb4"
@@ -110,14 +110,14 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         label={{
                             value: `Meta ${num(s.peso_objetivo_kg)} kg`,
                             position: "insideBottomLeft",
-                            fontSize: 12,
+                            fontSize: "var(--texto-etiqueta)",
                             fill: "#77737a",
                         }}
                     />
                     <ReferenceLine
                         x={s.dia_actual}
                         stroke="#b3afb4"
-                        label={{ value: "Hoy", position: "insideTopRight", fontSize: 12, fill: "#77737a" }}
+                        label={{ value: "Hoy", position: "insideTopRight", fontSize: "var(--texto-etiqueta)", fill: "#77737a" }}
                     />
                     <Line
                         name="Curva ideal"

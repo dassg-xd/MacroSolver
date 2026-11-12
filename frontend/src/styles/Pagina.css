@@ -16,7 +16,8 @@
 
 .pagina__cabecera h1 {
   margin: 0 0 6px;
-  font-size: clamp(26px, 4vw, 36px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1.1px;
 }
 
@@ -24,7 +25,7 @@
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-base);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .pagina__accion {
@@ -65,7 +66,8 @@
 
 .tarjeta h2 {
   margin: 0 0 6px;
-  font-size: var(--texto-destacado);
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.3px;
 }
 
@@ -73,7 +75,7 @@
   margin: 0 0 14px;
   color: #5d5960;
   font-size: var(--texto-base);
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .tarjeta > p:last-child {
@@ -114,9 +116,11 @@
 .kpi__valor {
   display: block;
   margin: 6px 0 2px;
-  font-size: 26px;
+  font-size: var(--texto-kpi);
   font-weight: 800;
   letter-spacing: -0.8px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi__valor small {
@@ -207,6 +211,6 @@
   }
 
   .kpi__valor {
-    font-size: 21px;
+    font-size: var(--texto-kpi);
   }
 }

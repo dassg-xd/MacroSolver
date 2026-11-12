@@ -20,14 +20,15 @@
 
 .modal h2 {
   margin: 0 0 8px;
-  font-size: 21px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
 }
 
 .modal p {
   margin: 0 0 18px;
   color: var(--color-texto-secundario);
-  font-size: var(--texto-secundario);
-  line-height: 1.5;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .modal__acciones {

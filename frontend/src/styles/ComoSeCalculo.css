@@ -18,14 +18,15 @@
 
 .como-pantalla__cabecera h1 {
   margin: 0 0 6px;
-  font-size: clamp(26px, 4vw, 34px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1px;
 }
 
 .como-pantalla__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: var(--texto-secundario);
+  font-size: var(--texto-base);
 }
 
 .como {
@@ -36,14 +37,15 @@
 
 .como__cabecera h2 {
   margin: 0 0 4px;
-  font-size: 22px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.5px;
 }
 
 .como__cabecera p {
   margin: 0;
   color: #5d5960;
-  font-size: var(--texto-secundario);
+  font-size: var(--texto-base);
 }
 
 .como__bloque {
@@ -61,8 +63,8 @@
 .como__bloque p {
   margin: 0 0 8px;
   color: #3a3838;
-  font-size: var(--texto-secundario);
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .como__bloque:last-child p {
@@ -101,6 +103,7 @@
   margin-top: 6px !important;
   color: #68636a !important;
   font-size: var(--texto-secundario) !important;
+  line-height: 1.4;
 }
 
 .como__formulas {
@@ -133,11 +136,11 @@
   margin: 3px 0 0;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
 .como__vacio {
   color: #5d5960;
-  font-size: var(--texto-secundario);
+  font-size: var(--texto-base);
 }

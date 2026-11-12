@@ -22,15 +22,16 @@
 
 .nuevo-plan__cabecera h1 {
   margin: 0 0 8px;
-  font-size: clamp(30px, 4vw, 42px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1.5px;
 }
 
 .nuevo-plan__cabecera p {
   margin: 0;
   color: #68636a;
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .nuevo-plan__formulario {
@@ -72,7 +73,8 @@
 
 .nuevo-plan__grupo-cabecera h2 {
   margin: 0 0 5px;
-  font-size: var(--texto-destacado);
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.3px;
 }
 
@@ -94,8 +96,8 @@
   max-width: 580px;
   margin: 0;
   color: #77727a;
-  font-size: var(--texto-secundario);
-  line-height: 1.55;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .nuevo-plan__grid {
@@ -117,7 +119,7 @@
   flex-direction: column;
   gap: 7px;
   color: #39363a;
-  font-size: var(--texto-secundario);
+  font-size: var(--texto-etiqueta);
   font-weight: 700;
 }
 
@@ -180,7 +182,7 @@
   margin: 10px 0 0;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .nuevo-plan__acciones .boton {
@@ -204,7 +206,7 @@
   background: #fff4f4;
   color: #8f151b;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .nuevo-plan__resultado {
@@ -241,14 +243,15 @@
 
 .nuevo-plan__resumen h2 {
   margin: 0 0 7px;
-  font-size: var(--texto-destacado);
+  font-size: var(--texto-h2);
+  line-height: 1.2;
 }
 
 .nuevo-plan__resumen p {
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .nuevo-plan__resumen dl {
@@ -288,7 +291,7 @@
   margin: 0;
   color: #315a39;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .nuevo-plan__acciones-navegacion .boton {
@@ -307,7 +310,8 @@
 
 .nuevo-plan__tarjeta h2 {
   margin: 0 0 7px;
-  font-size: var(--texto-destacado);
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.3px;
 }
 
@@ -315,15 +319,17 @@
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 .nuevo-plan__ingesta {
   margin: 3px 0 8px !important;
   color: #c41e24 !important;
-  font-size: clamp(30px, 5vw, 38px) !important;
+  font-size: var(--texto-kpi) !important;
   font-weight: 800;
   letter-spacing: -1.2px;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .nuevo-plan__bloqueos,
@@ -348,7 +354,7 @@
   margin: 0 0 8px;
   padding-left: 19px;
   font-size: var(--texto-secundario);
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 .nuevo-plan__bloqueos ul,
@@ -392,14 +398,15 @@
 
 .nuevo-plan__grafica h2 {
   margin: 0 0 7px;
-  font-size: var(--texto-destacado);
+  font-size: var(--texto-h2);
+  line-height: 1.2;
 }
 
 .nuevo-plan__grafica p {
   margin: 0;
   color: #68636a;
   font-size: var(--texto-secundario);
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 @keyframes nuevo-plan-aparecer {
@@ -502,7 +509,7 @@
   margin: -4px 0 14px;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .nuevo-plan__usar-grasa {

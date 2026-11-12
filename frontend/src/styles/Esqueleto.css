@@ -39,7 +39,7 @@
 
 .esqueleto__titulo {
   width: min(42%, 320px);
-  height: 36px;
+  height: 24px;
 }
 
 .esqueleto__subtitulo {
@@ -85,7 +85,7 @@
 
 .esqueleto__valor {
   width: 68%;
-  height: 28px;
+  height: 34px;
 }
 
 .esqueleto__grafica {

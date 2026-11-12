@@ -12,13 +12,14 @@
 
 .estado-pantalla h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
 }
 
 .estado-pantalla__detalle {
   max-width: 62ch;
   color: var(--color-texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .estado-pantalla__accion {

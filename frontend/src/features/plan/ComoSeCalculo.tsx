@@ -145,37 +145,37 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                                 <XAxis
                                     dataKey="dia"
                                     type="number"
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)" }}
                                     tickLine={false}
                                     label={{
                                         value: "Día del plan",
                                         position: "insideBottom",
                                         offset: -12,
-                                        fontSize: 12,
+                                        fontSize: "var(--texto-eje-titulo)",
                                         fill: "#5d5960",
                                     }}
                                 />
                                 <YAxis
-                                    tick={{ fontSize: 12 }}
+                                    tick={{ fontSize: "var(--texto-eje-marca)" }}
                                     unit=" kg"
                                     width={70}
                                     label={{
                                         value: "Peso (kg)",
                                         angle: -90,
                                         position: "insideLeft",
-                                        fontSize: 12,
+                                        fontSize: "var(--texto-eje-titulo)",
                                         fill: "#5d5960",
                                     }}
                                 />
                                 <Tooltip
-                                    contentStyle={{ fontSize: 14 }}
+                                    contentStyle={{ fontSize: "var(--texto-secundario)" }}
                                     formatter={(valor, nombre) => [
                                         `${Number(valor).toFixed(2)} kg`,
                                         nombre,
                                     ]}
                                     labelFormatter={(dia) => `Día ${dia}`}
                                 />
-                                <Legend wrapperStyle={{ fontSize: 13 }} />
+                                <Legend wrapperStyle={{ fontSize: "var(--texto-secundario)" }} />
                                 <Line
                                     type="monotone"
                                     dataKey="bandaSuperior"

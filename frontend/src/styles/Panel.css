@@ -11,7 +11,8 @@
 
 .panel__cabecera h1 {
   margin: 4px 0 6px;
-  font-size: clamp(28px, 4vw, 38px);
+  font-size: var(--texto-h1);
+  line-height: 1.15;
   letter-spacing: -1.2px;
 }
 
@@ -29,7 +30,7 @@
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-base);
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .panel__tarjeta {
@@ -51,7 +52,8 @@
 
 .panel__tarjeta h2 {
   margin: 4px 0 8px;
-  font-size: 22px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
   letter-spacing: -0.5px;
 }
 
@@ -60,7 +62,7 @@
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-base);
-  line-height: 1.55;
+  line-height: 1.4;
 }
 
 .panel__etiqueta {
@@ -124,19 +126,20 @@
   border-radius: 50%;
   background: #fbe9ea;
   color: #c41e24;
-  font-size: 12px;
+  font-size: var(--texto-etiqueta);
+  line-height: 1.1;
 }
 
 .panel__pasos h3 {
   margin: 10px 0 6px;
-  font-size: 15px;
+  font-size: var(--texto-secundario);
 }
 
 .panel__pasos p {
   margin: 0 0 10px;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .panel__pasos a {
@@ -172,7 +175,8 @@
 
 .panel__aviso h2 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: var(--texto-h2);
+  line-height: 1.2;
 }
 
 .panel__aviso p {
@@ -180,7 +184,7 @@
   margin: 0;
   color: #5d5960;
   font-size: var(--texto-secundario);
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 .panel__dos {
@@ -211,7 +215,9 @@
 }
 
 .panel__macros strong {
-  font-size: 17px;
+  font-size: var(--texto-kpi);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 .panel__enlace--boton {

@@ -66,8 +66,8 @@
   border-radius: 10px;
   background: #f7f5f2;
   color: #3e3a40;
-  font-size: var(--texto-secundario);
-  line-height: 1.5;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 .guia__glosario {
@@ -106,8 +106,8 @@
 .guia__glosario dd {
   margin: 2px 0 0;
   color: #5d5960;
-  font-size: var(--texto-secundario);
-  line-height: 1.5;
+  font-size: var(--texto-base);
+  line-height: 1.4;
 }
 
 @media (max-width: 640px) {
