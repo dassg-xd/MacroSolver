@@ -129,7 +129,7 @@
 
 .registro__tarjeta input {
   width: 100%;
-  height: 42px;
+  min-height: 44px;
   padding: 0 12px;
   box-sizing: border-box;
   border: 1px solid #dcd7d1;
@@ -158,6 +158,8 @@
   top: 50%;
   right: 10px;
   transform: translateY(-50%);
+  min-width: 44px;
+  min-height: 44px;
   padding: 4px;
   border: 0;
   background: transparent;
@@ -233,7 +235,7 @@
 
 .registro__tarjeta select {
   width: 100%;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid #dcd7d1;
   border-radius: 9px;
@@ -287,6 +289,14 @@
   margin: 5px 0 0;
   color: #c9242c;
   font-size: 10px;
+}
+
+.registro__tarjeta [aria-invalid="true"] {
+  border-color: #a3161d;
+}
+
+.registro__tarjeta [aria-invalid="true"]:focus-visible {
+  outline-color: #7f171c;
 }
 
 .registro__acciones {

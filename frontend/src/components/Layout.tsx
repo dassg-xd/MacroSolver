@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import logoMacroSolver from "../assets/componente1.png";
+import EstadoPantalla from "./EstadoPantalla";
 import Dialogo from "./Dialogo";
 import { useSesion } from "../features/auth/SesionContext";
 import "../styles/Layout.css";
@@ -93,7 +94,16 @@ export default function Layout() {
             </header>
 
             <main className="app__contenido">
-                <Outlet />
+                <Suspense
+                    fallback={
+                        <EstadoPantalla
+                            tipo="cargando"
+                            titulo="Cargando la pantalla..."
+                        />
+                    }
+                >
+                    <Outlet />
+                </Suspense>
             </main>
 
             <footer className="app__pie">

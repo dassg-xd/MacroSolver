@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    ReferenceLine,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import type { Estadisticas as DatosEstadisticas, SemanaEstadistica } from "../../types/seguimiento";
@@ -82,12 +92,21 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             ? conVariacion.reduce((suma, s) => suma + (s.variacion_kg ?? 0), 0) / conVariacion.length
             : null;
     const sesionesSemana = semanas.length > 0 ? r.sesiones / semanas.length : 0;
-    const barras = semanas.map((s) => ({
+    const barras = semanas
+        .filter((s) => s.adherencia_pct !== null)
+        .map((s) => ({
         semana: etiquetaSemana(s),
-        adherencia: s.adherencia_pct ?? 0,
+        adherencia: s.adherencia_pct ?? undefined,
         detalle: `${s.dias_cumplidos} de ${s.dias_registrados}`,
         parcial: s.parcial,
-    }));
+        }));
+    const variaciones = semanas
+        .filter((s) => s.variacion_kg !== null)
+        .map((s) => ({
+            semana: etiquetaSemana(s),
+            variacion: s.variacion_kg ?? undefined,
+            parcial: s.parcial,
+        }));
 
     return (
         <>
@@ -136,14 +155,22 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
 
             <article className="tarjeta">
                 <h2>Adherencia por semana</h2>
-                <p>Porcentaje de días registrados que quedaron dentro de ±{pct} % de la ingesta.</p>
-                {r.dias_registrados === 0 ? (
+                <p>
+                    Porcentaje de días registrados que quedaron dentro de ±{pct} % de la ingesta.
+                    El denominador excluye los días sin registro.
+                </p>
+                {barras.length === 0 ? (
                     <p className="tarjeta__nota">
-                        Aún no hay calorías registradas. Anótalas en el{" "}
-                        <Link to="/calendario">calendario</Link>.
+                        Aún no hay semanas con calorías registradas. Anótalas en el{" "}
+                        <Link to="/calendario">calendario</Link>; las semanas sin datos no se
+                        representan como 0 %.
                     </p>
                 ) : (
-                    <div className="estadisticas__grafica">
+                    <div
+                        className="estadisticas__grafica"
+                        role="img"
+                        aria-label={`Adherencia semanal calculada sobre días registrados. ${barras.length} semanas con datos.`}
+                    >
                         <ResponsiveContainer width="100%" height={220}>
                             <BarChart data={barras} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
                                 <CartesianGrid stroke="#efebe6" vertical={false} />
@@ -180,9 +207,86 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </div>
                 )}
                 <p className="tarjeta__nota">
-                    * Semana en curso, parcial. La variación de peso usa el promedio de los pesos de
-                    cada semana para amortiguar las fluctuaciones diarias.
+                    * Semana en curso, parcial. La tabla conserva el detalle y muestra “—” cuando
+                    no hay denominador o peso medido.
                 </p>
+            </article>
+
+            <article className="tarjeta">
+                <h2>Variación semanal del peso</h2>
+                <p>
+                    Cambio entre promedios de peso de semanas consecutivas, en kg. Debajo de cero
+                    indica descenso; por encima, aumento. El dato procede de la respuesta del plan.
+                </p>
+                {variaciones.length === 0 ? (
+                    <p className="tarjeta__nota">
+                        Aún no hay pesos de semanas consecutivas para mostrar una variación.
+                    </p>
+                ) : (
+                    <>
+                        <div
+                            className="estadisticas__grafica estadisticas__grafica--variacion"
+                            role="img"
+                            aria-label={`Variación de peso en ${variaciones.length} semanas con observaciones. Los valores negativos indican descenso y los positivos aumento.`}
+                        >
+                            <ResponsiveContainer width="100%" height={220}>
+                                <BarChart
+                                    data={variaciones}
+                                    margin={{ top: 8, right: 8, bottom: 0, left: -18 }}
+                                >
+                                    <CartesianGrid stroke="#efebe6" vertical={false} />
+                                    <XAxis
+                                        dataKey="semana"
+                                        tick={{ fontSize: 10, fill: "#77737a" }}
+                                        tickLine={false}
+                                        axisLine={{ stroke: "#dcd7d1" }}
+                                    />
+                                    <YAxis
+                                        unit=" kg"
+                                        tick={{ fontSize: 10, fill: "#77737a" }}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        width={58}
+                                    />
+                                    <ReferenceLine y={0} stroke="#77737a" />
+                                    <Tooltip
+                                        formatter={(valor) => [
+                                            `${conSigno(Number(valor), 2)} kg`,
+                                            "Variación semanal",
+                                        ]}
+                                        contentStyle={{
+                                            fontSize: 12,
+                                            borderRadius: 8,
+                                            borderColor: "#e6e1db",
+                                        }}
+                                    />
+                                    <Bar
+                                        dataKey="variacion"
+                                        name="Variación semanal"
+                                        radius={[5, 5, 0, 0]}
+                                        maxBarSize={56}
+                                        isAnimationActive={false}
+                                    >
+                                        {variaciones.map((semana) => (
+                                            <Cell
+                                                key={semana.semana}
+                                                fill={
+                                                    (semana.variacion ?? 0) <= 0
+                                                        ? "#1c6b3a"
+                                                        : "#b8700c"
+                                                }
+                                            />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <p className="tarjeta__nota">
+                            Se grafica solo cuando existe una variación; las semanas sin peso
+                            permanecen como “—” en la tabla.
+                        </p>
+                    </>
+                )}
             </article>
 
             <article className="tarjeta">

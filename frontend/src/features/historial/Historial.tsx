@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { mensajeDeError } from "../../api/mensajeError";
+import EstadoPantalla from "../../components/EstadoPantalla";
 import type { PlanHistorial } from "../../types/seguimiento";
 import { conSigno, fechaCorta, num } from "../calendario/fechas";
 import { obtenerHistorial } from "../seguimiento/seguimientoService";
@@ -16,6 +17,7 @@ function anio(fecha: string): string {
 
 export default function Historial() {
     const [carga, setCarga] = useState<Carga | null>(null);
+    const [intento, setIntento] = useState(0);
 
     useEffect(() => {
         let vigente = true;
@@ -29,7 +31,7 @@ export default function Historial() {
         return () => {
             vigente = false;
         };
-    }, []);
+    }, [intento]);
 
     return (
         <section className="pagina">
@@ -43,19 +45,46 @@ export default function Historial() {
                 </Link>
             </header>
 
-            {carga === null && <p className="pagina__estado">Cargando tus planes...</p>}
+            {carga === null && (
+                <EstadoPantalla
+                    tipo="cargando"
+                    titulo="Cargando tus planes..."
+                />
+            )}
 
             {carga?.tipo === "error" && (
-                <p className="pagina__error" role="alert">
-                    {carga.mensaje}
-                </p>
+                <EstadoPantalla
+                    tipo="error"
+                    titulo="No pudimos cargar el historial"
+                    accion={
+                        <button
+                            type="button"
+                            className="boton boton--secundario"
+                            onClick={() => {
+                                setCarga(null);
+                                setIntento((actual) => actual + 1);
+                            }}
+                        >
+                            Reintentar
+                        </button>
+                    }
+                >
+                    <p>{carga.mensaje}</p>
+                </EstadoPantalla>
             )}
 
             {carga?.tipo === "ok" && carga.planes.length === 0 && (
-                <article className="tarjeta tarjeta--vacia">
-                    <h2>Todavía no has creado ningún plan</h2>
+                <EstadoPantalla
+                    tipo="vacio"
+                    titulo="Todavía no has creado ningún plan"
+                    accion={
+                        <Link className="boton boton--primario" to="/nuevo-plan">
+                            Crear mi plan
+                        </Link>
+                    }
+                >
                     <p>Cuando crees tu primer plan aparecerá aquí.</p>
-                </article>
+                </EstadoPantalla>
             )}
 
             {carga?.tipo === "ok" && carga.planes.length > 0 && (
@@ -64,7 +93,11 @@ export default function Historial() {
                         const activo = plan.estado === "activo";
                         const numero = carga.planes.length - indice;
                         return (
-                            <li key={plan.id} className={`tarjeta historial__plan${activo ? " historial__plan--activo" : ""}`}>
+                            <li
+                                key={plan.id}
+                                className={`tarjeta historial__plan${activo ? " historial__plan--activo" : ""}`}
+                                aria-current={activo ? "true" : undefined}
+                            >
                                 <header>
                                     <h2>Plan {numero}</h2>
                                     <span className={`etiqueta${activo ? " etiqueta--activo" : ""}`}>

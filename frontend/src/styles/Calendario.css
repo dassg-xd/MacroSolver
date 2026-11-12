@@ -29,6 +29,16 @@
   font-size: 12px;
 }
 
+.calendario__guardado {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--color-exito-borde, #b9dfc6);
+  border-radius: 9px;
+  background: var(--color-exito-fondo, #f1faf4);
+  color: var(--color-exito-texto, #245c39);
+  font-size: 12px;
+}
+
 .calendario__cuerpo {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
@@ -86,8 +96,8 @@
 }
 
 .calendario__flecha {
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   border: 1px solid #dcd7d1;
   border-radius: 8px;
   background: #fff;
@@ -152,7 +162,7 @@
 .calendario__dia--fuera-del-plan,
 .calendario__dia--futuro {
   background: #faf9f7;
-  color: #b3afb4;
+  color: #6f6b70;
 }
 
 .calendario__dia--estimado {
@@ -203,9 +213,24 @@
 }
 
 .calendario__estimado {
-  color: #8a868c;
+  color: #5d5960;
   font-size: 10px;
   font-style: italic;
+}
+
+.calendario__estado,
+.calendario__seleccionado {
+  color: #5d5960;
+  font-size: 8px;
+  font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.calendario__seleccionado {
+  color: #171719;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .calendario__marcas {
@@ -417,16 +442,24 @@
   }
 
   .calendario__dia {
-    min-height: 54px;
-    padding: 5px;
+    min-height: 64px;
+    padding: 4px 3px;
   }
 
   .calendario__kcal {
     font-size: 9px;
   }
 
-  .calendario__estimado,
   .calendario__hoy {
-    display: none;
+    position: static;
+    align-self: flex-end;
+    margin-left: auto;
+    padding: 1px 3px;
+    font-size: 7px;
+  }
+
+  .calendario__estado,
+  .calendario__seleccionado {
+    font-size: 7px;
   }
 }

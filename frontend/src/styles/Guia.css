@@ -21,7 +21,7 @@
 }
 
 .guia__opciones button {
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 12px;
   border: none;
   border-radius: 7px;
@@ -31,6 +31,16 @@
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+}
+
+.guia__estado {
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid #e6e1db;
+  border-radius: 9px;
+  background: #fff;
+  color: #5d5960;
+  font-size: 12px;
 }
 
 .guia__opciones button.activo {

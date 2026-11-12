@@ -5,6 +5,7 @@ import {
     Line,
     ReferenceLine,
     ResponsiveContainer,
+    Scatter,
     Tooltip,
     XAxis,
     YAxis,
@@ -31,6 +32,10 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
         dia,
         ideal: s.curva_ideal[dia],
         adherencia: s.curva_adherencia[dia],
+        estimado: s.estimado[dia] ?? false,
+        adherenciaEstimada: s.estimado[dia]
+            ? s.curva_adherencia[dia]
+            : undefined,
         tendencia: s.tendencia ? s.tendencia.curva[dia] : undefined,
         real: reales.get(dia),
     }));
@@ -70,7 +75,12 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         width={62}
                     />
                     <Tooltip
-                        formatter={(valor, nombre) => [`${num(Number(valor), 2)} kg`, nombre]}
+                        formatter={(valor, nombre, elemento) => [
+                            `${num(Number(valor), 2)} kg`,
+                            nombre === "Por adherencia" && elemento.payload.estimado
+                                ? "Por adherencia (estimado)"
+                                : nombre,
+                        ]}
                         labelFormatter={(dia) => `Día ${dia}`}
                         contentStyle={{ fontSize: 12, borderRadius: 8, borderColor: "#e6e1db" }}
                     />
@@ -105,6 +115,14 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         stroke={COLORES.adherencia}
                         strokeWidth={2}
                         dot={false}
+                        isAnimationActive={false}
+                    />
+                    <Scatter
+                        name="Días estimados"
+                        dataKey="adherenciaEstimada"
+                        fill={COLORES.adherencia}
+                        shape="square"
+                        legendType="square"
                         isAnimationActive={false}
                     />
                     {s.tendencia && (

@@ -1,4 +1,4 @@
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import logoMacroSolver from "../../assets/componente1.png";
@@ -22,11 +22,21 @@ export default function Login() {
     const [mostrarContrasena, setMostrarContrasena] = useState(false);
     const [enviando, setEnviando] = useState(false);
     const [error, setError] = useState("");
+    const errorRef = useRef<HTMLParagraphElement>(null);
 
     const aviso = estado?.aviso || avisoSesion;
 
+    useEffect(() => {
+        if (error) {
+            errorRef.current?.focus();
+        }
+    }, [error]);
+
     async function enviarFormulario(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (enviando) {
+            return;
+        }
         setError("");
         limpiarAviso();
         setEnviando(true);
@@ -101,6 +111,7 @@ export default function Login() {
                 <form
                     className="registro__tarjeta login__tarjeta"
                     onSubmit={enviarFormulario}
+                    aria-busy={enviando}
                 >
                     <h2>Inicia sesión</h2>
                     <p className="registro__login">
@@ -122,7 +133,10 @@ export default function Login() {
                         autoComplete="email"
                         placeholder="nombre@correo.com"
                         value={correo}
-                        onChange={(event) => setCorreo(event.target.value)}
+                        onChange={(event) => {
+                            setCorreo(event.target.value);
+                            setError("");
+                        }}
                         required
                     />
 
@@ -135,7 +149,10 @@ export default function Login() {
                             autoComplete="current-password"
                             placeholder="Tu contraseña"
                             value={contrasena}
-                            onChange={(event) => setContrasena(event.target.value)}
+                            onChange={(event) => {
+                                setContrasena(event.target.value);
+                                setError("");
+                            }}
                             required
                         />
                         <button
@@ -154,7 +171,13 @@ export default function Login() {
                     </div>
 
                     {error && (
-                        <p className="registro__alerta" role="alert">
+                        <p
+                            ref={errorRef}
+                            id="login-error"
+                            className="registro__alerta"
+                            role="alert"
+                            tabIndex={-1}
+                        >
                             {error}
                         </p>
                     )}

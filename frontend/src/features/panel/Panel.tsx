@@ -78,6 +78,7 @@ export default function Panel() {
     const cambio = s.hoy.ultimo_peso_kg - plan.peso_inicial_kg;
     const retraso = s.llegada.retraso_dias;
     const diferenciaHoy = s.hoy.kcal !== null ? s.hoy.kcal - s.hoy.objetivo_kcal : null;
+    const diasEstimados = s.estimado.filter(Boolean).length;
 
     return (
         <section className="pagina">
@@ -140,6 +141,13 @@ export default function Panel() {
                             : "Registra tu peso para ver el cambio"}
                     </span>
                 </article>
+                <article className="kpi">
+                    <span className="kpi__etiqueta">Días restantes</span>
+                    <span className="kpi__valor">{s.hoy.dias_restantes}</span>
+                    <span className="kpi__detalle">
+                        Hoy el plan espera {num(s.hoy.peso_ideal_kg)} kg
+                    </span>
+                </article>
                 <article className={`kpi${retraso !== null && retraso > 0 ? " kpi--alerta" : ""}`}>
                     <span className="kpi__etiqueta">Llegada estimada</span>
                     <span className="kpi__valor">
@@ -150,23 +158,19 @@ export default function Panel() {
                         {s.llegada.mensaje}
                     </span>
                 </article>
-                <article className="kpi">
-                    <span className="kpi__etiqueta">Días restantes</span>
-                    <span className="kpi__valor">{s.hoy.dias_restantes}</span>
-                    <span className="kpi__detalle">
-                        Hoy el plan espera {num(s.hoy.peso_ideal_kg)} kg
-                    </span>
-                </article>
             </div>
 
             <article className="tarjeta">
                 <h2>Peso: plan, adherencia y realidad</h2>
                 <GraficaSeguimiento seguimiento={s} />
                 <p className="tarjeta__nota">
-                    Los días sin registro se simulan con la ingesta del plan. Toda proyección es
-                    aproximada.
+                    Los puntos verdes son pesos registrados; los cuadrados marcan días estimados
+                    por falta de calorías registradas. La proyección es aproximada.
+                    {` ${s.pesos.length} pesos reales y ${diasEstimados} días estimados.`}
                     {s.tendencia &&
-                        ` Tu tendencia cambia ${conSigno(s.tendencia.tasa_semanal_pct, 2)} % por semana.`}
+                        ` Tendencia: ${conSigno(s.tendencia.tasa_semanal_pct, 2)} % por semana; R² ${num(s.tendencia.r2, 2)} (n = ${s.tendencia.n} pesos).`}
+                    {!s.tendencia &&
+                        " La tendencia aparecerá cuando haya datos suficientes."}
                 </p>
             </article>
 

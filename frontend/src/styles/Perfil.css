@@ -80,7 +80,8 @@
 }
 
 .perfil__alerta,
-.perfil__exito {
+.perfil__exito,
+.perfil__info {
   margin: 14px 0 0;
   padding: 10px 12px;
   border-radius: 8px;
@@ -97,6 +98,22 @@
   border: 1px solid #cfe8d8;
   background: #f1faf4;
   color: #246b3d;
+}
+
+.perfil__info {
+  border: 1px solid #e6e1db;
+  background: #f7f5f2;
+  color: #5d5960;
+}
+
+.perfil__error-campo {
+  margin: 5px 0 0;
+  color: #a3161d;
+  font-size: 11px;
+}
+
+.perfil__tarjeta [aria-invalid="true"] {
+  border-color: #a3161d;
 }
 
 .perfil__acciones {

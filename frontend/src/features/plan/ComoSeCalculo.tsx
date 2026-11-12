@@ -4,6 +4,7 @@ import {
     XAxis,
     YAxis,
     Tooltip,
+    Legend,
     ResponsiveContainer,
     CartesianGrid,
 } from "recharts";
@@ -32,6 +33,10 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
               bandaSuperior: curva.banda_superior_kg[indice],
           }))
         : [];
+    const metodoComposicion =
+        calculo.composicion.metodo === "marina"
+            ? "circunferencias (fórmula de la Marina de EE. UU.)"
+            : "IMC, edad y sexo (fórmula de Deurenberg)";
 
     return (
         <section className="como">
@@ -46,11 +51,16 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
             <article className="como__bloque">
                 <h3>1. Composición inicial</h3>
                 <p>
-                    Se estimó la grasa con la fórmula de la Marina de EE. UU.
-                    (circunferencias) o, si faltan medidas, con Deurenberg (IMC,
-                    edad y sexo). Resultado:{" "}
+                    La estimación usa {metodoComposicion}. Resultado:{" "}
                     <strong>{calculo.composicion.pct_grasa.toFixed(1)} %</strong>{" "}
-                    de grasa.
+                    de grasa y{" "}
+                    <strong>
+                        {calculo.composicion.masa_libre_inicial_kg.toFixed(1)} kg
+                    </strong>{" "}
+                    de masa libre.
+                </p>
+                <p className="como__nota">
+                    Es una estimación y no una medición directa de la composición corporal.
                 </p>
             </article>
 
@@ -119,19 +129,46 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
             {curva && datos.length > 0 && (
                 <article className="como__bloque">
                     <h3>5. Curva ideal y banda de tolerancia</h3>
+                    <p>
+                        El peso estimado va de {curva.peso_kg[0].toFixed(1)} kg a{" "}
+                        {curva.peso_kg[curva.peso_kg.length - 1].toFixed(1)} kg.
+                        Las líneas superior e inferior muestran la banda de tolerancia.
+                    </p>
                     <div className="como__grafica">
-                        <ResponsiveContainer width="100%" height={260}>
-                            <LineChart data={datos}>
+                        <div
+                            role="img"
+                            aria-label={`Curva ideal: ${curva.peso_kg[0].toFixed(1)} kg al inicio y ${curva.peso_kg[curva.peso_kg.length - 1].toFixed(1)} kg al final, con bandas de tolerancia.`}
+                        >
+                            <ResponsiveContainer width="100%" height={290}>
+                            <LineChart data={datos} margin={{ top: 10, right: 12, bottom: 20, left: 8 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="dia" />
-                                <YAxis />
-                                <Tooltip />
+                                <XAxis
+                                    dataKey="dia"
+                                    type="number"
+                                    tickLine={false}
+                                    label={{
+                                        value: "Día del plan",
+                                        position: "insideBottom",
+                                        offset: -12,
+                                    }}
+                                />
+                                <YAxis unit=" kg" width={58} />
+                                <Tooltip
+                                    formatter={(valor, nombre) => [
+                                        `${Number(valor).toFixed(2)} kg`,
+                                        nombre,
+                                    ]}
+                                    labelFormatter={(dia) => `Día ${dia}`}
+                                />
+                                <Legend wrapperStyle={{ fontSize: 11 }} />
                                 <Line
                                     type="monotone"
                                     dataKey="bandaSuperior"
                                     stroke="#e0d8d1"
+                                    strokeDasharray="4 3"
                                     dot={false}
                                     name="Banda superior"
+                                    isAnimationActive={false}
                                 />
                                 <Line
                                     type="monotone"
@@ -140,16 +177,20 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                                     strokeWidth={2}
                                     dot={false}
                                     name="Peso ideal"
+                                    isAnimationActive={false}
                                 />
                                 <Line
                                     type="monotone"
                                     dataKey="bandaInferior"
                                     stroke="#e0d8d1"
+                                    strokeDasharray="4 3"
                                     dot={false}
                                     name="Banda inferior"
+                                    isAnimationActive={false}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
+                        </div>
                     </div>
                 </article>
             )}
@@ -171,6 +212,32 @@ export default function ComoSeCalculo({ calculo, curva }: Props) {
                     </p>
                 </article>
             )}
+
+            <details className="como__formulas">
+                <summary>Ver fórmulas utilizadas</summary>
+                <dl>
+                    <div>
+                        <dt>Modelo</dt>
+                        <dd>{calculo.formulas.modelo}</dd>
+                    </div>
+                    <div>
+                        <dt>Gasto energético</dt>
+                        <dd>{calculo.formulas.tdee}</dd>
+                    </div>
+                    <div>
+                        <dt>Simulación de peso</dt>
+                        <dd>{calculo.formulas.euler}</dd>
+                    </div>
+                    <div>
+                        <dt>Búsqueda de ingesta</dt>
+                        <dd>{calculo.formulas.secante}</dd>
+                    </div>
+                    <div>
+                        <dt>Reparto de macros</dt>
+                        <dd>{calculo.formulas.macros}</dd>
+                    </div>
+                </dl>
+            </details>
 
         </section>
     );

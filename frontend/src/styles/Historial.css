@@ -29,6 +29,10 @@
   margin: 0;
 }
 
+.historial__datos > div {
+  min-width: 0;
+}
+
 .historial__datos dt {
   color: #77737a;
   font-size: 10px;
@@ -41,15 +45,20 @@
   margin: 3px 0 0;
   font-size: 13px;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .historial__enlaces {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   margin-top: 14px;
 }
 
 .historial__enlaces a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   color: #c41e24;
   font-size: 12px;
   font-weight: 700;
@@ -59,5 +68,11 @@
 @media (max-width: 640px) {
   .historial__datos {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 420px) {
+  .historial__datos {
+    grid-template-columns: 1fr;
   }
 }

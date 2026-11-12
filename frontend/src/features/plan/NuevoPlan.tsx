@@ -464,6 +464,57 @@ export default function NuevoPlan() {
 
             {previa && (
                 <div className="nuevo-plan__resultado">
+                    <section
+                        className={`nuevo-plan__resumen${previa.puede_confirmar ? " nuevo-plan__resumen--listo" : ""}`}
+                        aria-labelledby="nuevo-plan-resumen"
+                    >
+                        <div>
+                            <span className="nuevo-plan__eyebrow">
+                                Resultado de la vista previa
+                            </span>
+                            <h2 id="nuevo-plan-resumen">
+                                {previa.puede_confirmar
+                                    ? "Tu plan está listo para confirmar"
+                                    : "Revisa la viabilidad de esta meta"}
+                            </h2>
+                            <p>{previa.viabilidad.mensaje}</p>
+                        </div>
+                        <dl>
+                            <div>
+                                <dt>Meta</dt>
+                                <dd>
+                                    {previa.meta?.tipo === "grasa"
+                                        ? `${previa.meta.grasa_a_perder_kg ?? "—"} kg de grasa · ${previa.meta.peso_objetivo_kg.toFixed(1)} kg de peso`
+                                        : previa.meta
+                                            ? `${previa.meta.peso_objetivo_kg.toFixed(1)} kg`
+                                            : "No disponible"}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Plazo</dt>
+                                <dd>{previa.plazo_dias} días</dd>
+                            </div>
+                            <div>
+                                <dt>Fechas</dt>
+                                <dd>
+                                    {previa.fecha_inicio} – {previa.fecha_meta}
+                                </dd>
+                            </div>
+                            <div>
+                                <dt>Fecha viable</dt>
+                                <dd>{previa.viabilidad.fecha_viable ?? "—"}</dd>
+                            </div>
+                            <div>
+                                <dt>Ingesta diaria</dt>
+                                <dd>
+                                    {previa.ingesta_kcal !== null
+                                        ? `${previa.ingesta_kcal.toFixed(0)} kcal`
+                                        : "Pendiente de viabilidad"}
+                                </dd>
+                            </div>
+                        </dl>
+                    </section>
+
                     {previa.puede_confirmar && (
                         <div className="nuevo-plan__acciones-navegacion">
                             <p>Tu plan está listo para guardar. Revisa el resumen y confirma cuando quieras.</p>

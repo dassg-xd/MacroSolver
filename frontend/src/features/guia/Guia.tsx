@@ -48,10 +48,11 @@ export default function Guia() {
         };
     }, [comidas]);
 
-    const guia = carga?.tipo === "ok" ? carga.guia : null;
+    const cargaActual = carga?.comidas === comidas ? carga : null;
+    const guia = cargaActual?.tipo === "ok" ? cargaActual.guia : null;
 
     return (
-        <section className="pagina">
+        <section className="pagina" aria-busy={cargaActual === null}>
             <header className="pagina__cabecera">
                 <div>
                     <h1>Guía de nutrición</h1>
@@ -59,21 +60,53 @@ export default function Guia() {
                 </div>
             </header>
 
-            {carga === null && <p className="pagina__estado">Cargando la guía...</p>}
-
-            {carga?.tipo === "error" && (
-                <p className="pagina__error" role="alert">
-                    {carga.mensaje}
+            {cargaActual === null && (
+                <p className="guia__estado" role="status">
+                    Actualizando la guía para {comidas} comidas...
                 </p>
             )}
 
-            {carga?.tipo === "sin-plan" && (
+            {cargaActual?.tipo === "error" && (
+                <p className="pagina__error" role="alert">
+                    {cargaActual.mensaje}
+                </p>
+            )}
+
+            {cargaActual?.tipo === "sin-plan" && (
                 <article className="tarjeta tarjeta--vacia">
                     <h2>Todavía no tienes un plan activo</h2>
                     <p>El reparto por comidas se calcula con los macros de tu plan.</p>
                     <Link className="boton boton--primario pagina__accion" to="/nuevo-plan">
                         Crear mi plan
                     </Link>
+                </article>
+            )}
+
+            {cargaActual?.tipo !== "sin-plan" && (
+                <article className="tarjeta">
+                    <div className="guia__encabezado">
+                        <div>
+                            <h2>Repartir en</h2>
+                            <p>Elige cuántas comidas haces al día.</p>
+                        </div>
+                        <div
+                            className="guia__opciones"
+                            role="group"
+                            aria-label="Número de comidas"
+                        >
+                            {OPCIONES.map((n) => (
+                                <button
+                                    key={n}
+                                    type="button"
+                                    aria-pressed={comidas === n}
+                                    className={comidas === n ? "activo" : ""}
+                                    onClick={() => setComidas(n)}
+                                >
+                                    {n} comidas
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </article>
             )}
 
@@ -115,23 +148,10 @@ export default function Guia() {
                     </div>
 
                     <article className="tarjeta">
-                        <div className="guia__encabezado">
-                            <h2>Reparto por comidas</h2>
-                            <div className="guia__opciones" role="radiogroup" aria-label="Número de comidas">
-                                {OPCIONES.map((n) => (
-                                    <button
-                                        key={n}
-                                        type="button"
-                                        role="radio"
-                                        aria-checked={comidas === n}
-                                        className={comidas === n ? "activo" : ""}
-                                        onClick={() => setComidas(n)}
-                                    >
-                                        {n} comidas
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                        <h2>Reparto por comidas</h2>
+                        <p>
+                            Reparto para {guia.comidas} comidas · {num(guia.ingesta_kcal, 0)} kcal al día.
+                        </p>
                         <div className="tabla-contenedor">
                             <table className="tabla">
                                 <thead>

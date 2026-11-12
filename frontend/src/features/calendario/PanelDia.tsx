@@ -5,13 +5,23 @@ import type { ActividadCatalogo, ActividadDia, DiaCalendario } from "../../types
 import { formatoKcal, tituloDia } from "./fechas";
 import { guardarActividades, guardarCalorias, guardarPeso } from "./registroService";
 
+export type ResultadoGuardado =
+    | { tipo: "completo"; fecha: string }
+    | {
+          tipo: "parcial";
+          fecha: string;
+          guardadas: number;
+          fallidas: number;
+          mensaje: string;
+      };
+
 interface Props {
     dia: DiaCalendario;
     ingestaObjetivo: number;
     banda: number;
     esDiaInicial: boolean;
     catalogo: ActividadCatalogo[];
-    onGuardado: () => void;
+    onGuardado: (resultado: ResultadoGuardado) => void;
 }
 
 function aTexto(valor: number | null): string {
@@ -90,12 +100,26 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
         setError(null);
         const resultados = await Promise.allSettled(pendientes);
         setGuardando(false);
-        const fallo = resultados.find((r): r is PromiseRejectedResult => r.status === "rejected");
-        if (fallo) {
-            setError(mensajeDeError(fallo.reason));
+        const fallidos = resultados.filter(
+            (resultado): resultado is PromiseRejectedResult =>
+                resultado.status === "rejected",
+        );
+        const guardadas = resultados.length - fallidos.length;
+        if (fallidos.length > 0) {
+            if (guardadas > 0) {
+                onGuardado({
+                    tipo: "parcial",
+                    fecha: dia.fecha,
+                    guardadas,
+                    fallidas: fallidos.length,
+                    mensaje: mensajeDeError(fallidos[0].reason),
+                });
+            } else {
+                setError(`No se guardó ningún cambio. ${mensajeDeError(fallidos[0].reason)}`);
+            }
             return;
         }
-        onGuardado();
+        onGuardado({ tipo: "completo", fecha: dia.fecha });
     }
 
     return (

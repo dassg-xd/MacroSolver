@@ -3,6 +3,10 @@
   margin-bottom: 10px;
 }
 
+.estadisticas__grafica--variacion {
+  margin-top: 12px;
+}
+
 .tarjeta__nota a {
   color: #c41e24;
   font-weight: 700;
