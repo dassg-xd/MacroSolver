@@ -211,6 +211,10 @@
   white-space: nowrap;
 }
 
+.barra__toggle {
+  display: none;
+}
+
 @media (max-width: 860px) {
   .barra {
     flex-wrap: wrap;
@@ -242,5 +246,105 @@
 
   .barra__nav a {
     padding: 10px 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .barra {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    gap: 12px;
+    min-height: 64px;
+    padding: 0 14px;
+  }
+
+  .barra__toggle {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .barra__marca {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .barra__marca img {
+    width: 104px;
+  }
+
+  .barra__cuenta {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .barra__chip {
+    width: 44px;
+    justify-content: center;
+    padding: 6px;
+  }
+
+  .barra__toggle {
+    display: inline-grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    padding: 9px;
+    border: 1px solid #3a3838;
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .barra__toggle svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-width: 2;
+  }
+
+  .barra__nav,
+  .barra__nav.barra__nav--abierta {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    display: none;
+    flex: none;
+    flex-direction: column;
+    gap: 4px;
+    order: initial;
+    overflow: visible;
+    padding: 8px 14px 12px;
+    background: #101012;
+    box-shadow: 0 12px 20px rgb(0 0 0 / 18%);
+  }
+
+  .barra__nav.barra__nav--abierta {
+    display: flex;
+  }
+
+  .barra__nav a {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 0;
+    border-left: 3px solid transparent;
+    border-radius: 6px;
+  }
+
+  .barra__nav a:hover {
+    background: #242326;
+  }
+
+  .barra__nav a.active {
+    border-left-color: #e0242b;
+    background: #242326;
   }
 }

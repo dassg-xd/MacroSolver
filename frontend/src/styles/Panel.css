@@ -337,4 +337,21 @@
   .panel__kpis {
     grid-template-columns: 1fr;
   }
+
+  .panel__macros {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .panel__macros li {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+  }
+
+  .panel__macros strong {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
 }
