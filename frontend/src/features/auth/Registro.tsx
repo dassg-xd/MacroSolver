@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, UserPlus } from "lucide-react";
 import logoMacroSolver from "../../assets/componente1.png";
 import { mensajeDeError } from "../../api/mensajeError";
 import { useSesion } from "./SesionContext";
@@ -334,7 +335,11 @@ export default function Registro() {
                         setMostrarContrasena((visible) => !visible)
                       }
                     >
-                      {mostrarContrasena ? "Ocultar" : "Ver"}
+                    {mostrarContrasena ? (
+                      <EyeOff size={16} aria-hidden="true" />
+                    ) : (
+                      <Eye size={16} aria-hidden="true" />
+                    )}
                     </button>
                   </div>
                   {erroresCampos.contrasena && (
@@ -406,7 +411,11 @@ export default function Registro() {
                         setMostrarConfirmacion((visible) => !visible)
                       }
                     >
-                      {mostrarConfirmacion ? "Ocultar" : "Ver"}
+                      {mostrarConfirmacion ? (
+                        <EyeOff size={16} aria-hidden="true" />
+                      ) : (
+                        <Eye size={16} aria-hidden="true" />
+                      )}
                     </button>
                   </div>
                   {erroresCampos.confirmacion && (
@@ -428,6 +437,7 @@ export default function Registro() {
                   )}
 
                   <button className="registro__continuar" type="submit">
+                    <ArrowRight size={17} aria-hidden="true" />
                     Continuar
                   </button>
                   <p className="registro__pie">
@@ -581,6 +591,7 @@ export default function Registro() {
                       onClick={volverAlPasoUno}
                       disabled={enviando}
                     >
+                      <ArrowLeft size={16} aria-hidden="true" />
                       Atrás
                     </button>
                     <button
@@ -588,6 +599,7 @@ export default function Registro() {
                       type="submit"
                       disabled={enviando}
                     >
+                      <UserPlus size={17} aria-hidden="true" />
                       {enviando ? "Creando cuenta..." : "Crear cuenta"}
                     </button>
                   </div>

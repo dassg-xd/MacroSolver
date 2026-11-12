@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    Calculator,
+    Check,
+    History as HistoryIcon,
+    LayoutDashboard,
+    Plus,
+    RefreshCw,
+} from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import {
@@ -42,10 +50,14 @@ export default function Historial() {
         <section className="pagina" aria-busy={carga === null}>
             <header className="pagina__cabecera">
                 <div>
-                    <h1>Historial de planes</h1>
+                    <h1 className="historial__titulo">
+                        <HistoryIcon className="icono-ui" size={21} aria-hidden="true" />
+                        Historial de planes
+                    </h1>
                     <p>Cada re-planeación crea un plan nuevo encadenado al anterior. Ninguno se borra.</p>
                 </div>
                 <Link className="boton boton--primario pagina__accion" to="/nuevo-plan">
+                    <Plus size={17} aria-hidden="true" />
                     Nuevo plan
                 </Link>
             </header>
@@ -78,6 +90,7 @@ export default function Historial() {
                                 setIntento((actual) => actual + 1);
                             }}
                         >
+                            <RefreshCw size={16} aria-hidden="true" />
                             Reintentar
                         </button>
                     }
@@ -92,6 +105,7 @@ export default function Historial() {
                     titulo="Todavía no has creado ningún plan"
                     accion={
                         <Link className="boton boton--primario" to="/nuevo-plan">
+                            <Plus size={17} aria-hidden="true" />
                             Crear mi plan
                         </Link>
                     }
@@ -114,6 +128,7 @@ export default function Historial() {
                                 <header>
                                     <h2>Plan {numero}</h2>
                                     <span className={`etiqueta${activo ? " etiqueta--activo" : ""}`}>
+                                        {activo && <Check size={14} aria-hidden="true" />}
                                         {activo ? "Activo" : "Anterior"}
                                     </span>
                                 </header>
@@ -148,8 +163,14 @@ export default function Historial() {
                                 </dl>
                                 {activo && (
                                     <div className="historial__enlaces">
-                                        <Link to="/panel">Ver en el panel</Link>
-                                        <Link to="/plan/como-se-calculo">Cómo se calculó</Link>
+                                        <Link to="/panel">
+                                            <LayoutDashboard size={16} aria-hidden="true" />
+                                            Ver en el panel
+                                        </Link>
+                                        <Link to="/plan/como-se-calculo">
+                                            <Calculator size={16} aria-hidden="true" />
+                                            Cómo se calculó
+                                        </Link>
                                     </div>
                                 )}
                             </li>

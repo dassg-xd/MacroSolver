@@ -1,6 +1,14 @@
 import { isAxiosError } from "axios";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
+import {
+    CalendarDays,
+    ChevronLeft,
+    ChevronRight,
+    Dumbbell,
+    Plus,
+    Scale,
+} from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import type { ActividadCatalogo, Calendario as DatosCalendario, DiaCalendario } from "../../types/registro";
@@ -132,6 +140,7 @@ export default function Calendario() {
                         para empezar a anotar calorías, peso y actividad física.
                     </p>
                     <Link className="boton boton--primario calendario__cta" to="/nuevo-plan">
+                        <Plus size={17} aria-hidden="true" />
                         Crear mi plan
                     </Link>
                 </article>
@@ -267,7 +276,7 @@ export default function Calendario() {
                                 setMes(moverMes(mes, -1));
                             }}
                         >
-                            ‹
+                            <ChevronLeft size={20} aria-hidden="true" />
                         </button>
                         <h2>{tituloMes(mes)}</h2>
                         <button
@@ -280,7 +289,7 @@ export default function Calendario() {
                                 setMes(moverMes(mes, 1));
                             }}
                         >
-                            ›
+                            <ChevronRight size={20} aria-hidden="true" />
                         </button>
                     </header>
 
@@ -384,8 +393,8 @@ export default function Calendario() {
                     <ul className="calendario__leyenda">
                         <li><i className="calendario__muestra calendario__muestra--cumplido" />Calorías dentro de ±10 %</li>
                         <li><i className="calendario__muestra calendario__muestra--desviado" />Fuera de ±10 %</li>
-                        <li><i className="calendario__marca calendario__marca--peso" />Peso</li>
-                        <li><i className="calendario__marca calendario__marca--actividad" />Actividad</li>
+                        <li><Scale className="calendario__leyenda-icono" size={15} aria-hidden="true" />Peso</li>
+                        <li><Dumbbell className="calendario__leyenda-icono" size={15} aria-hidden="true" />Actividad</li>
                         <li><i className="calendario__muestra calendario__muestra--estimado" />Estimado con el plan</li>
                     </ul>
                 </article>
@@ -429,7 +438,10 @@ export default function Calendario() {
 function Cabecera() {
     return (
         <header className="calendario__cabecera">
-            <h1>Calendario</h1>
+            <h1>
+                <CalendarDays className="icono-ui" size={21} aria-hidden="true" />
+                Calendario
+            </h1>
             <p>Toca un día para registrar calorías, peso y actividad física.</p>
         </header>
     );

@@ -154,6 +154,8 @@
 }
 
 .registro__campo-contrasena button {
+  display: grid;
+  place-items: center;
   position: absolute;
   top: 50%;
   right: 10px;
@@ -191,6 +193,10 @@
 }
 
 .registro__continuar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   width: 100%;
   min-height: 44px;
   margin-top: 12px;
@@ -312,6 +318,10 @@
 }
 
 .registro__atras {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
   min-height: 42px;
   margin-top: 12px;
   padding: 0 14px;

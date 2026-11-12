@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ArrowLeft, Calculator, Plus, RefreshCw } from "lucide-react";
 
 import {
     BloqueEsqueleto,
@@ -59,9 +60,13 @@ export default function PantallaCalculo() {
         <section className="como-pantalla" aria-busy={carga.tipo === "cargando"}>
             <header className="como-pantalla__cabecera">
                 <Link className="como-pantalla__volver" to="/panel">
-                    ← Volver al panel
+                    <ArrowLeft size={16} aria-hidden="true" />
+                    Volver al panel
                 </Link>
-                <h1>Cómo se calculó mi plan</h1>
+                <h1>
+                    <Calculator className="icono-ui" size={21} aria-hidden="true" />
+                    Cómo se calculó mi plan
+                </h1>
                 {carga.tipo === "ok" && (
                     <p>
                         Plan del {carga.plan.fecha_inicio} al {carga.plan.fecha_meta} ·{" "}
@@ -94,6 +99,7 @@ export default function PantallaCalculo() {
                     titulo="Todavía no tienes un plan activo"
                     accion={
                         <Link className="boton boton--primario" to="/nuevo-plan">
+                            <Plus size={17} aria-hidden="true" />
                             Crear un plan
                         </Link>
                     }
@@ -111,6 +117,7 @@ export default function PantallaCalculo() {
                             type="button"
                             onClick={reintentar}
                         >
+                            <RefreshCw size={16} aria-hidden="true" />
                             Reintentar
                         </button>
                     }
@@ -128,6 +135,7 @@ export default function PantallaCalculo() {
                             type="button"
                             onClick={reintentar}
                         >
+                            <RefreshCw size={16} aria-hidden="true" />
                             Reintentar
                         </button>
                     }

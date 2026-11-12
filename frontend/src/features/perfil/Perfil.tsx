@@ -1,4 +1,5 @@
 import { useRef, useState, type SubmitEvent } from "react";
+import { RotateCcw, Save } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import type { DatosPerfil, UsuarioPublico } from "../../types/auth";
@@ -346,6 +347,7 @@ export default function Perfil() {
                         }}
                         disabled={guardando}
                     >
+                        <RotateCcw size={16} aria-hidden="true" />
                         Descartar cambios
                     </button>
                     <button
@@ -353,6 +355,7 @@ export default function Perfil() {
                         className="boton boton--primario"
                         disabled={guardando}
                     >
+                        <Save size={16} aria-hidden="true" />
                         {guardando ? "Guardando..." : "Guardar cambios"}
                     </button>
                 </div>

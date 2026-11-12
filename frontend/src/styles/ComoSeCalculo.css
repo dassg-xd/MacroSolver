@@ -8,7 +8,9 @@
 }
 
 .como-pantalla__volver {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 12px;
   color: #c41e24;
   font-size: var(--texto-secundario);
@@ -17,6 +19,9 @@
 }
 
 .como-pantalla__cabecera h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 6px;
   font-size: var(--texto-h1);
   line-height: 1.15;

@@ -1,5 +1,17 @@
 import { Suspense, useRef, useState, type KeyboardEvent } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import {
+    Activity,
+    BookOpen,
+    CalendarDays,
+    ChartLine,
+    History,
+    LogOut,
+    Menu,
+    Plus,
+    UserRound,
+    X,
+} from "lucide-react";
 
 import logoMacroSolver from "../assets/componente1.png";
 import EsqueletoPagina from "./Esqueleto";
@@ -63,13 +75,7 @@ export default function Layout() {
                         setMenuAbierto(false);
                     }}
                 >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        {navegacionAbierta ? (
-                            <path d="m6 6 12 12M18 6 6 18" />
-                        ) : (
-                            <path d="M4 6h16M4 12h16M4 18h16" />
-                        )}
-                    </svg>
+                    {navegacionAbierta ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
                 </button>
 
                 <nav
@@ -78,21 +84,27 @@ export default function Layout() {
                     aria-label="Navegación principal"
                 >
                     <NavLink to="/panel" end onClick={() => setNavegacionAbierta(false)}>
+                        <Activity size={16} aria-hidden="true" />
                         Seguimiento
                     </NavLink>
                     <NavLink to="/calendario" onClick={() => setNavegacionAbierta(false)}>
+                        <CalendarDays size={16} aria-hidden="true" />
                         Calendario
                     </NavLink>
                     <NavLink to="/estadisticas" onClick={() => setNavegacionAbierta(false)}>
+                        <ChartLine size={16} aria-hidden="true" />
                         Estadísticas
                     </NavLink>
                     <NavLink to="/historial" onClick={() => setNavegacionAbierta(false)}>
+                        <History size={16} aria-hidden="true" />
                         Historial
                     </NavLink>
                     <NavLink to="/guia" onClick={() => setNavegacionAbierta(false)}>
+                        <BookOpen size={16} aria-hidden="true" />
                         Guía
                     </NavLink>
                     <NavLink to="/nuevo-plan" onClick={() => setNavegacionAbierta(false)}>
+                        <Plus size={16} aria-hidden="true" />
                         Nuevo plan
                     </NavLink>
                 </nav>
@@ -126,6 +138,7 @@ export default function Layout() {
                             to="/perfil"
                             onClick={() => setMenuAbierto(false)}
                         >
+                            <UserRound size={16} aria-hidden="true" />
                             Mi perfil
                         </NavLink>
                         <button
@@ -135,6 +148,7 @@ export default function Layout() {
                                 setCerrandoSesion(true);
                             }}
                         >
+                            <LogOut size={16} aria-hidden="true" />
                             Cerrar sesión
                         </button>
                     </nav>
@@ -175,6 +189,7 @@ export default function Layout() {
                             className="boton boton--secundario"
                             onClick={() => setCerrandoSesion(false)}
                         >
+                            <X size={16} aria-hidden="true" />
                             Cancelar
                         </button>
                         <button
@@ -182,6 +197,7 @@ export default function Layout() {
                             className="boton boton--peligro"
                             onClick={confirmarCierre}
                         >
+                            <LogOut size={16} aria-hidden="true" />
                             Cerrar sesión
                         </button>
                     </div>

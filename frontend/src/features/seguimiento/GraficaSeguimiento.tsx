@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { RotateCcw } from "lucide-react";
 import {
     CartesianGrid,
     ComposedChart,
@@ -126,6 +127,7 @@ export default function GraficaSeguimiento({ seguimiento: s }: Props) {
                         className="boton boton--secundario"
                         onClick={() => setRangoZoom(null)}
                     >
+                        <RotateCcw size={16} aria-hidden="true" />
                         Restablecer zoom
                     </button>
                 )}

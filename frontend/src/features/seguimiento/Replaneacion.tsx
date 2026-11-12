@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { CalendarDays, Check, RefreshCw, X } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import {
@@ -65,7 +66,10 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
             tituloId="titulo-replaneacion"
             onClose={onCerrar}
         >
-            <h2 id="titulo-replaneacion">Re-planear</h2>
+            <h2 id="titulo-replaneacion" className="replaneacion__titulo">
+                <RefreshCw className="icono-ui" size={19} aria-hidden="true" />
+                Re-planear
+            </h2>
 
                 {cargando && (
                     <EstadoEsqueleto
@@ -104,6 +108,7 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
                                         className="boton boton--secundario"
                                         onClick={() => setFechaMeta(previa.viabilidad.fecha_viable!)}
                                     >
+                                        <CalendarDays size={16} aria-hidden="true" />
                                         Usar el {fechaCorta(previa.viabilidad.fecha_viable)} como nueva fecha
                                     </button>
                                 )}
@@ -171,6 +176,7 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
 
                 <div className="modal__acciones">
                     <button type="button" className="boton boton--secundario" onClick={onCerrar}>
+                        <X size={16} aria-hidden="true" />
                         Cancelar
                     </button>
                     <button
@@ -179,6 +185,7 @@ export default function Replaneacion({ onCerrar, onReplaneado }: Props) {
                         disabled={cargando || guardando || !previa?.puede_confirmar}
                         onClick={confirmar}
                     >
+                        <Check size={16} aria-hidden="true" />
                         {guardando ? "Guardando..." : "Aceptar re-planeación"}
                     </button>
                 </div>

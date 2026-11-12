@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, LogIn } from "lucide-react";
 
 import logoMacroSolver from "../../assets/componente1.png";
 import { mensajeDeError } from "../../api/mensajeError";
@@ -166,7 +167,11 @@ export default function Login() {
                                 setMostrarContrasena((visible) => !visible)
                             }
                         >
-                            {mostrarContrasena ? "Ocultar" : "Ver"}
+                            {mostrarContrasena ? (
+                                <EyeOff size={16} aria-hidden="true" />
+                            ) : (
+                                <Eye size={16} aria-hidden="true" />
+                            )}
                         </button>
                     </div>
 
@@ -187,6 +192,7 @@ export default function Login() {
                         type="submit"
                         disabled={enviando}
                     >
+                        <LogIn size={17} aria-hidden="true" />
                         {enviando ? "Iniciando sesión..." : "Iniciar sesión"}
                     </button>
                 </form>

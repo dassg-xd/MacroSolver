@@ -36,6 +36,7 @@
 .barra__nav a {
   display: inline-flex;
   align-items: center;
+  gap: 7px;
   min-height: 44px;
   padding: 8px 0;
   color: #c9c6c6;
@@ -99,7 +100,9 @@
 
 .barra__menu a,
 .barra__menu button {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 9px;
   width: 100%;
   padding: 10px 12px;
   border: 0;
@@ -139,6 +142,10 @@
 }
 
 .boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 42px;
   padding: 0 18px;
   border: 1px solid transparent;

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Dumbbell, Plus, Save, Trash2 } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import { BloqueEsqueleto, EstadoEsqueleto } from "../../components/Esqueleto";
@@ -159,7 +160,10 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 {esDiaInicial && " El peso del día de inicio es el peso inicial del plan."}
             </p>
 
-            <h3 className="dia__subtitulo">Actividad física</h3>
+            <h3 className="dia__subtitulo">
+                <Dumbbell className="icono-ui" size={17} aria-hidden="true" />
+                Actividad física
+            </h3>
             {actividades.length === 0 ? (
                 <p className="dia__nota">Sin actividades: cuenta como descanso.</p>
             ) : (
@@ -184,7 +188,7 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                                     aria-label={`Quitar ${info?.nombre ?? "actividad"}`}
                                     onClick={() => setActividades((lista) => lista.filter((_, j) => j !== i))}
                                 >
-                                    ×
+                                    <Trash2 size={16} aria-hidden="true" />
                                 </button>
                             </li>
                         );
@@ -230,7 +234,8 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 disabled={catalogo.length === 0}
                 onClick={agregarActividad}
             >
-                + Agregar actividad
+                <Plus size={16} aria-hidden="true" />
+                Agregar actividad
             </button>
 
             {error && (
@@ -245,6 +250,7 @@ export default function PanelDia({ dia, ingestaObjetivo, banda, esDiaInicial, ca
                 disabled={guardando}
                 onClick={guardarDia}
             >
+                <Save size={16} aria-hidden="true" />
                 {guardando ? "Guardando..." : "Guardar día"}
             </button>
             <p className="dia__pie">

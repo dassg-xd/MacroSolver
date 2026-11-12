@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { CircleAlert, Inbox, type LucideIcon } from "lucide-react";
 
 import "../styles/EstadoPantalla.css";
 
@@ -18,6 +19,8 @@ export default function EstadoPantalla({
     accion,
 }: Props) {
     const rol = tipo === "cargando" ? "status" : tipo === "error" ? "alert" : undefined;
+    const Icono: LucideIcon | null =
+        tipo === "error" ? CircleAlert : tipo === "vacio" ? Inbox : null;
 
     return (
         <section
@@ -25,7 +28,10 @@ export default function EstadoPantalla({
             role={rol}
             aria-busy={tipo === "cargando" ? true : undefined}
         >
-            <h2>{titulo}</h2>
+            <h2>
+                {Icono && <Icono className="icono-ui" size={20} aria-hidden="true" />}
+                {titulo}
+            </h2>
             {children && <div className="estado-pantalla__detalle">{children}</div>}
             {accion && <div className="estado-pantalla__accion">{accion}</div>}
         </section>

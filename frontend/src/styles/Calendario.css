@@ -7,6 +7,9 @@
 }
 
 .calendario__cabecera h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 6px;
   font-size: var(--texto-h1);
   line-height: 1.15;
@@ -99,6 +102,8 @@
 }
 
 .calendario__flecha {
+  display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
   border: 1px solid #dcd7d1;
@@ -309,6 +314,10 @@
   gap: 6px;
 }
 
+.calendario__leyenda-icono {
+  color: #5d5960;
+}
+
 /* Panel del día */
 .dia {
   display: flex;
@@ -379,6 +388,9 @@
 }
 
 .dia__subtitulo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   margin: 6px 0 0;
   font-size: var(--texto-secundario);
 }
@@ -413,6 +425,9 @@
 }
 
 .dia__quitar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
   width: 26px;
   height: 26px;
   border: none;
@@ -429,6 +444,9 @@
 }
 
 .dia__boton-agregar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   align-self: flex-start;
   padding: 0;
   border: none;

@@ -1,5 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    Activity,
+    ArrowRight,
+    CalendarDays,
+    Calculator,
+    ChartLine,
+    Droplet,
+    Dumbbell,
+    Flame,
+    Plus,
+    RefreshCw,
+    Scale,
+    Target,
+    Utensils,
+    Wheat,
+} from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import EsqueletoPagina from "../../components/Esqueleto";
@@ -89,6 +105,7 @@ export default function Panel() {
                     </p>
                 </div>
                 <Link className="boton boton--primario pagina__accion" to="/calendario">
+                    <CalendarDays size={17} aria-hidden="true" />
                     Registrar hoy
                 </Link>
             </header>
@@ -108,6 +125,7 @@ export default function Panel() {
                         className="boton boton--primario"
                         onClick={() => setReplaneando(true)}
                     >
+                        <ArrowRight size={17} aria-hidden="true" />
                         Ver propuesta
                     </button>
                 </article>
@@ -115,7 +133,10 @@ export default function Panel() {
 
             <div className="kpis panel__kpis">
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Ingesta del plan</span>
+                    <span className="kpi__etiqueta">
+                        <Flame className="icono-ui" size={16} aria-hidden="true" />
+                        Ingesta del plan
+                    </span>
                     <span className="kpi__valor">
                         {num(plan.ingesta_kcal, 0)}
                         <small> kcal/día</small>
@@ -128,7 +149,10 @@ export default function Panel() {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Peso actual</span>
+                    <span className="kpi__etiqueta">
+                        <Scale className="icono-ui" size={16} aria-hidden="true" />
+                        Peso actual
+                    </span>
                     <span className="kpi__valor">
                         {num(s.hoy.ultimo_peso_kg)}
                         <small> kg</small>
@@ -141,7 +165,10 @@ export default function Panel() {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Días restantes</span>
+                    <span className="kpi__etiqueta">
+                        <CalendarDays className="icono-ui" size={16} aria-hidden="true" />
+                        Días restantes
+                    </span>
                     <span className="kpi__valor">{s.hoy.dias_restantes}</span>
                     <br/>
                     <span className="kpi__detalle">
@@ -149,7 +176,10 @@ export default function Panel() {
                     </span>
                 </article>
                 <article className={`kpi${retraso !== null && retraso > 0 ? " kpi--alerta" : ""}`}>
-                    <span className="kpi__etiqueta">Llegada estimada</span>
+                    <span className="kpi__etiqueta">
+                        <Activity className="icono-ui" size={16} aria-hidden="true" />
+                        Llegada estimada
+                    </span>
                     <span className="kpi__valor">
                         {s.llegada.dia !== null ? `Día ${s.llegada.dia}` : "Sin fecha"}
                     </span>
@@ -162,7 +192,10 @@ export default function Panel() {
             </div>
 
             <article className="tarjeta">
-                <h2>Peso: plan, adherencia y realidad</h2>
+                <h2 className="panel__titulo-icono">
+                    <ChartLine className="icono-ui" size={19} aria-hidden="true" />
+                    Peso: plan, adherencia y realidad
+                </h2>
                 <GraficaSeguimiento key={s.plan_id} seguimiento={s} />
                 <p className="tarjeta__nota">
                     Los puntos verdes son pesos registrados; los cuadrados marcan días estimados
@@ -177,28 +210,44 @@ export default function Panel() {
 
             <div className="panel__dos">
                 <article className="tarjeta">
-                    <h2>Macros del día</h2>
+                    <h2 className="panel__titulo-icono">
+                        <Utensils className="icono-ui" size={19} aria-hidden="true" />
+                        Macros del día
+                    </h2>
                     <ul className="panel__macros">
                         <li>
-                            <span>Proteína</span>
+                            <span>
+                                <Dumbbell className="icono-ui" size={17} aria-hidden="true" />
+                                Proteína
+                            </span>
                             <strong>{num(plan.proteina_g, 0)} g</strong>
                         </li>
                         <li>
-                            <span>Grasa</span>
+                            <span>
+                                <Droplet className="icono-ui" size={17} aria-hidden="true" />
+                                Grasa
+                            </span>
                             <strong>{num(plan.grasa_g, 0)} g</strong>
                         </li>
                         <li>
-                            <span>Carbohidratos</span>
+                            <span>
+                                <Wheat className="icono-ui" size={17} aria-hidden="true" />
+                                Carbohidratos
+                            </span>
                             <strong>{num(plan.carbohidratos_g, 0)} g</strong>
                         </li>
                     </ul>
                     <Link className="panel__enlace" to="/guia">
+                        <Utensils size={16} aria-hidden="true" />
                         Ver reparto por comidas
                     </Link>
                 </article>
 
                 <article className="tarjeta">
-                    <h2>Tu plan</h2>
+                    <h2 className="panel__titulo-icono">
+                        <Target className="icono-ui" size={19} aria-hidden="true" />
+                        Tu plan
+                    </h2>
                     <p>
                         De {num(plan.peso_inicial_kg)} kg a {num(plan.peso_objetivo_kg)} kg en{" "}
                         {plan.plazo_dias} días, desde el {fechaCorta(plan.fecha_inicio)}.
@@ -206,9 +255,11 @@ export default function Panel() {
                     </p>
                     <div className="panel__acciones">
                         <Link className="panel__enlace" to="/plan/como-se-calculo">
+                            <Calculator size={16} aria-hidden="true" />
                             Cómo se calculó
                         </Link>
                         <Link className="panel__enlace" to="/estadisticas">
+                            <ChartLine size={16} aria-hidden="true" />
                             Estadísticas
                         </Link>
                         <button
@@ -216,6 +267,7 @@ export default function Panel() {
                             className="panel__enlace panel__enlace--boton"
                             onClick={() => setReplaneando(true)}
                         >
+                            <RefreshCw size={16} aria-hidden="true" />
                             Re-planear
                         </button>
                     </div>
@@ -258,6 +310,7 @@ function PanelSinPlan({ nombre }: { nombre: string }) {
                     </p>
                 </div>
                 <Link className="panel__cta" to="/nuevo-plan">
+                    <Plus size={18} aria-hidden="true" />
                     Crear mi plan
                 </Link>
             </article>

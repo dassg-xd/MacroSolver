@@ -11,6 +11,10 @@
 }
 
 .estado-pantalla h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-2);
   margin: 0;
   font-size: var(--texto-h2);
   line-height: 1.2;
@@ -44,6 +48,10 @@
   border-color: #f1c6c8;
   background: var(--color-fondo-error);
   color: var(--color-error);
+}
+
+.estado-pantalla--vacio h2 svg {
+  color: var(--color-primario);
 }
 
 .estado-pantalla--error .estado-pantalla__detalle {

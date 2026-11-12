@@ -1,5 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {
+    Activity,
+    CalendarCheck2,
+    ChartLine,
+    CircleCheck,
+    Droplet,
+    Dumbbell,
+    Flame,
+    Lightbulb,
+    Plus,
+    RefreshCw,
+    Target,
+    Utensils,
+    Wheat,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { mensajeDeError } from "../../api/mensajeError";
 import {
@@ -21,30 +37,71 @@ type Carga =
 
 const OPCIONES = [3, 4, 5];
 
-const GLOSARIO = [
+interface TerminoGlosario {
+    titulo: string;
+    descripcion: string;
+    Icono: LucideIcon;
+    indicador?: string;
+}
+
+const GLOSARIO: {
+    id: string;
+    titulo: string;
+    terminos: TerminoGlosario[];
+}[] = [
     {
         id: "glosario-plan",
         titulo: "Plan y meta",
         terminos: [
-            ["Ingesta del plan", "Calorías diarias que el modelo estima para alcanzar tu meta en la fecha elegida."],
-            ["Curva ideal", "Peso estimado cada día si consumes exactamente las calorías del plan."],
+            {
+                titulo: "Ingesta del plan",
+                descripcion: "Calorías diarias que el modelo estima para alcanzar tu meta en la fecha elegida.",
+                Icono: Flame,
+            },
+            {
+                titulo: "Curva ideal",
+                descripcion: "Peso estimado cada día si consumes exactamente las calorías del plan.",
+                Icono: Target,
+            },
         ],
     },
     {
         id: "glosario-progreso",
         titulo: "Tu progreso",
         terminos: [
-            ["Curva por adherencia", "Peso simulado con las calorías que registraste. Los días sin registro usan la ingesta del plan y se marcan como estimados."],
-            ["Tendencia", "Curva de tus pesos registrados que suaviza las subidas y bajadas del día a día."],
-            ["Llegada estimada", "Día en que la curva por adherencia alcanza tu meta si mantienes el ritmo actual."],
+            {
+                titulo: "Curva por adherencia",
+                descripcion: "Peso simulado con las calorías que registraste. Los días sin registro usan la ingesta del plan y se marcan como estimados.",
+                Icono: ChartLine,
+            },
+            {
+                titulo: "Tendencia",
+                descripcion: "Curva de tus pesos registrados que suaviza las subidas y bajadas del día a día.",
+                Icono: Activity,
+            },
+            {
+                titulo: "Llegada estimada",
+                descripcion: "Día en que la curva por adherencia alcanza tu meta si mantienes el ritmo actual.",
+                Icono: CalendarCheck2,
+            },
         ],
     },
     {
         id: "glosario-ajustes",
         titulo: "Cumplimiento y ajustes",
         terminos: [
-            ["Día cumplido", "Día en que tus calorías quedaron dentro de ±10 % de la ingesta del plan."],
-            ["Re-planeación", "Si tu tendencia se desvía más de 1 kg del plan, se propone un plan nuevo desde tu peso real. Solo cambia si lo aceptas."],
+            {
+                titulo: "Día cumplido",
+                descripcion: "Día en que tus calorías quedaron dentro de ±10 % de la ingesta del plan.",
+                Icono: CircleCheck,
+                indicador: "±10 %",
+            },
+            {
+                titulo: "Re-planeación",
+                descripcion: "Si tu tendencia se desvía más de 1 kg del plan, se propone un plan nuevo desde tu peso real. Solo cambia si lo aceptas.",
+                Icono: RefreshCw,
+                indicador: "> 1 kg",
+            },
         ],
     },
 ];
@@ -113,6 +170,7 @@ export default function Guia() {
                     <h2>Todavía no tienes un plan activo</h2>
                     <p>El reparto por comidas se calcula con los macros de tu plan.</p>
                     <Link className="boton boton--primario pagina__accion" to="/nuevo-plan">
+                        <Plus size={17} aria-hidden="true" />
                         Crear mi plan
                     </Link>
                 </article>
@@ -122,7 +180,10 @@ export default function Guia() {
                 <article className="tarjeta">
                     <div className="guia__encabezado">
                         <div>
-                            <h2>Repartir en</h2>
+                            <h2 className="guia__subtitulo">
+                                <Utensils className="icono-ui" size={19} aria-hidden="true" />
+                                Repartir en
+                            </h2>
                             <p>Elige cuántas comidas haces al día.</p>
                         </div>
                         <div
@@ -148,9 +209,12 @@ export default function Guia() {
 
             {guia && (
                 <>
-                    <div className="kpis">
+                    <div className="kpis guia__kpis">
                         <article className="kpi">
-                            <span className="kpi__etiqueta">Energía</span>
+                            <span className="kpi__etiqueta">
+                                <Flame className="icono-ui" size={16} aria-hidden="true" />
+                                Energía
+                            </span>
                             <span className="kpi__valor">
                                 {num(guia.ingesta_kcal, 0)}
                                 <small>kcal</small>
@@ -158,7 +222,10 @@ export default function Guia() {
                             <span className="kpi__detalle">Ingesta diaria del plan</span>
                         </article>
                         <article className="kpi">
-                            <span className="kpi__etiqueta">Proteína</span>
+                            <span className="kpi__etiqueta">
+                                <Dumbbell className="icono-ui" size={16} aria-hidden="true" />
+                                Proteína
+                            </span>
                             <span className="kpi__valor">
                                 {num(guia.proteina_g, 0)}
                                 <small>g</small>
@@ -166,7 +233,10 @@ export default function Guia() {
                             <span className="kpi__detalle">2,2 g por kg de masa libre</span>
                         </article>
                         <article className="kpi">
-                            <span className="kpi__etiqueta">Grasa</span>
+                            <span className="kpi__etiqueta">
+                                <Droplet className="icono-ui" size={16} aria-hidden="true" />
+                                Grasa
+                            </span>
                             <span className="kpi__valor">
                                 {num(guia.grasa_g, 0)}
                                 <small>g</small>
@@ -174,7 +244,10 @@ export default function Guia() {
                             <span className="kpi__detalle">25 % de la energía</span>
                         </article>
                         <article className="kpi">
-                            <span className="kpi__etiqueta">Carbohidratos</span>
+                            <span className="kpi__etiqueta">
+                                <Wheat className="icono-ui" size={16} aria-hidden="true" />
+                                Carbohidratos
+                            </span>
                             <span className="kpi__valor">
                                 {num(guia.carbohidratos_g, 0)}
                                 <small>g</small>
@@ -184,7 +257,10 @@ export default function Guia() {
                     </div>
 
                     <article className="tarjeta">
-                        <h2>Reparto por comidas</h2>
+                        <h2 className="guia__subtitulo">
+                            <Utensils className="icono-ui" size={19} aria-hidden="true" />
+                            Reparto por comidas
+                        </h2>
                         <p>
                             Reparto para {guia.comidas} comidas · {num(guia.ingesta_kcal, 0)} kcal al día.
                         </p>
@@ -223,7 +299,10 @@ export default function Guia() {
                     </article>
 
                     <article className="tarjeta">
-                        <h2>Consejos para cumplir el plan</h2>
+                        <h2 className="guia__subtitulo">
+                            <Lightbulb className="icono-ui" size={19} aria-hidden="true" />
+                            Consejos para cumplir el plan
+                        </h2>
                         <ul className="guia__consejos">
                             {guia.consejos.map((c) => (
                                 <li key={c}>{c}</li>
@@ -244,12 +323,31 @@ export default function Guia() {
                         >
                             <h3 id={id}>{titulo}</h3>
                             <dl>
-                                {terminos.map(([termino, definicion]) => (
-                                    <div key={termino}>
-                                        <dt>{termino}</dt>
-                                        <dd>{definicion}</dd>
-                                    </div>
-                                ))}
+                                {terminos.map(
+                                    ({ titulo: termino, descripcion, Icono, indicador }) => (
+                                        <div
+                                            className="guia__glosario-termino"
+                                            key={termino}
+                                        >
+                                            <dt>
+                                                <span className="guia__glosario-icono">
+                                                    <Icono
+                                                        size={18}
+                                                        strokeWidth={1.8}
+                                                        aria-hidden="true"
+                                                    />
+                                                </span>
+                                                <span>{termino}</span>
+                                                {indicador && (
+                                                    <span className="guia__glosario-indicador">
+                                                        {indicador}
+                                                    </span>
+                                                )}
+                                            </dt>
+                                            <dd>{descripcion}</dd>
+                                        </div>
+                                    ),
+                                )}
                             </dl>
                         </section>
                     ))}

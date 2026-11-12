@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
+    CalendarDays,
+    ChartLine,
+    CircleCheck,
+    Dumbbell,
+    Flame,
+    Plus,
+    Scale,
+} from "lucide-react";
+import {
     Bar,
     BarChart,
     CartesianGrid,
@@ -60,7 +69,10 @@ export default function Estadisticas() {
         <section className="pagina" aria-busy={carga === null}>
             <header className="pagina__cabecera">
                 <div>
-                    <h1>Estadísticas semanales</h1>
+                    <h1 className="estadisticas__titulo">
+                        <ChartLine className="icono-ui" size={21} aria-hidden="true" />
+                        Estadísticas semanales
+                    </h1>
                     <p>Semanas de domingo a sábado. La semana en curso es parcial.</p>
                 </div>
             </header>
@@ -99,6 +111,7 @@ export default function Estadisticas() {
                     <h2>Todavía no tienes un plan activo</h2>
                     <p>Las estadísticas se calculan con los registros de tu plan.</p>
                     <Link className="boton boton--primario pagina__accion" to="/nuevo-plan">
+                        <Plus size={17} aria-hidden="true" />
                         Crear mi plan
                     </Link>
                 </article>
@@ -137,9 +150,12 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
 
     return (
         <>
-            <div className="kpis">
+            <div className="kpis estadisticas__kpis">
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Adherencia acumulada</span>
+                    <span className="kpi__etiqueta">
+                        <CircleCheck className="icono-ui" size={16} aria-hidden="true" />
+                        Adherencia acumulada
+                    </span>
                     <span className="kpi__valor">
                         {r.dias_cumplidos} de {r.dias_registrados}
                     </span>
@@ -149,7 +165,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Promedio de calorías</span>
+                    <span className="kpi__etiqueta">
+                        <Flame className="icono-ui" size={16} aria-hidden="true" />
+                        Promedio de calorías
+                    </span>
                     <span className="kpi__valor">
                         {r.promedio_kcal !== null ? num(r.promedio_kcal, 0) : "—"}
                         <small>kcal</small>
@@ -157,7 +176,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     <span className="kpi__detalle">Objetivo: {num(r.objetivo_kcal, 0)} kcal</span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Cambio de peso</span>
+                    <span className="kpi__etiqueta">
+                        <Scale className="icono-ui" size={16} aria-hidden="true" />
+                        Cambio de peso
+                    </span>
                     <span className="kpi__valor">
                         {conSigno(r.cambio_kg)}
                         <small>kg</small>
@@ -169,7 +191,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
                     </span>
                 </article>
                 <article className="kpi">
-                    <span className="kpi__etiqueta">Entrenamiento</span>
+                    <span className="kpi__etiqueta">
+                        <Dumbbell className="icono-ui" size={16} aria-hidden="true" />
+                        Entrenamiento
+                    </span>
                     <span className="kpi__valor">
                         {num(sesionesSemana)}
                         <small>sesiones/semana</small>
@@ -181,7 +206,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             </div>
 
             <article className="tarjeta">
-                <h2>Adherencia por semana</h2>
+                <h2 className="estadisticas__subtitulo">
+                    <CircleCheck className="icono-ui" size={18} aria-hidden="true" />
+                    Adherencia por semana
+                </h2>
                 <p>
                     Porcentaje de días registrados que quedaron dentro de ±{pct} % de la ingesta.
                     El denominador excluye los días sin registro.
@@ -255,7 +283,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             </article>
 
             <article className="tarjeta">
-                <h2>Variación semanal del peso</h2>
+                <h2 className="estadisticas__subtitulo">
+                    <Scale className="icono-ui" size={18} aria-hidden="true" />
+                    Variación semanal del peso
+                </h2>
                 <p>
                     Cambio entre promedios de peso de semanas consecutivas, en kg. Debajo de cero
                     indica descenso; por encima, aumento. El dato procede de la respuesta del plan.
@@ -347,7 +378,10 @@ function Contenido({ datos }: { datos: DatosEstadisticas }) {
             </article>
 
             <article className="tarjeta">
-                <h2>Detalle por semana</h2>
+                <h2 className="estadisticas__subtitulo">
+                    <CalendarDays className="icono-ui" size={18} aria-hidden="true" />
+                    Detalle por semana
+                </h2>
                 <div className="tabla-contenedor">
                     <table className="tabla">
                         <thead>

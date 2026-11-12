@@ -1,5 +1,21 @@
 import { useState, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+    ArrowLeft,
+    Calculator,
+    ChartLine,
+    CircleAlert,
+    CircleCheck,
+    Flame,
+    Info,
+    Pencil,
+    Plus,
+    Ruler,
+    Save,
+    Scale,
+    Target,
+    TrendingDown,
+} from "lucide-react";
 
 import { useSesion } from "../auth/SesionContext";
 import { vistaPreviaPlan, confirmarPlan } from "./planService";
@@ -259,7 +275,10 @@ export default function NuevoPlan() {
         <section className="nuevo-plan">
             <header className="nuevo-plan__cabecera">
                 <span className="nuevo-plan__eyebrow">Tu siguiente paso</span>
-                <h1>Nuevo plan</h1>
+                <h1>
+                    <Plus className="icono-ui" size={21} aria-hidden="true" />
+                    Nuevo plan
+                </h1>
                 <p>
                     Define una meta realista. Revisaremos la viabilidad y tus
                     objetivos de nutrición antes de guardar el plan.
@@ -277,7 +296,10 @@ export default function NuevoPlan() {
                     <div className="nuevo-plan__grupo-cabecera">
                         <span className="nuevo-plan__paso">01</span>
                         <div>
-                            <h2 id="nuevo-plan-meta">Tu objetivo</h2>
+                            <h2 id="nuevo-plan-meta" className="nuevo-plan__titulo-icono">
+                                <Target className="icono-ui" size={19} aria-hidden="true" />
+                                Tu objetivo
+                            </h2>
                             <p>Indica desde dónde empiezas y a dónde quieres llegar.</p>
                         </div>
                     </div>
@@ -392,7 +414,10 @@ export default function NuevoPlan() {
                     <div className="nuevo-plan__grupo-cabecera">
                         <span className="nuevo-plan__paso">02</span>
                         <div>
-                            <h2 id="nuevo-plan-medidas">Medidas corporales <span>Opcional</span></h2>
+                            <h2 id="nuevo-plan-medidas" className="nuevo-plan__titulo-icono">
+                                <Ruler className="icono-ui" size={19} aria-hidden="true" />
+                                Medidas corporales <span>Opcional</span>
+                            </h2>
                             <p>
                                 Ayudan a estimar tu composición. Si las dejas vacías o incompletas,
                                 usaremos una estimación basada en tu perfil.
@@ -459,9 +484,11 @@ export default function NuevoPlan() {
                         className="boton boton--primario"
                         disabled={cargando || confirmando}
                     >
+                        <Calculator size={17} aria-hidden="true" />
                         {cargando ? "Calculando la vista previa..." : "Ver vista previa del plan"}
                     </button>
                     <Link className="boton boton--secundario " to="/panel">
+                        <ArrowLeft size={16} aria-hidden="true" />
                         Volver al panel
                     </Link>
                 </div>
@@ -507,6 +534,11 @@ export default function NuevoPlan() {
                                 Resultado de la vista previa
                             </span>
                             <h2 id="nuevo-plan-resumen">
+                                {previa.puede_confirmar ? (
+                                    <CircleCheck className="icono-ui" size={20} aria-hidden="true" />
+                                ) : (
+                                    <CircleAlert className="icono-ui" size={20} aria-hidden="true" />
+                                )}
                                 {previa.puede_confirmar
                                     ? "Tu plan está listo para confirmar"
                                     : "Revisa la viabilidad de esta meta"}
@@ -558,13 +590,17 @@ export default function NuevoPlan() {
                                 onClick={invalidarPrevia}
                                 disabled={confirmando}
                             >
+                                <Pencil size={16} aria-hidden="true" />
                                 Editar datos
                             </button>
                         </div>
                     )}
                     {previa.meta?.tipo === "grasa" && previa.meta.grasa_a_perder_kg !== null && (
                         <section className="nuevo-plan__tarjeta nuevo-plan__tarjeta--grasa">
-                            <h2>Tu meta</h2>
+                            <h2 className="nuevo-plan__titulo-icono">
+                                <Target className="icono-ui" size={18} aria-hidden="true" />
+                                Tu meta
+                            </h2>
                             <p>
                                 Perder {previa.meta.grasa_a_perder_kg.toFixed(1)} kg de grasa te
                                 lleva a unos <strong>{previa.meta.peso_objetivo_kg.toFixed(1)} kg</strong>.
@@ -574,7 +610,10 @@ export default function NuevoPlan() {
                     )}
 
                     <section className="nuevo-plan__tarjeta">
-                        <h2>Composición inicial</h2>
+                        <h2 className="nuevo-plan__titulo-icono">
+                            <Scale className="icono-ui" size={18} aria-hidden="true" />
+                            Composición inicial
+                        </h2>
                         <p>
                             {previa.composicion.pct_grasa.toFixed(1)} % de grasa
                             ({previa.composicion.metodo}). Masa libre:{" "}
@@ -585,7 +624,10 @@ export default function NuevoPlan() {
 
                     {previa.bloqueos.length > 0 && (
                         <section className="nuevo-plan__bloqueos">
-                            <h2>Bloqueos</h2>
+                            <h2 className="nuevo-plan__titulo-icono">
+                                <CircleAlert className="icono-ui" size={18} aria-hidden="true" />
+                                Bloqueos
+                            </h2>
                             <ul>
                                 {previa.bloqueos.map((b) => (
                                     <li key={b.codigo}>{b.mensaje}</li>
@@ -615,7 +657,10 @@ export default function NuevoPlan() {
 
                     {previa.advertencias.length > 0 && (
                         <section className="nuevo-plan__avisos">
-                            <h2>Avisos</h2>
+                            <h2 className="nuevo-plan__titulo-icono">
+                                <Info className="icono-ui" size={18} aria-hidden="true" />
+                                Avisos
+                            </h2>
                             <ul>
                                 {previa.advertencias.map((a, i) => (
                                     <li key={i}>{a}</li>
@@ -646,6 +691,7 @@ export default function NuevoPlan() {
                                     className="boton boton--secundario nuevo-plan__usar-grasa"
                                     onClick={() => usarMetaEnGrasa(previa.equivalente_grasa!.grasa_a_perder_kg)}
                                 >
+                                    <Target size={16} aria-hidden="true" />
                                     Usar meta en grasa
                                 </button>
                             ) : (
@@ -660,7 +706,10 @@ export default function NuevoPlan() {
                     {previa.puede_confirmar && previa.ingesta_kcal && (
                         <>
                             <section className="nuevo-plan__tarjeta">
-                                <h2>Ingesta diaria</h2>
+                                <h2 className="nuevo-plan__titulo-icono">
+                                    <Flame className="icono-ui" size={18} aria-hidden="true" />
+                                    Ingesta diaria
+                                </h2>
                                 <p className="nuevo-plan__ingesta">
                                     {previa.ingesta_kcal.toFixed(0)} kcal
                                 </p>
@@ -676,7 +725,10 @@ export default function NuevoPlan() {
 
                             {previa.perdida && (
                                 <section className="nuevo-plan__tarjeta">
-                                    <h2>Pérdida estimada</h2>
+                                    <h2 className="nuevo-plan__titulo-icono">
+                                        <TrendingDown className="icono-ui" size={18} aria-hidden="true" />
+                                        Pérdida estimada
+                                    </h2>
                                     <p>
                                         Peso {previa.perdida.peso_kg.toFixed(1)} kg ·
                                         Grasa {previa.perdida.grasa_kg.toFixed(1)} kg ·
@@ -687,7 +739,10 @@ export default function NuevoPlan() {
                             )}
 
                             <section className="nuevo-plan__grafica">
-                                <h2>Curva ideal</h2>
+                                <h2 className="nuevo-plan__titulo-icono">
+                                    <ChartLine className="icono-ui" size={18} aria-hidden="true" />
+                                    Curva ideal
+                                </h2>
                                 {/* Recharts importado en ComoSeCalculo; aquí resumen textual */}
                                 {previa.curva && previa.curva.peso_kg.length > 0 ? (
                                     <p>
@@ -717,6 +772,7 @@ export default function NuevoPlan() {
                                     disabled={confirmando}
                                     onClick={confirmar}
                                 >
+                                    <Save size={16} aria-hidden="true" />
                                     {confirmando ? "Guardando tu plan..." : "Confirmar y guardar plan"}
                                 </button>
                             </div>

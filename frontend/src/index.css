@@ -73,6 +73,11 @@ h2 {
   font-size: var(--texto-h2);
 }
 
+.icono-ui {
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
 input,
 select,
 textarea {
